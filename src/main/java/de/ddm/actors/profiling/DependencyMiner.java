@@ -187,13 +187,13 @@ public class DependencyMiner extends AbstractBehavior<DependencyMiner.Message> {
 			// this worker is idle
 
 			Task task = this.unassignedTasks.remove();
-			Map<String, Set<String>> uniqueValuesA = new HashMap<>();
-			Map<String, Set<String>> uniqueValuesB = new HashMap<>();
+			Map<String, Set<Integer>> uniqueValuesA = new HashMap<>();
+			Map<String, Set<Integer>> uniqueValuesB = new HashMap<>();
 			for (String colName: task.getColumnNamesA()) {
-				uniqueValuesA.put(colName, this.dataStorage.getColumn(task.getTableNameA(), colName).getUniqueValues());
+				uniqueValuesA.put(colName, this.dataStorage.getColumn(task.getTableNameA(), colName).getUniqueValueHashes());
 			}
 			for (String colName: task.getColumnNamesB()) {
-				uniqueValuesB.put(colName, this.dataStorage.getColumn(task.getTableNameB(), colName).getUniqueValues());
+				uniqueValuesB.put(colName, this.dataStorage.getColumn(task.getTableNameB(), colName).getUniqueValueHashes());
 			}
 
 			DependencyWorker.TaskMessage taskMessage = new DependencyWorker.TaskMessage(

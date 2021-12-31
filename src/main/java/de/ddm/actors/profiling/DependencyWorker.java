@@ -9,7 +9,6 @@ import akka.actor.typed.javadsl.Receive;
 import akka.actor.typed.receptionist.Receptionist;
 import de.ddm.actors.patterns.LargeMessageProxy;
 import de.ddm.serialization.AkkaSerializable;
-import de.ddm.structures.Column;
 import de.ddm.structures.InclusionDependency;
 import de.ddm.structures.Task;
 import lombok.AllArgsConstructor;
@@ -43,11 +42,11 @@ public class DependencyWorker extends AbstractBehavior<DependencyWorker.Message>
 		ActorRef<LargeMessageProxy.Message> dependencyMinerLargeMessageProxy;
 
 		Task task;
-		Map<String, Set<String>> uniqueValuesA;
-		Map<String, Set<String>> uniqueValuesB;
+		Map<String, Set<Integer>> uniqueValuesA;
+		Map<String, Set<Integer>> uniqueValuesB;
 
-		private int getSetMemorySize(Set<String> set) {
-			return set.stream().mapToInt(value -> value.length() * 2).sum();
+		private int getSetMemorySize(Set<Integer> set) {
+			return set.size() * 4;
 		}
 
 		public int getMemorySize() {
@@ -104,8 +103,7 @@ public class DependencyWorker extends AbstractBehavior<DependencyWorker.Message>
 		this.getContext().getLog().info(
 			"Received task table {} with {} columns and {} unique values, task table {} with {} columns and {} unique values",
 			message.task.getTableNameA(), message.task.getColumnNamesA().size(), message.uniqueValuesA.size(),
-			message.task.getTableNameB(), message.task.getColumnNamesB().size(), message.uniqueValuesB.size(),
-			message.getMemorySize());
+			message.task.getTableNameB(), message.task.getColumnNamesB().size(), message.uniqueValuesB.size());
 
 		List<InclusionDependency> inclusionDeps = new ArrayList<>();
 		message.uniqueValuesA.forEach((columnA, setA) -> {
