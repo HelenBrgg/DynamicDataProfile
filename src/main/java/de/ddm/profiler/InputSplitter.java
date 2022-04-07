@@ -33,7 +33,7 @@ public class InputSplitter {
                 Column column = table.columns.get(i);
                 for(int j = 0; j < column.values.size(); j++){
                     Value value = column.values.get(i);
-                    int position = table.columns.get(0).values.get(j).toInt();
+                    int position = table.positions.get(j);
                     setCommand.values.add(new ValueWithPosition(value,position));
                 }
                 setCommand.workerID =(i-1) % numWorker;
