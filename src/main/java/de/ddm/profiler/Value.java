@@ -1,20 +1,17 @@
 package de.ddm.profiler;
 
-    /**
-    * interface of the value of a table
-    */
-public interface Value {
-    String getText();
-    byte[] getLongHash();
+import lombok.AllArgsConstructor;
 
-    /**
-     * default function
-     *  returns the text of the value as an integer
-    * @return the integer
-    */
 
-    default int toInt(){
-        return Integer.parseInt(getText());
-    }
+public class Value {
+    private String s;
+
+    public static Value fromOriginal(String original){}
+    public static Value fromInt(int i){}
+    public static Value fromString(String s){}
+
+    public int compare(Value a, Value b);
+    public byte[] getLongHash(){};
+    public String toString(){};
     
 }
