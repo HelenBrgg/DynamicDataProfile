@@ -1,11 +1,11 @@
 package de.ddm.profiler;
 
-import java.util.List;
+import java.util.Set;
 
 public interface CandidateGenerator {
     public void addChange(String attribute, SetChange change);
 
-    public List<Candidate> generateCandidates();
+    public Set<Candidate> generateCandidates();
 
-    public void updateCAndidateStatus(Candidate candidate, CandidateStatus cs);
+    public void updateCandidateStatus(Candidate candidate, CandidateStatus cs);
 }

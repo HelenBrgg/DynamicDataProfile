@@ -7,5 +7,5 @@ public class Candidate {
 
     public String dependentAttribute;
     public String referencedAttibute;
-    
+
 }
