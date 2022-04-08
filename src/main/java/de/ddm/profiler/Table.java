@@ -39,7 +39,8 @@ public class Table {
         List<String> tableAttributes = new ArrayList<>();
         List<Column> tableColumns = new ArrayList<>();
 
-        tableAttributes = Arrays.asList(lines.get(0));
+        tableAttributes = new ArrayList<>(Arrays.asList(lines.get(0)));
+        tableAttributes.remove(0); // remove position column
 
         for (int i = 1; i < lines.size(); i++) {
             tablePositions.add(Integer.parseInt(lines.get(i)[0]));

@@ -9,9 +9,9 @@ public class HTTPServerSource implements Source {
     private int port;
 
     @Override
-    public Optional<Table> nextTable() {
+    public Table nextTable() {
         // TODO Auto-generated method stub
         return null;
     }
-    
+
 }

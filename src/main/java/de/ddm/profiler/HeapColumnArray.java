@@ -34,13 +34,12 @@ public class HeapColumnArray implements ColumnArray {
                 return -1;
             else
                 return 0;
-        }
+        }).orElse(0);
 
-        ).orElse(0);
-        for (int i = 0; i <= (maxPosition + 1) - values.size(); i++) {
-            values.add(null);
+        int padding = (maxPosition + 1) - values.size();
+        for (int i = 0; i < padding; i++) {
+            values.add(Value.NULL);
         }
-        System.out.println(values.size());
         return valuesWithPosition.stream().map(a -> values.set(a.position, a.value)).collect(Collectors.toList());
     }
 

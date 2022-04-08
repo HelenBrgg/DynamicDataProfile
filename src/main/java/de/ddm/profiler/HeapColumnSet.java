@@ -5,10 +5,12 @@ import java.util.TreeMap;
 import java.util.stream.Stream;
 
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 @AllArgsConstructor
+@NoArgsConstructor
 public class HeapColumnSet implements ColumnSet {
-    public SortedMap<Value, Integer> set = new TreeMap<>();
+    public SortedMap<Value, Long> set = new TreeMap<>();
 
     /**
      * Applies(Increases/ Decreases) the changes of counts for a given set of values
@@ -17,12 +19,12 @@ public class HeapColumnSet implements ColumnSet {
      * @return the total number of counts for the given values
      */
     @Override
-    public Map<Value, Integer> applyCounts(Map<Value, Integer> counts) {
-        Map<Value, Integer> totalCounts = new TreeMap<>();
+    public Map<Value, Long> applyCounts(Map<Value, Long> counts) {
+        Map<Value, Long> totalCounts = new TreeMap<>();
         counts.forEach((k, v) -> {
-            Integer old = set.get(k);
+            Long old = set.get(k);
             if (old == null)
-                old = 0;
+                old = 0L;
             set.put(k, v + old);
             totalCounts.put(k, v + old);
         });
