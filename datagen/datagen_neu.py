@@ -1,5 +1,8 @@
 import csv
+import sys
 import random
+import http
+import time
 
 #reads in CVS-File and return the rows as arrays 
 class CSVRowReader:
@@ -75,13 +78,66 @@ class RowDeleter:
     def __init__(self, delete_chance, row_generator):
         self.delete_chance = delete_chance
         self.row_generator = row_generator
-        self.max_index = row_generator.index
+        self.max_index = 0
+
+    def attributes(self):
+        return self.row_generator.attributes()
 
     def nextRow(self):
         if random.uniform(0, 1) < self.delete_chance:
-            random.uniform(0, self.max_index) + ",,,,"
+            return str(random.randint(0, self.max_index)) + (","*(len(self.attributes())-1))
         else:
-            self.inner.nextRow()
+            row = self.row_generator.nextRow()
+            if row is not None:
+                self.max_index = max(self.max_index,int(row[0]))
+            return row
+    
+    def reset(self):
+        self.max_index = 0
+        self.row_generator.reset()
+
+
+class CSVReadIn:
+    def __init__(self):
+        self.goal = sys.argv[1] #wo hin soll die CSV
+        self.adress_csv = sys.argv[2] #Pfad wo die Datei liegt
+        self.number_of_rows = int(sys.argv[3])
+        self.delete_chance = 0.1
+    
+    def openRowGenerator(self):
+        reader = CSVRowReader(self.adress_csv)
+        repeater = RowRepeater(self.number_of_rows, reader)
+        deleter = RowDeleter(self.delete_chance, repeater)
+        return deleter
+    
+    def run(self):
+        batcher = Batcher(self.openRowGenerator(), 1000)
+        batch = batcher.nextBatch()
+        while batch is not None:
+            print(batch)
+            batch = batcher.nextBatch()
+
+
+class HTTPPoster:
+    def __init__(self):
+        self.conn = http.client.HTTPConnection(sys.argv[1])
+        self.goal = sys.argv[1] #wo hin soll die CSV
+        self.adress_csv = sys.argv[2] #Pfad wo die Datei liegt
+        self.number_of_rows = int(sys.argv[3])
+    
+    def openRowRepeater(self):
+        reader = CSVRowReader(self.adress_csv)
+        repeater = RowRepeater(self.number_of_rows, reader)
+        return repeater
+    
+    def run(self):
+        batcher = Batcher(self.openRowRepeater(), 1000)
+        batch = batcher.nextBatch()
+        while batch is not None:
+            self.conn.request("POST", "/", batch)
+            batch = batcher.nextBatch()
+            time.sleep(2.4)
+
 
 
 
@@ -106,5 +162,7 @@ reader=RowRepeater(12, reader1)
 # print(batcher.nextBatch())
 # print(batcher.nextBatch())
 
-deleter = RowDeleter(reader,0.2)
-print(deleter.nextRow())
+readin = CSVReadIn()
+readin.run()
+
+# print(sys.argv)
