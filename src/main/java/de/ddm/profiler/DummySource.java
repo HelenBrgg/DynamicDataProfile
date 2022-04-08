@@ -1,6 +1,7 @@
 package de.ddm.profiler;
 
 import java.util.Optional;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 
@@ -11,7 +12,7 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor 
 public class DummySource implements Source {
-    private Table table;
+    private List<Table> table;
 
     /**
      * Returns the next table of the source in case it is available.
@@ -19,8 +20,11 @@ public class DummySource implements Source {
      */
     @Override
     public Optional<Table> nextTable() {
-        // TODO Auto-generated method stub
-        return null;
+        if (this.table.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of(this.table.remove(0));
+        }
     }
     
 }
