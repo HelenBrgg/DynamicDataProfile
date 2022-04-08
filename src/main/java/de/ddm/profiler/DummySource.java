@@ -26,5 +26,4 @@ public class DummySource implements Source {
             return Optional.of(this.table.remove(0));
         }
     }
-    
 }
