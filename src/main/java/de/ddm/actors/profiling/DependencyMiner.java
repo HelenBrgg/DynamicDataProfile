@@ -241,7 +241,7 @@ public class DependencyMiner extends AbstractBehavior<DependencyMiner.Message> {
 			// new tasks available for idle workers
 			delegateTasks();
 		} else {
-			this.dataStorage.addRows(tableName, message.batch.stream().map(row -> List.of(row)));
+			/*this.dataStorage.addRows(tableName, message.batch.stream().map(row -> List.of(row)));*/
 
 			// follow-up ReadBatchMessage for current input reader
 			this.inputReaders.get(message.id).tell(new InputReader.ReadBatchMessage(this.getContext().getSelf()));
