@@ -8,9 +8,11 @@ import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
 import akka.actor.typed.javadsl.Receive;
 import de.ddm.actors.patterns.Reaper;
-import de.ddm.actors.profiling.DependencyWorker;
+import de.ddm.actors.profiling.DataNodeWorker;
+import de.ddm.profiler.*;
 import de.ddm.serialization.AkkaSerializable;
 import de.ddm.singletons.SystemConfigurationSingleton;
+import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
@@ -34,7 +36,7 @@ public class Worker extends AbstractBehavior<Worker.Message> {
 	// Actor Construction //
 	////////////////////////
 
-	public static final String DEFAULT_NAME = "worker";
+	public static final String DEFAULT_NAME = "datanode";
 
 	public static Behavior<Message> create() {
 		return Behaviors.setup(Worker::new);
@@ -48,14 +50,16 @@ public class Worker extends AbstractBehavior<Worker.Message> {
 
 		this.workers = new ArrayList<>(numWorkers);
 		for (int id = 0; id < numWorkers; id++)
-			this.workers.add(context.spawn(DependencyWorker.create(), DependencyWorker.DEFAULT_NAME + "_" + id, DispatcherSelector.fromConfig("akka.worker-pool-dispatcher")));
+			// wo berechnen wir nochmal die Workeranzahl? hängt ja an der Anzahl Attributes
+			this.workers.add(context.spawn(DataNodeWorker.create(), DataNodeWorker.DEFAULT_NAME + "_" + id,
+					DispatcherSelector.fromConfig("akka.worker-pool-dispatcher")));
 	}
 
 	/////////////////
 	// Actor State //
 	/////////////////
 
-	final List<ActorRef<DependencyWorker.Message>> workers;
+	final List<ActorRef<DataNodeWorker.Message>> workers;
 
 	////////////////////
 	// Actor Behavior //
@@ -69,9 +73,12 @@ public class Worker extends AbstractBehavior<Worker.Message> {
 	}
 
 	private Behavior<Message> handle(ShutdownMessage message) {
-		// If we expect the system to still be active when the a ShutdownMessage is issued,
-		// we should propagate this ShutdownMessage to all active child actors so that they
-		// can end their protocols in a clean way. Simply stopping this actor also stops all
+		// If we expect the system to still be active when the a ShutdownMessage is
+		// issued,
+		// we should propagate this ShutdownMessage to all active child actors so that
+		// they
+		// can end their protocols in a clean way. Simply stopping this actor also stops
+		// all
 		// child actors, but in a hard way!
 		return Behaviors.stopped();
 	}

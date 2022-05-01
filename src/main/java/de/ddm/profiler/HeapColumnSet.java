@@ -54,4 +54,10 @@ public class HeapColumnSet implements ColumnSet {
         return set.size();
     }
 
+    @Override
+    public void merge(ColumnSet other) {
+        // TODO Auto-generated method stub
+
+    }
+
 }

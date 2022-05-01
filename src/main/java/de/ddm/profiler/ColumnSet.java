@@ -10,4 +10,6 @@ public interface ColumnSet {
     public Stream<Value> queryRange(Value from, Value to);
 
     public int cardinality();
+
+    public void merge(ColumnSet other);
 }

@@ -9,7 +9,10 @@ import akka.actor.typed.javadsl.Behaviors;
 import akka.actor.typed.javadsl.Receive;
 import de.ddm.actors.patterns.Reaper;
 import de.ddm.actors.profiling.DependencyMiner;
+import de.ddm.profiler.SetChange;
+import de.ddm.profiler.*;
 import de.ddm.serialization.AkkaSerializable;
+import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
 public class Master extends AbstractBehavior<Master.Message> {
@@ -31,6 +34,20 @@ public class Master extends AbstractBehavior<Master.Message> {
 		private static final long serialVersionUID = 7516129288777469221L;
 	}
 
+	@AllArgsConstructor
+	public static class SetChangeMessage implements Message {
+		private static final long serialVersionUID = 7;
+		public String attribute;
+		public SetChange setChange;
+	}
+
+	@NoArgsConstructor
+	public static class SubsetCheckResultMessage implements Message {
+		private static final long serialVersionUID = 8;
+		public String attribute;
+		public SubsetCheckResult result;
+	}
+
 	////////////////////////
 	// Actor Construction //
 	////////////////////////
@@ -45,7 +62,8 @@ public class Master extends AbstractBehavior<Master.Message> {
 		super(context);
 		Reaper.watchWithDefaultReaper(this.getContext().getSelf());
 
-		this.dependencyMiner = context.spawn(DependencyMiner.create(), DependencyMiner.DEFAULT_NAME, DispatcherSelector.fromConfig("akka.master-pinned-dispatcher"));
+		this.dependencyMiner = context.spawn(DependencyMiner.create(), DependencyMiner.DEFAULT_NAME,
+				DispatcherSelector.fromConfig("akka.master-pinned-dispatcher"));
 	}
 
 	/////////////////
@@ -72,9 +90,12 @@ public class Master extends AbstractBehavior<Master.Message> {
 	}
 
 	private Behavior<Message> handle(ShutdownMessage message) {
-		// If we expect the system to still be active when the a ShutdownMessage is issued,
-		// we should propagate this ShutdownMessage to all active child actors so that they
-		// can end their protocols in a clean way. Simply stopping this actor also stops all
+		// If we expect the system to still be active when the a ShutdownMessage is
+		// issued,
+		// we should propagate this ShutdownMessage to all active child actors so that
+		// they
+		// can end their protocols in a clean way. Simply stopping this actor also stops
+		// all
 		// child actors, but in a hard way!
 		return Behaviors.stopped();
 	}

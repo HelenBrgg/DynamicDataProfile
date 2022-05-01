@@ -53,7 +53,8 @@ public class Guardian extends AbstractBehavior<Guardian.Message> {
 
 	public static final String DEFAULT_NAME = "userGuardian";
 
-	public static final ServiceKey<Guardian.Message> guardianService = ServiceKey.create(Guardian.Message.class, DEFAULT_NAME + "Service");
+	public static final ServiceKey<Guardian.Message> guardianService = ServiceKey.create(Guardian.Message.class,
+			DEFAULT_NAME + "Service");
 
 	public static Behavior<Message> create() {
 		return Behaviors.setup(
@@ -71,7 +72,8 @@ public class Guardian extends AbstractBehavior<Guardian.Message> {
 
 		context.getSystem().receptionist().tell(Receptionist.register(guardianService, context.getSelf()));
 
-		final ActorRef<Receptionist.Listing> listingResponseAdapter = context.messageAdapter(Receptionist.Listing.class, ReceptionistListingMessage::new);
+		final ActorRef<Receptionist.Listing> listingResponseAdapter = context.messageAdapter(Receptionist.Listing.class,
+				ReceptionistListingMessage::new);
 		context.getSystem().receptionist().tell(Receptionist.subscribe(guardianService, listingResponseAdapter));
 	}
 
@@ -121,13 +123,15 @@ public class Guardian extends AbstractBehavior<Guardian.Message> {
 					userGuardian.tell(new ShutdownMessage(self));
 
 			if (!this.timers.isTimerActive("ShutdownReattempt"))
-				this.timers.startTimerAtFixedRate("ShutdownReattempt", message, Duration.ofSeconds(5), Duration.ofSeconds(5));
+				this.timers.startTimerAtFixedRate("ShutdownReattempt", message, Duration.ofSeconds(5),
+						Duration.ofSeconds(5));
 		}
 		return this;
 	}
 
 	private boolean isClusterDown() {
-		return this.userGuardians.isEmpty() || (this.userGuardians.contains(this.getContext().getSelf()) && this.userGuardians.size() == 1);
+		return this.userGuardians.isEmpty()
+				|| (this.userGuardians.contains(this.getContext().getSelf()) && this.userGuardians.size() == 1);
 	}
 
 	private void shutdown() {
