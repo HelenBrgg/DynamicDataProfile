@@ -6,17 +6,21 @@ import lombok.NoArgsConstructor;
 import java.util.*;
 
 /**
-    * An ArrayChange is a list of values to be applied to an ColumnArray, it contains of
-    * - the attribute that the values belong to. 
-    * - a list of values with their positions. 
-    * - and the ID of the worker that saves all values of that attribute 
-    * They have to be put to the column of the worker that saves the column.
-    * @see  ValueWithPosition
-    */
+ * A setCommand is a list of commands for values to be added to a list, it
+ * contains
+ * - a list of values with their positions.
+ * - the attribute that the values belong to.
+ * - and the ID of the worker that saves all values of that attribute
+ * They have to be put to the column of the worker that saves the column.
+ * 
+ * @see ValueWithPosition
+ */
 
-@Data @AllArgsConstructor @NoArgsConstructor
-public class ArrayChange {
-    public String attribute;
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class SetCommand {
     public List<ValueWithPosition> values;
     public int workerID;
+    public String attribute;
 }

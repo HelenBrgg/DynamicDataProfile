@@ -9,28 +9,28 @@ public class NaiveCandidateGenerator implements CandidateGenerator {
     @Override
     public void addChange(String attribute, SetChange change) {
         if (attributes.contains(attribute)) {
-            allCandidates.removeIf(candidate -> {
+            oldCandidates.removeIf(candidate -> {
                 return candidate.referencedAttibute == attribute || candidate.dependentAttribute == attribute;
             });
         }
         this.attributes.add(attribute);
     }
 
-    Set<Candidate> allCandidates = new HashSet<>();
+    Set<Candidate> oldCandidates = new HashSet<>();
 
     @Override
     public Set<Candidate> generateCandidates() {
-        Set<Candidate> generatedCandidateSet = new HashSet<>();
+        Set<Candidate> newCandidateSet = new HashSet<>();
         for (String firstAttribute : attributes) {
             for (String secondAttribute : attributes) {
                 Candidate candidate = new Candidate(firstAttribute, secondAttribute);
-                if (firstAttribute != secondAttribute && !allCandidates.contains(candidate)) {
-                    generatedCandidateSet.add(candidate);
+                if (firstAttribute != secondAttribute && !oldCandidates.contains(candidate)) {
+                    newCandidateSet.add(candidate);
                 }
             }
         }
-        allCandidates.addAll(generatedCandidateSet);
-        return generatedCandidateSet;
+        oldCandidates.addAll(newCandidateSet);
+        return newCandidateSet;
     }
 
     @Override
