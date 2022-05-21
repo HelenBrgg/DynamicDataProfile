@@ -19,6 +19,7 @@ import lombok.NoArgsConstructor;
 
 import de.ddm.profiler.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class DataNodeWorker extends AbstractBehavior<DataNodeWorker.Message> {
 
@@ -37,72 +38,52 @@ public class DataNodeWorker extends AbstractBehavior<DataNodeWorker.Message> {
     }
 
     @AllArgsConstructor
-    public static class EnqueueUpdatesMessage implements Message {
+    public static class PostTableMessage implements Message {
         private static final long serialVersionUID = 200;
         public String attribute;
         public List<ValueWithPosition> values;
     }
 
     @AllArgsConstructor
-    public static class MergeTriggerMessage implements Message {
+    public static class MergeMessage implements Message {
         private static final long serialVersionUID = 201;
-        String Attribute;
-        ActorRef<Master.SetChangeMessage> master;
+        String attribute;
     }
 
     @AllArgsConstructor
-    public static class SubsetTriggerMessage implements Message {
+    public static class SubsetCheckMessage implements Message {
         private static final long serialVersionUID = 202;
-        String Attribute;
-        ActorRef<Master.SubsetCheckResultMessage> master;
+        String referencedAttribute;
+        String dependentAttribute;
+        ActorRef<DataNodeWorker.Message> dependentWorker;
     }
 
     @AllArgsConstructor
     public static class MetadataRequestMessage implements Message {
         private static final long serialVersionUID = 203;
-        String Attribute;
-    }
-
-    @AllArgsConstructor
-    public static class MetadataRequestedMessage implements Message {
-        private static final long serialVersionUID = 204;
-        String Attribute;
-        ActorRef<DataNodeWorker.MetadataRequestMessage> requestor; // meine eigene??
-    }
-
-    @AllArgsConstructor
-    public static class MetadataReceivedMessage implements Message {
-        private static final long serialVersionUID = 205;
-    }
-
-    @AllArgsConstructor
-    public static class SendMetadataMessage implements Message {
-        private static final long serialVersionUID = 206;
         String attribute;
+        ActorRef<DataNodeWorker.Message> requestor; // meine eigene??
+    }
+
+    @AllArgsConstructor
+    public static class MetadataMessage implements Message {
+        private static final long serialVersionUID = 205;
+        private String attribute;
         Metadata metadata;
     }
 
     @AllArgsConstructor
-    public static class QueryRequestMessage implements Message {
+    public static class ValueRequestMessage implements Message {
         private static final long serialVersionUID = 207;
-        public String Attribute;
+        public String attribute;
+        ActorRef<DataNodeWorker.Message> requestor;
     }
 
     @AllArgsConstructor
-    public static class QueryRequestedMessage implements Message {
-        private static final long serialVersionUID = 208;
-        public String Attribute;
-        ActorRef<DataNodeWorker.QueryRequestMessage> requestor;
-    }
-
-    @AllArgsConstructor
-    public static class QueryReceivedMessage implements Message {
+    public static class ValueMessage implements Message {
         private static final long serialVersionUID = 209;
-    }
-
-    @AllArgsConstructor
-    public static class SendQueryResultsMessage implements Message {
-        private static final long serialVersionUID = 210;
+        String attribute;
+        List<Value> valueList;
     }
 
     /*
@@ -159,7 +140,8 @@ public class DataNodeWorker extends AbstractBehavior<DataNodeWorker.Message> {
 
     private final ActorRef<LargeMessageProxy.Message> largeMessageProxy;
     Map<String, AttributeState> attributes;
-    Map<String, ActorRef<SubsetCheckResult>> pendingSubsetChecks;
+    List<SubsetCheckMessage> pendingSubsetChecks;
+    ActorRef<MasterNodeWorker.Message> master;
 
     ////////////////////
     // Actor Behavior //
@@ -169,12 +151,13 @@ public class DataNodeWorker extends AbstractBehavior<DataNodeWorker.Message> {
     public Receive<Message> createReceive() {
         return newReceiveBuilder()
                 .onMessage(ReceptionistListingMessage.class, this::handle)
-                .onMessage(EnqueueUpdatesMessage.class, this::handle)
-                .onMessage(MergeTriggerMessage.class, this::handle)
-                .onMessage(SubsetTriggerMessage.class, this::handle)
-                .onMessage(MetadataRequestedMessage.class, this::handle)
-                .onMessage(QueryRequestedMessage.class, this::handle)
-                .onMessage(QueryReceivedMessage.class, this::handle)
+                .onMessage(PostTableMessage.class, this::handle)
+                .onMessage(MergeMessage.class, this::handle)
+                .onMessage(SubsetCheckMessage.class, this::handle)
+                .onMessage(MetadataRequestMessage.class, this::handle)
+                .onMessage(MetadataMessage.class, this::handle)
+                .onMessage(ValueRequestMessage.class, this::handle)
+                .onMessage(ValueMessage.class, this::handle)
                 .build();
     }
 
@@ -231,28 +214,72 @@ public class DataNodeWorker extends AbstractBehavior<DataNodeWorker.Message> {
      * return this;
      * }
      */
-    private Behavior<Message> handle(EnqueueUpdatesMessage message) {
+    private Behavior<Message> handle(PostTableMessage message) {
         this.attributes.
         return this;
     }
 
-    private Behavior<Message> handle(MergeTriggerMessage message) {
+    private Behavior<Message> handle(MergeMessage message) {
         return this;
     }
 
-    private Behavior<Message> handle(SubsetTriggerMessage message) {
+    private Behavior<Message> handle(SubsetCheckMessage message) {
+        this.pendingSubsetChecks.add(message);
+        message.dependentWorker
+                .tell(new MetadataRequestMessage(message.dependentAttribute, this.getContext().getSelf()));
         return this;
     }
 
-    private Behavior<Message> handle(MetadataRequestedMessage message) {
+    private Behavior<Message> handle(MetadataRequestMessage message) {
+        Metadata metadata = this.attributes.get(message.attribute).metadata;
+        message.requestor.tell(new MetadataMessage(message.attribute, metadata));
         return this;
     }
 
-    private Behavior<Message> handle(QueryRequestedMessage message) {
+    private Behavior<Message> handle(MetadataMessage message) {
+        for (SubsetCheckMessage subsetCheck : pendingSubsetChecks) {
+            if (subsetCheck.dependentAttribute != message.attribute)
+                continue;
+            Metadata referencedMetadata = this.attributes.get(subsetCheck.referencedAttribute).metadata;
+            if (referencedMetadata.distinctCount < message.metadata.distinctCount) {
+                this.master.tell(new MasterNodeWorker.SubsetCheckResultMessage(subsetCheck.referencedAttribute,
+                        subsetCheck.dependentAttribute,
+                        SubsetCheckResult.ruledOutByCardinality()));
+            }
+            // TODO else if()
+            else {
+                subsetCheck.dependentWorker
+                        .tell(new ValueRequestMessage(subsetCheck.dependentAttribute, this.getContext().getSelf()));
+            }
+        }
+
         return this;
     }
 
-    private Behavior<Message> handle(QueryReceivedMessage message) {
+    private Behavior<Message> handle(ValueRequestMessage message) {
+        List<Value> valueList = this.attributes.get(message.attribute).currentSegment.queryRange()
+                .collect(Collectors.toList());
+        message.requestor.tell(new ValueMessage(message.attribute, valueList));
+        return this;
+    }
+    // TODO largeMessageProxy + nur Hälfte schicken + Logik für nur Hälfte schicken
+
+    private Behavior<Message> handle(ValueMessage message) {
+        for (SubsetCheckMessage subsetCheck : pendingSubsetChecks) {
+            if (subsetCheck.dependentAttribute != message.attribute)
+                continue;
+            boolean result = this.attributes.get(subsetCheck.referencedAttribute).currentSegment
+                    .containsAll(message.valueList.stream());
+            if (result) {
+                this.master.tell(new MasterNodeWorker.SubsetCheckResultMessage(subsetCheck.referencedAttribute,
+                        subsetCheck.dependentAttribute,
+                        SubsetCheckResult.passedCheck()));
+            } else {
+                this.master.tell(new MasterNodeWorker.SubsetCheckResultMessage(subsetCheck.referencedAttribute,
+                        subsetCheck.dependentAttribute,
+                        SubsetCheckResult.failedCheck(new HashMap<Value, Integer>())));
+            }
+        }
         return this;
     }
 

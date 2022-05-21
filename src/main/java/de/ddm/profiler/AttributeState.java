@@ -1,8 +1,8 @@
 package de.ddm.profiler;
 
 public class AttributeState {
-    ColumnArray columnArray;
-    ColumnSet currentSegment;
-    ColumnSet oldSegment;
-    Metadata metadata;
+    public ColumnArray columnArray;
+    public ColumnSet currentSegment;
+    public ColumnSet oldSegment;
+    public Metadata metadata;
 }

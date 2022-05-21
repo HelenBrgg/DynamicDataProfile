@@ -9,7 +9,11 @@ public interface ColumnSet {
 
     public Stream<Value> queryRange(Value from, Value to);
 
+    public Stream<Value> queryRange();
+
     public int cardinality();
 
     public void merge(ColumnSet other);
+
+    public boolean containsAll(Stream<Value> values);
 }
