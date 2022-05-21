@@ -25,7 +25,7 @@ public class Value implements Comparable<Value> {
 
     @Override
     public int compareTo(Value b) {
-        return this.shortstrs.compareTo(b.shortstr); // TODO compare object refs?
+        return this.shortstr.compareTo(b.shortstr); // TODO compare object refs?
     };
 
     // public byte[] getLongHash(){};

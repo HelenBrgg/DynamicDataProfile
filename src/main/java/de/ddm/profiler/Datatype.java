@@ -8,7 +8,7 @@ public interface Datatype {
     @NoArgsConstructor
     public static class String implements Datatype {
         @Override
-        boolean isSubsetOf(Datatype other){
+        public boolean isSubsetOf(Datatype other) {
             return true;
         }
     }
@@ -16,7 +16,7 @@ public interface Datatype {
     @NoArgsConstructor
     public static class Number extends String {
         @Override
-        boolean isSubsetOf(Datatype other){
+        public boolean isSubsetOf(Datatype other) {
             return other instanceof Number;
         }
     }
@@ -24,7 +24,7 @@ public interface Datatype {
     @NoArgsConstructor
     public static class Integer extends Number {
         @Override
-        boolean isSubsetOf(Datatype other){
+        public boolean isSubsetOf(Datatype other) {
             return other instanceof Integer;
         }
     }
@@ -32,16 +32,16 @@ public interface Datatype {
     @NoArgsConstructor
     public static class Timestamp extends String {
         @Override
-        boolean isSubsetOf(Datatype other){
+        public boolean isSubsetOf(Datatype other) {
             return other instanceof Timestamp;
         }
     }
 
-    public static Datatype inferType(Value val){
-        if val.matches("\d+"){
+    public static Datatype inferType(Value val) {
+        if (val.toString().matches("\\d+")) {
             return new Integer();
         }
-        if val.matches("[\d+[.]\d*") || val.matches("\d*[.]\d+") {
+        if (val.toString().matches("\\d+[.]\\d*") || val.toString().matches("\\d*[.]\\d+")) {
             // TODO allow exponent-expressions
             return new Number();
         }

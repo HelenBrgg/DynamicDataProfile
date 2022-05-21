@@ -3,6 +3,8 @@ package de.ddm.profiler;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,5 +18,5 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Column {
-    public List<Value> values = new ArrayList<()>;
+    public List<Value> values = new ArrayList<>();
 }

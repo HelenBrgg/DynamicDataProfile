@@ -1,5 +1,8 @@
 import java.util.function.BiConsumer;
 import java.util.stream.IntStream;
+
+import lombok.NoArgsConstructor;
+
 import java.util.List;
 
 @NoArgsConstructor
