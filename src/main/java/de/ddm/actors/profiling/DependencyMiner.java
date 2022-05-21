@@ -54,7 +54,7 @@ public class DependencyMiner extends AbstractBehavior<DependencyMiner.Message> {
 		int id;
 		List<String[]> batch; // TODO rename to rows
 
-		public boolean finishedReading(){
+		public boolean finishedReading() {
 			return batch.isEmpty();
 		}
 	}
@@ -64,7 +64,7 @@ public class DependencyMiner extends AbstractBehavior<DependencyMiner.Message> {
 	@AllArgsConstructor
 	public static class RegistrationMessage implements Message {
 		private static final long serialVersionUID = -4025238529984914107L;
-		ActorRef<DependencyWorker.Message> dependencyWorker;
+		ActorRef<DataNodeWorker.Message> dependencyWorker;
 		ActorRef<LargeMessageProxy.Message> dependencyWorkerLargeMessageProxy;
 	}
 
@@ -73,7 +73,7 @@ public class DependencyMiner extends AbstractBehavior<DependencyMiner.Message> {
 	@AllArgsConstructor
 	public static class CompletionMessage implements Message {
 		private static final long serialVersionUID = -7642425159675583598L;
-		ActorRef<DependencyWorker.Message> dependencyWorker;
+		ActorRef<DataNodeWorker.Message> dependencyWorker;
 
 		List<InclusionDependency> inclusionDependencies;
 	}
@@ -84,7 +84,8 @@ public class DependencyMiner extends AbstractBehavior<DependencyMiner.Message> {
 
 	public static final String DEFAULT_NAME = "dependencyMiner";
 
-	public static final ServiceKey<DependencyMiner.Message> dependencyMinerService = ServiceKey.create(DependencyMiner.Message.class, DEFAULT_NAME + "Service");
+	public static final ServiceKey<DependencyMiner.Message> dependencyMinerService = ServiceKey
+			.create(DependencyMiner.Message.class, DEFAULT_NAME + "Service");
 
 	public static Behavior<Message> create() {
 		return Behaviors.setup(DependencyMiner::new);
@@ -100,9 +101,11 @@ public class DependencyMiner extends AbstractBehavior<DependencyMiner.Message> {
 
 		this.inputReaders = new ArrayList<>(inputFiles.length);
 		for (int id = 0; id < this.inputFiles.length; id++)
-			this.inputReaders.add(context.spawn(InputReader.create(id, this.inputFiles[id]), InputReader.DEFAULT_NAME + "_" + id));
+			this.inputReaders.add(
+					context.spawn(InputReader.create(id, this.inputFiles[id]), InputReader.DEFAULT_NAME + "_" + id));
 		this.resultCollector = context.spawn(ResultCollector.create(), ResultCollector.DEFAULT_NAME);
-		this.largeMessageProxy = this.getContext().spawn(LargeMessageProxy.create(this.getContext().getSelf().unsafeUpcast()), LargeMessageProxy.DEFAULT_NAME);
+		this.largeMessageProxy = this.getContext().spawn(
+				LargeMessageProxy.create(this.getContext().getSelf().unsafeUpcast()), LargeMessageProxy.DEFAULT_NAME);
 
 		context.getSystem().receptionist().tell(Receptionist.register(dependencyMinerService, context.getSelf()));
 	}
@@ -124,12 +127,12 @@ public class DependencyMiner extends AbstractBehavior<DependencyMiner.Message> {
 	private final ActorRef<LargeMessageProxy.Message> largeMessageProxy;
 
 	// list of all registered DependencyWorkers
-	private final List<ActorRef<DependencyWorker.Message>> dependencyWorkers = new ArrayList<>();
+	private final List<ActorRef<DataNodeWorker.Message>> dependencyWorkers = new ArrayList<>();
 	private final List<ActorRef<LargeMessageProxy.Message>> dependencyWorkerLargeProxies = new ArrayList<>();
 	// all tasks that not yet assigned
 	private final Queue<Task> unassignedTasks = new ArrayDeque<>();
 	// all workers that are busy, with their assigned Task
-	private final Map<ActorRef<DependencyWorker.Message>, Task> busyWorkers = new HashMap<>();
+	private final Map<ActorRef<DataNodeWorker.Message>, Task> busyWorkers = new HashMap<>();
 
 	////////////////////
 	// Actor Behavior //
@@ -158,7 +161,8 @@ public class DependencyMiner extends AbstractBehavior<DependencyMiner.Message> {
 	}
 
 	private Behavior<Message> handle(HeaderMessage message) {
-		this.getContext().getLog().info("Read header of size {} from table {}: {}", message.header.length, message.id, message.header);
+		this.getContext().getLog().info("Read header of size {} from table {}: {}", message.header.length, message.id,
+				message.header);
 
 		String tableName = this.inputFiles[message.id].getName();
 		this.dataStorage.addTable(tableName, Arrays.asList(message.header));
@@ -170,16 +174,16 @@ public class DependencyMiner extends AbstractBehavior<DependencyMiner.Message> {
 	}
 
 	// try to delegate all unassigned Tasks to idle DependencyWorkers
-	private void delegateTasks(){
+	private void delegateTasks() {
 		this.getContext().getLog().info("Before task delegation: {} unassigned tasks", this.unassignedTasks.size());
 
-		for (int workerIdx = 0; workerIdx < this.dependencyWorkers.size(); ++workerIdx){
+		for (int workerIdx = 0; workerIdx < this.dependencyWorkers.size(); ++workerIdx) {
 			if (this.unassignedTasks.isEmpty()) {
 				break; // no more unassigned tasks
 			}
 
-		    ActorRef<DependencyWorker.Message> worker = this.dependencyWorkers.get(workerIdx);
-		    ActorRef<LargeMessageProxy.Message> workerProxy = this.dependencyWorkerLargeProxies.get(workerIdx);
+			ActorRef<DataNodeWorker.Message> worker = this.dependencyWorkers.get(workerIdx);
+			ActorRef<LargeMessageProxy.Message> workerProxy = this.dependencyWorkerLargeProxies.get(workerIdx);
 
 			if (this.busyWorkers.containsKey(worker)) {
 				continue; // this worker is busy
@@ -190,20 +194,24 @@ public class DependencyMiner extends AbstractBehavior<DependencyMiner.Message> {
 
 			Map<String, Set<String>> distinctValuesA = new HashMap<>();
 			Map<String, Set<String>> distinctValuesB = new HashMap<>();
-			for (String colName: task.getColumnNamesA()) {
-				distinctValuesA.put(colName, this.dataStorage.getColumn(task.getTableNameA(), colName).getDistinctValues());
+			for (String colName : task.getColumnNamesA()) {
+				distinctValuesA.put(colName,
+						this.dataStorage.getColumn(task.getTableNameA(), colName).getDistinctValues());
 			}
-			for (String colName: task.getColumnNamesB()) {
-				distinctValuesB.put(colName, this.dataStorage.getColumn(task.getTableNameB(), colName).getDistinctValues());
+			for (String colName : task.getColumnNamesB()) {
+				distinctValuesB.put(colName,
+						this.dataStorage.getColumn(task.getTableNameB(), colName).getDistinctValues());
 			}
 
-			DependencyWorker.TaskMessage taskMessage = new DependencyWorker.TaskMessage(
-				this.largeMessageProxy,
-				task, distinctValuesA, distinctValuesB);
+			DataNodeWorker.TaskMessage taskMessage = new DataNodeWorker.TaskMessage(
+					this.largeMessageProxy,
+					task, distinctValuesA, distinctValuesB);
 
-			this.getContext().getLog().info("Delegated task {}, message has {} memory size", task, taskMessage.getMemorySize());;
+			this.getContext().getLog().info("Delegated task {}, message has {} memory size", task,
+					taskMessage.getMemorySize());
+			;
 
-			this.largeMessageProxy.tell(new LargeMessageProxy.SendMessage (taskMessage, workerProxy));
+			this.largeMessageProxy.tell(new LargeMessageProxy.SendMessage(taskMessage, workerProxy));
 			this.busyWorkers.put(worker, task);
 		}
 
@@ -220,18 +228,20 @@ public class DependencyMiner extends AbstractBehavior<DependencyMiner.Message> {
 
 			// generate new tasks for completed table.
 			for (int id = 0; id < this.inputFiles.length; ++id) {
-				if (id == message.id) continue; // skip current table
+				if (id == message.id)
+					continue; // skip current table
 
 				// we want to check against every other completed table
 				if (this.finishedReading[id]) {
 					String otherTableName = this.inputFiles[id].getName();
 					List<Task> tasks = TaskGenerator.run(
-						dataStorage,
-						60 * 1024 * 1024, // target 60 mib. TODO make this configurable
-						tableName,
-						otherTableName);
+							dataStorage,
+							60 * 1024 * 1024, // target 60 mib. TODO make this configurable
+							tableName,
+							otherTableName);
 
-					this.getContext().getLog().info("Generated {} tasks for new table {} against table {}", tasks.size(), tableName, otherTableName);
+					this.getContext().getLog().info("Generated {} tasks for new table {} against table {}",
+							tasks.size(), tableName, otherTableName);
 					tasks.forEach(task -> this.getContext().getLog().info("Task: {}", task));
 
 					this.unassignedTasks.addAll(tasks);
@@ -241,7 +251,10 @@ public class DependencyMiner extends AbstractBehavior<DependencyMiner.Message> {
 			// new tasks available for idle workers
 			delegateTasks();
 		} else {
-			/*this.dataStorage.addRows(tableName, message.batch.stream().map(row -> List.of(row)));*/
+			/*
+			 * this.dataStorage.addRows(tableName, message.batch.stream().map(row ->
+			 * List.of(row)));
+			 */
 
 			// follow-up ReadBatchMessage for current input reader
 			this.inputReaders.get(message.id).tell(new InputReader.ReadBatchMessage(this.getContext().getSelf()));
@@ -253,7 +266,7 @@ public class DependencyMiner extends AbstractBehavior<DependencyMiner.Message> {
 	private Behavior<Message> handle(RegistrationMessage message) {
 		this.getContext().getLog().info("Registered dependency worker {}", message.dependencyWorker.path());
 
-		ActorRef<DependencyWorker.Message> dependencyWorker = message.getDependencyWorker();
+		ActorRef<DataNodeWorker.Message> dependencyWorker = message.getDependencyWorker();
 		if (!this.dependencyWorkers.contains(dependencyWorker)) {
 			this.dependencyWorkers.add(dependencyWorker);
 			this.getContext().watch(dependencyWorker);
@@ -266,7 +279,7 @@ public class DependencyMiner extends AbstractBehavior<DependencyMiner.Message> {
 	}
 
 	private Behavior<Message> handle(CompletionMessage message) {
-		ActorRef<DependencyWorker.Message> dependencyWorker = message.getDependencyWorker();
+		ActorRef<DataNodeWorker.Message> dependencyWorker = message.getDependencyWorker();
 		Task task = this.busyWorkers.get(message.getDependencyWorker());
 
 		this.getContext().getLog().info("Completed work for task {}", task);
@@ -277,7 +290,8 @@ public class DependencyMiner extends AbstractBehavior<DependencyMiner.Message> {
 			this.resultCollector.tell(new ResultCollector.ResultMessage(inds));
 		}
 
-		// Once I found all unary INDs, I could check if this.discoverNaryDependencies is set to true and try to detect n-ary INDs as well!
+		// Once I found all unary INDs, I could check if this.discoverNaryDependencies
+		// is set to true and try to detect n-ary INDs as well!
 
 		// TODO this will throw an error if duplicate CompletionMessages are sent?
 		this.busyWorkers.remove(dependencyWorker);
@@ -287,7 +301,7 @@ public class DependencyMiner extends AbstractBehavior<DependencyMiner.Message> {
 
 		// system finish
 		boolean finishedAll = true; // FIXME Arrays.streamBoolean sadly doesnt exist...
-		for (boolean b: this.finishedReading){
+		for (boolean b : this.finishedReading) {
 			if (!b) {
 				finishedAll = false;
 				break;
@@ -306,7 +320,7 @@ public class DependencyMiner extends AbstractBehavior<DependencyMiner.Message> {
 	}
 
 	private Behavior<Message> handle(Terminated signal) {
-		ActorRef<DependencyWorker.Message> dependencyWorker = signal.getRef().unsafeUpcast();
+		ActorRef<DataNodeWorker.Message> dependencyWorker = signal.getRef().unsafeUpcast();
 		this.dependencyWorkers.remove(dependencyWorker);
 		return this;
 	}
