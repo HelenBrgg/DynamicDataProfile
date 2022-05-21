@@ -5,46 +5,43 @@ import java.util.List;
 
 /**
  * receives tables from the source and distribute them to the workers
- * 
- * @see Source
  */
 
 public class InputSplitter {
-    public Source source;
     public int numWorker;
 
-    public InputSplitter(Source source, int numWorker) {
-        this.source = source;
+    public InputSplitter(int numWorker) {
         this.numWorker = numWorker;
     }
 
     /**
-     * Splits a given table into its columns and creates setCommands for the
+     * Splits a given table into its columns and creates ArrayChanges for the
      * workers.
      * If there are more columns than worker, the workers receive multiple columns.
      * They get distributed with a modulo-function.
      * 
      * @param table the given table with the columns to be distributed
-     * @return a List of SetCommands
-     * @see SetCommand
+     * @return a List of ArrayChanges
+     * @see ArrayChange
      */
 
-    public List<SetCommand> splitTable(Table table) {
-        List<SetCommand> setCommands = new ArrayList<>();
+    public List<ArrayChange> splitTable(Table table) {
+        List<ArrayChange> changes = new ArrayList<>();
+
         for (int col = 0; col < table.attributes.size(); col++) {
-            SetCommand setCommand = new SetCommand();
-            setCommand.values = new ArrayList<>();
-            setCommand.attribute = table.attributes.get(col);
+            int workerID = (col - 1) % numWorker;
+            String attribute = table.attributes.get(col);
+            List<ValueWithPosition> values = new ArrayList<>();
+
             Column column = table.columns.get(col);
             for (int row = 0; row < column.values.size(); row++) {
                 Value value = column.values.get(row);
                 int position = table.positions.get(row);
-                setCommand.values.add(new ValueWithPosition(value, position));
+                ArrayChange.values.add(new ValueWithPosition(value, position));
             }
-            setCommand.workerID = (col - 1) % numWorker;
-            setCommands.add(setCommand);
+            changes.add(new ArrayChange(attribute, values, worker_id));
         }
-        return setCommands;
+        return ArrayChanges;
     }
 
 }

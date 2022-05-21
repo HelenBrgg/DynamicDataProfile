@@ -16,5 +16,5 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Column {
-    public List<Value> values;
+    public List<Value> values = new ArrayList<()>;
 }

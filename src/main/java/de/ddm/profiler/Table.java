@@ -23,35 +23,37 @@ import com.opencsv.exceptions.CsvException;
  * @see ValueWithPosition
  */
 
-@Data
 @AllArgsConstructor
-@NoArgsConstructor
 public class Table {
     public String name;
-    public List<String> attributes;
-    public List<Column> columns;
+    public List<String> attributes = new ArrayList<>();
+    public List<Column> columns = new ArrayList<>();
     public List<Integer> positions = new ArrayList<>();
 
     public static Table parseCSV(String csvString, String tableName) throws IOException, CsvException {
         CSVReader reader = new CSVReader(new StringReader(csvString));
         List<String[]> lines = reader.readAll();
-        List<Integer> tablePositions = new ArrayList<>();
-        List<String> tableAttributes = new ArrayList<>();
-        List<Column> tableColumns = new ArrayList<>();
+        reader.close();
 
-        tableAttributes = new ArrayList<>(Arrays.asList(lines.get(0)));
+        List<String> tableAttributes tableAttributes = new ArrayList<>(Arrays.asList(lines.get(0)));
         tableAttributes.remove(0); // remove position column
+
+        List<Integer> tablePositions = new ArrayList<>();
+        List<Column> tableColumns = Stream.generate(Column::new).limit(tableAttributes.size()).collect(Collectors.toList());
 
         for (int i = 1; i < lines.size(); i++) {
             tablePositions.add(Integer.parseInt(lines.get(i)[0]));
             for (int j = 1; j < lines.get(i).length; j++) {
-                if (i == 1) {
-                    tableColumns.add(new Column(new ArrayList<>()));
-                }
                 tableColumns.get(j - 1).values.add(Value.fromOriginal(lines.get(i)[j]));
             }
         }
-        reader.close();
         return new Table(tableName, tableAttributes, tableColumns, tablePositions);
+    }
+
+    public Stream<ValueWithPosition> streamColumnWithPositions(int colIndex, int rangeBegin, int rangeEndInclusive) {
+        Column column = this.columns[colIndex];
+        return IntStream::count(0, this.positions.size())
+            .filter(i => this.positions[i] > rangeBegin && this.positions[i] <= rangeEndInclusive)
+            .map(i => new ValueWithPosition(column.values.get(i), this.positions[i]))
     }
 }

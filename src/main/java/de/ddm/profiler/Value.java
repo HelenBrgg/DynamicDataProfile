@@ -4,36 +4,32 @@ import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode
 public class Value implements Comparable<Value> {
-    private String s;
+    public static Value NULL = Value.fromString("");
 
-    private Value(String s) {
-        this.s = s;
+    private String shortstr;
+
+    private Value(String shortstr) {
+        this.shortstr = shortstr;
     }
 
-    public static Value fromOriginal(String original) {
-        if (original.length() > 64) {
-            return new Value("$" + original.length() + "$" + Integer.toString(original.hashCode()));
+    public static Value fromString(String str) {
+        if (str.charAt(0) != '$' && str.length() > 64) {
+            return new Value("$" + str.length() + "$" + Integer.toString(str.hashCode()));
         }
-        return new Value(original);
+        return new Value(str);
     }
 
     public static Value fromInt(int i) {
         return new Value(Integer.toString(i));
     }
 
-    public static Value fromString(String s) {
-        return new Value(s);
-    }
-
-    public static Value NULL = Value.fromString("");
-
     @Override
     public int compareTo(Value b) {
-        return this.s.compareTo(b.s);
+        return this.shortstrs.compareTo(b.shortstr); // TODO compare object refs?
     };
 
     // public byte[] getLongHash(){};
     public String toString() {
-        return s;
+        return this.shortstr;
     }
 }

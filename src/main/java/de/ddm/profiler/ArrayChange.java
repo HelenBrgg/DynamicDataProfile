@@ -14,7 +14,7 @@ import java.util.*;
     * @see  ValueWithPosition
     */
 
-@Data @AllArgsConstructor @NoArgsConstructor
+@AllArgsConstructor
 public class ArrayChange {
     public String attribute;
     public List<ValueWithPosition> values;

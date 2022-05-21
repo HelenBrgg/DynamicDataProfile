@@ -14,6 +14,4 @@ public interface ColumnArray {
      */
     List<Value> setValue(List<ValueWithPosition> ValuesWithPosition);
     int rowCount();
-
-    
 }
