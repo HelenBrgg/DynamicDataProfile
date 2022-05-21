@@ -36,7 +36,7 @@ public class Worker extends AbstractBehavior<Worker.Message> {
 	// Actor Construction //
 	////////////////////////
 
-	public static final String DEFAULT_NAME = "datanode";
+	public static final String DEFAULT_NAME = "worker";
 
 	public static Behavior<Message> create() {
 		return Behaviors.setup(Worker::new);

@@ -17,86 +17,72 @@ import lombok.NoArgsConstructor;
 
 public class Master extends AbstractBehavior<Master.Message> {
 
-	////////////////////
-	// Actor Messages //
-	////////////////////
+    ////////////////////
+    // Actor Messages //
+    ////////////////////
 
-	public interface Message extends AkkaSerializable {
-	}
+    public interface Message extends AkkaSerializable {
+    }
 
-	@NoArgsConstructor
-	public static class StartMessage implements Message {
-		private static final long serialVersionUID = -1963913294517850454L;
-	}
+    @NoArgsConstructor
+    public static class StartMessage implements Message {
+        private static final long serialVersionUID = -1963913294517850454L;
+    }
 
-	@NoArgsConstructor
-	public static class ShutdownMessage implements Message {
-		private static final long serialVersionUID = 7516129288777469221L;
-	}
+    @NoArgsConstructor
+    public static class ShutdownMessage implements Message {
+        private static final long serialVersionUID = 7516129288777469221L;
+    }
 
-	@AllArgsConstructor
-	public static class SetChangeMessage implements Message {
-		private static final long serialVersionUID = 7;
-		public String attribute;
-		public SetChange setChange;
-	}
+    ////////////////////////
+    // Actor Construction //
+    ////////////////////////
 
-	@NoArgsConstructor
-	public static class SubsetCheckResultMessage implements Message {
-		private static final long serialVersionUID = 8;
-		public String attribute;
-		public SubsetCheckResult result;
-	}
+    public static final String DEFAULT_NAME = "master";
 
-	////////////////////////
-	// Actor Construction //
-	////////////////////////
+    public static Behavior<Message> create() {
+        return Behaviors.setup(Master::new);
+    }
 
-	public static final String DEFAULT_NAME = "master";
+    private Master(ActorContext<Message> context) {
+        super(context);
+        Reaper.watchWithDefaultReaper(this.getContext().getSelf());
 
-	public static Behavior<Message> create() {
-		return Behaviors.setup(Master::new);
-	}
+        this.dependencyMiner = context.spawn(DependencyMiner.create(), DependencyMiner.DEFAULT_NAME,
+                DispatcherSelector.fromConfig("akka.master-pinned-dispatcher"));
+    }
 
-	private Master(ActorContext<Message> context) {
-		super(context);
-		Reaper.watchWithDefaultReaper(this.getContext().getSelf());
+    /////////////////
+    // Actor State //
+    /////////////////
 
-		this.dependencyMiner = context.spawn(DependencyMiner.create(), DependencyMiner.DEFAULT_NAME,
-				DispatcherSelector.fromConfig("akka.master-pinned-dispatcher"));
-	}
+    private final ActorRef<DependencyMiner.Message> dependencyMiner;
 
-	/////////////////
-	// Actor State //
-	/////////////////
+    ////////////////////
+    // Actor Behavior //
+    ////////////////////
 
-	private final ActorRef<DependencyMiner.Message> dependencyMiner;
+    @Override
+    public Receive<Message> createReceive() {
+        return newReceiveBuilder()
+                .onMessage(StartMessage.class, this::handle)
+                .onMessage(ShutdownMessage.class, this::handle)
+                .build();
+    }
 
-	////////////////////
-	// Actor Behavior //
-	////////////////////
+    private Behavior<Message> handle(StartMessage message) {
+        this.dependencyMiner.tell(new DependencyMiner.StartMessage());
+        return this;
+    }
 
-	@Override
-	public Receive<Message> createReceive() {
-		return newReceiveBuilder()
-				.onMessage(StartMessage.class, this::handle)
-				.onMessage(ShutdownMessage.class, this::handle)
-				.build();
-	}
-
-	private Behavior<Message> handle(StartMessage message) {
-		this.dependencyMiner.tell(new DependencyMiner.StartMessage());
-		return this;
-	}
-
-	private Behavior<Message> handle(ShutdownMessage message) {
-		// If we expect the system to still be active when the a ShutdownMessage is
-		// issued,
-		// we should propagate this ShutdownMessage to all active child actors so that
-		// they
-		// can end their protocols in a clean way. Simply stopping this actor also stops
-		// all
-		// child actors, but in a hard way!
-		return Behaviors.stopped();
-	}
+    private Behavior<Message> handle(ShutdownMessage message) {
+        // If we expect the system to still be active when the a ShutdownMessage is
+        // issued,
+        // we should propagate this ShutdownMessage to all active child actors so that
+        // they
+        // can end their protocols in a clean way. Simply stopping this actor also stops
+        // all
+        // child actors, but in a hard way!
+        return Behaviors.stopped();
+    }
 }
