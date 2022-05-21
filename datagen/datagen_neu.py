@@ -1,3 +1,5 @@
+#!/usr/bin/env python3 
+
 import csv
 import sys
 import random
@@ -53,6 +55,27 @@ class RowRepeater:
         self.remaining_rows = self.max_row
         self.inner.reset()
 
+class RowDeleter:
+    def __init__(self, delete_chance, row_generator):
+        self.delete_chance = delete_chance
+        self.row_generator = row_generator
+        self.max_index = 0
+
+    def attributes(self):
+        return self.row_generator.attributes()
+
+    def nextRow(self):
+        if random.uniform(0, 1) < self.delete_chance:
+            return [str(random.randint(0, self.max_index))] + ([''] * (len(self.attributes())-1))
+        else:
+            row = self.row_generator.nextRow()
+            if row is not None:
+                self.max_index = max(self.max_index,int(row[0]))
+            return row
+    
+    def reset(self):
+        self.max_index = 0
+        self.row_generator.reset()
 
 class Batcher:
     def __init__(self, row_generator, max_batch_size):
@@ -74,27 +97,6 @@ class Batcher:
         return attr_string + batch
 
 
-class RowDeleter:
-    def __init__(self, delete_chance, row_generator):
-        self.delete_chance = delete_chance
-        self.row_generator = row_generator
-        self.max_index = 0
-
-    def attributes(self):
-        return self.row_generator.attributes()
-
-    def nextRow(self):
-        if random.uniform(0, 1) < self.delete_chance:
-            return str(random.randint(0, self.max_index)) + (","*(len(self.attributes())-1))
-        else:
-            row = self.row_generator.nextRow()
-            if row is not None:
-                self.max_index = max(self.max_index,int(row[0]))
-            return row
-    
-    def reset(self):
-        self.max_index = 0
-        self.row_generator.reset()
 
 
 class CSVReadIn:
@@ -141,8 +143,8 @@ class HTTPPoster:
 
 
 
-reader1=CSVRowReader('/Users/ilove/OneDrive/Uni/Master - Philipps Uni/1. Semester/Projektarbeit/Projektarbeit/DynamicDataProfile-1/datagen/adressen.csv')
-reader=RowRepeater(12, reader1)
+#reader1=CSVRowReader('/Users/ilove/OneDrive/Uni/Master - Philipps Uni/1. Semester/Projektarbeit/Projektarbeit/DynamicDataProfile-1/datagen/adressen.csv')
+#reader=RowRepeater(12, reader1)
 
 # row = reader.nextRow()
 # attributes = reader.attributes()
