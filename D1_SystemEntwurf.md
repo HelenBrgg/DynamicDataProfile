@@ -4,13 +4,21 @@
 
 ![](imgs/system-basic.drawio.svg)
 
+---
+
 ![](imgs/datagen-datanode.drawio.svg)
+
+---
 
 ![](imgs/masternode-datanode.drawio.svg)
 
+---
+
 ![](imgs/datanode-merge.drawio.svg)
 
-![](masternode-datanode.drawio.svg)
+---
+
+![](imgs/masternode-datanode.drawio.svg)
 
 ## Value Representation
 
@@ -71,6 +79,7 @@ Wenn wir bestimmte Eingenschaften einer Column kennen, können wir für einen Ca
 * Datatype (Data Domain)
 * Bloomfilter
 * Minima/Maxima
+* Column-Bytesum
 
 Fraglich ist, wo dieser Filter angebracht werden sollte - vor oder nach der Candidate-Generation. Davor: Candidaten können früher eliminiert werden. Danach: Möglicherweise kostenspielig bei sehr vielen Attributen.
 
