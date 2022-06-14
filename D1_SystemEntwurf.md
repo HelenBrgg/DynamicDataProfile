@@ -18,7 +18,7 @@
 
 ---
 
-![](imgs/masternode-datanode.drawio.svg)
+![](imgs/masternode-cycle.drawio.svg)
 
 ## Value Representation
 
