@@ -4,6 +4,14 @@
 
 ![](imgs/system-basic.drawio.svg)
 
+![](imgs/datagen-datanode.drawio.svg)
+
+![](imgs/masternode-datanode.drawio.svg)
+
+![](imgs/datanode-merge.drawio.svg)
+
+![](masternode-datanode.drawio.svg)
+
 ## Value Representation
 
 ### Hashing Long Values
