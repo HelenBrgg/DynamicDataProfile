@@ -5,6 +5,7 @@ import sys
 import random
 import http
 import time
+import pandas
 
 #reads in CVS-File and return the rows as arrays 
 class CSVRowReader:
@@ -97,8 +98,6 @@ class Batcher:
         return attr_string + batch
 
 
-
-
 class CSVReadIn:
     def __init__(self):
         self.goal = sys.argv[1] #wo hin soll die CSV
@@ -120,25 +119,28 @@ class CSVReadIn:
             batch = batcher.nextBatch()
 
 
-class HTTPPoster:
-    def __init__(self):
-        self.conn = http.client.HTTPConnection(sys.argv[1])
-        self.goal = sys.argv[1] #wo hin soll die CSV
-        self.adress_csv = sys.argv[2] #Pfad wo die Datei liegt
-        self.number_of_rows = int(sys.argv[3])
+
+######## HTTP Poster wird nicht mehr gebraucht
+
+# class HTTPPoster:
+#     def __init__(self):
+#         self.conn = http.client.HTTPConnection(sys.argv[1])
+#         self.goal = sys.argv[1] #wo hin soll die CSV
+#         self.adress_csv = sys.argv[2] #Pfad wo die Datei liegt
+#         self.number_of_rows = int(sys.argv[3])
     
-    def openRowRepeater(self):
-        reader = CSVRowReader(self.adress_csv)
-        repeater = RowRepeater(self.number_of_rows, reader)
-        return repeater
+#     def openRowRepeater(self):
+#         reader = CSVRowReader(self.adress_csv)
+#         repeater = RowRepeater(self.number_of_rows, reader)
+#         return repeater
     
-    def run(self):
-        batcher = Batcher(self.openRowRepeater(), 1000)
-        batch = batcher.nextBatch()
-        while batch is not None:
-            self.conn.request("POST", "/", batch)
-            batch = batcher.nextBatch()
-            time.sleep(2.4)
+#     def run(self):
+#         batcher = Batcher(self.openRowRepeater(), 1000)
+#         batch = batcher.nextBatch()
+#         while batch is not None:
+#             self.conn.request("POST", "/", batch)
+#             batch = batcher.nextBatch()
+#             time.sleep(2.4)
 
 
 
