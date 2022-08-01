@@ -9,12 +9,12 @@ public class DummyMain {
         try {
             Table table = Table.parseCSV(
                     "$,Origin,Destination,Day\n" +
-                    "0,Mercury,Venus,2\n" +
-                    "1,Mercury,Venus,2\n" +
-                    "2,Venus,Earth,3\n" +
-                    "3,Earth,Earth,4\n" +
-                    "4,Moon,Earth,2\n" +
-                    "5,Mars,Moon,1",
+                            "0,Mercury,Venus,2\n" +
+                            "1,Mercury,Venus,2\n" +
+                            "2,Venus,Earth,3\n" +
+                            "3,Earth,Earth,4\n" +
+                            "4,Moon,Earth,2\n" +
+                            "5,Mars,Moon,1",
                     "test.csv");
 
             Source source = new DummySource(new ArrayList<>(Arrays.asList(table)));
@@ -55,7 +55,7 @@ public class DummyMain {
                 Map<Value, Long> totalCounts = columnSets.get(setCommand.attribute)
                         .applyCounts(deltaCounts);
 
-                SetChange change = Utility.calculateSetChange(addedValues, removedValues);
+                SetDiff change = Utility.calculateSetDiff(addedValues, removedValues);
 
                 generator.addChange(setCommand.attribute, change);
             }

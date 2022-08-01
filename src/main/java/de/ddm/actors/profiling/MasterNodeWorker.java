@@ -1,6 +1,7 @@
 package de.ddm.actors.profiling;
 
 import akka.actor.typed.ActorRef;
+import akka.actor.typed.Behavior;
 import akka.actor.typed.javadsl.AbstractBehavior;
 import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
@@ -29,7 +30,7 @@ public class MasterNodeWorker extends AbstractBehavior<MasterNodeWorker.Message>
     public static class SetChangeMessage implements Message {
         private static final long serialVersionUID = 100;
         private String attribute;
-        private SetChange setChange;
+        private SetDiff setDiff;
     }
 
     @Getter
@@ -47,28 +48,30 @@ public class MasterNodeWorker extends AbstractBehavior<MasterNodeWorker.Message>
     public static final String DEFAULT_NAME = "MasterNodeWorker";
 
     public static Behavior<Message> create(CandidateGenerator candidateGenerator) {
-        return Behaviors.setup(ctx -> MasterNodeWorker::new(ctx, candidateGenerator);
+        return Behaviors.setup(ctx -> new MasterNodeWorker(ctx, candidateGenerator));
     }
 
     private MasterNodeWorker(ActorContext<Message> context, CandidateGenerator candidateGenerator) {
         super(context);
         this.candidateGenerator = candidateGenerator;
 
-        // final ActorRef<Receptionist.Listing> listingResponseAdapter = context.messageAdapter(Receptionist.Listing.class,
-        //         ReceptionistListingMessage::new);
+        // final ActorRef<Receptionist.Listing> listingResponseAdapter =
+        // context.messageAdapter(Receptionist.Listing.class,
+        // ReceptionistListingMessage::new);
         // context.getSystem().receptionist()
-        //         .tell(Receptionist.subscribe(DependencyMiner.dependencyMinerService, listingResponseAdapter));
+        // .tell(Receptionist.subscribe(DependencyMiner.dependencyMinerService,
+        // listingResponseAdapter));
 
         // this.largeMessageProxy = this.getContext().spawn(
-        //         LargeMessageProxy.create(this.getContext().getSelf().unsafeUpcast()), LargeMessageProxy.DEFAULT_NAME);
+        // LargeMessageProxy.create(this.getContext().getSelf().unsafeUpcast()),
+        // LargeMessageProxy.DEFAULT_NAME);
     }
 
     /////////////////
     // Actor State //
     /////////////////
 
-    private final List<ActorRef<DataNodeWorker.Message>> dataNodeWorkers = new ArrayList<>();
-    private final ActorRef<PartitioningWorker> partitioningWorker;
+    private final ActorRef<DataNodeWorker.Message> dataNodeWorker;
     private final CandidateGenerator candidateGenerator;
 
     ////////////////////

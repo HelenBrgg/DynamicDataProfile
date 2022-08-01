@@ -3,9 +3,9 @@ package de.ddm.profiler;
 import java.util.Set;
 
 public interface CandidateGenerator {
-    public void addChange(String attribute, SetChange change);
+    public void addChange(String attribute, SetDiff change);
 
     public Set<Candidate> generateCandidates();
 
-    public void updateCandidateStatus(Candidate candidate, CandidateStatus cs);
+    public void updateCandidateStatus(Candidate candidate, SubsetCheckResult scr);
 }

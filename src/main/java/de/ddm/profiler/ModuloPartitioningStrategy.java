@@ -9,9 +9,9 @@ import java.util.List;
 public class ModuloPartitioningStrategy implements PartitioningStrategy {
     List<String> attributesByWorkerId;
 
-    List<PartitioningStrategy.Partition> partitionRange(String attribute, int rangeBegin, rangeEndInclusive){
+    List<PartitioningStrategy.Partition> partitionRange(String attribute, int rangeBegin, int rangeEndInclusive) {
         int workerId = this.attributesByWorkerId.indexOf(attribute);
-        if (workerId == -1){
+        if (workerId == -1) {
             this.attributesByWorkerId.add(attribute);
             workerId = this.attributesByWorkerId.size() - 1;
         }

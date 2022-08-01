@@ -33,6 +33,20 @@ public class Table {
     public List<Column> columns = new ArrayList<>();
     public List<Integer> positions = new ArrayList<>();
 
+    /**
+     * represents a column in a table
+     * saves the values of one column in a list
+     * 
+     * @see Value
+     *
+     */
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class Column {
+        public List<Value> values = new ArrayList<>();
+    }
+
     public static Table parseCSV(String csvString, String tableName) throws IOException, CsvException {
         CSVReader reader = new CSVReader(new StringReader(csvString));
         List<String[]> lines = reader.readAll();
