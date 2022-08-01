@@ -5,7 +5,6 @@ import sys
 import random
 import http
 import time
-import pandas
 
 #reads in CVS-File and return the rows as arrays 
 class CSVRowReader:
@@ -31,6 +30,7 @@ class CSVRowReader:
         next(self.reader)
 
 
+# Kommentar
 class RowRepeater:
     def __init__(self, max_row, inner):
         self.max_row = max_row
@@ -56,6 +56,8 @@ class RowRepeater:
         self.remaining_rows = self.max_row
         self.inner.reset()
 
+
+# Kommentar
 class RowDeleter:
     def __init__(self, delete_chance, row_generator):
         self.delete_chance = delete_chance
@@ -78,6 +80,8 @@ class RowDeleter:
         self.max_index = 0
         self.row_generator.reset()
 
+
+# Kommentar
 class Batcher:
     def __init__(self, row_generator, max_batch_size):
         self.row_generator = row_generator
@@ -98,6 +102,7 @@ class Batcher:
         return attr_string + batch
 
 
+# Kommentar
 class CSVReadIn:
     def __init__(self):
         self.goal = sys.argv[1] #wo hin soll die CSV
