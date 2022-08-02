@@ -3,10 +3,11 @@
 import csv
 import sys
 import random
-import http
-import time
+import http         # nur relevant für HTTP Poster
+import time         # nur relevant für HTTP Poster
 
-#reads in CVS-File and return the rows as arrays 
+
+# takes a CVS-File and return the rows as arrays
 class CSVRowReader:
     def __init__(self, filename):
         self.reader = csv.reader(open(filename, encoding='utf-8'),delimiter=',')
@@ -30,7 +31,7 @@ class CSVRowReader:
         next(self.reader)
 
 
-# Kommentar
+# takes a read file and repeats the rows until the specified number of maximum rows is reached
 class RowRepeater:
     def __init__(self, max_row, inner):
         self.max_row = max_row
@@ -57,7 +58,7 @@ class RowRepeater:
         self.inner.reset()
 
 
-# Kommentar
+# deleats a row of a given row_generator with a specified delete chance
 class RowDeleter:
     def __init__(self, delete_chance, row_generator):
         self.delete_chance = delete_chance
@@ -81,7 +82,7 @@ class RowDeleter:
         self.row_generator.reset()
 
 
-# Kommentar
+# takes a row_generator and a generates a batch with a specified maximum size
 class Batcher:
     def __init__(self, row_generator, max_batch_size):
         self.row_generator = row_generator
@@ -102,7 +103,9 @@ class Batcher:
         return attr_string + batch
 
 
-# Kommentar
+# takes the location of a CSV-file, number of row and a delete chance, 
+# create a row_generatior, 
+# give it to the Batcher and creates a batch
 class CSVReadIn:
     def __init__(self):
         self.goal = sys.argv[1] #wo hin soll die CSV
@@ -122,6 +125,7 @@ class CSVReadIn:
         while batch is not None:
             print(batch)
             batch = batcher.nextBatch()
+
 
 
 
