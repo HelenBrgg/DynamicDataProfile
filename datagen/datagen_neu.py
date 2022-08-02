@@ -7,8 +7,10 @@ import http         # nur relevant für HTTP Poster
 import time         # nur relevant für HTTP Poster
 
 
-# takes a CVS-File and return the rows as arrays
+
 class CSVRowReader:
+    """takes a CVS-File and return the rows together with an index as arrays
+    """
     def __init__(self, filename):
         self.reader = csv.reader(open(filename, encoding='utf-8'),delimiter=',')
         self._attributes = next(self.reader)
@@ -16,9 +18,20 @@ class CSVRowReader:
         self.index = -1
     
     def attributes(self):
+        """returns the attributes (first line of File) of the dataset.
+
+        :return: Index '$' with attribute names
+        :rtype: Array
+        """
         return ['$'] + self._attributes
 
     def nextRow(self):
+        """returns an index with a row of the CSV-file. 
+        If this is not possible (e.g. no more row left) the iteration stops and returns None
+
+        :return: as long as possible: Index + row of reader. If no longer possible: None
+        :rtype: Array
+        """
         try:
             self.index += 1
             return [str(self.index)] + next(self.reader)
@@ -26,6 +39,8 @@ class CSVRowReader:
             return None
     
     def reset(self):
+        """resets the reader and the index and calls the first line again.
+        """
         self.reader = csv.reader(open(self.filename, encoding='utf-8'),delimiter=',')
         self.index = -1
         next(self.reader)
