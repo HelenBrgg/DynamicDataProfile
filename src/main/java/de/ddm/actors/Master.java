@@ -8,8 +8,7 @@ import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
 import akka.actor.typed.javadsl.Receive;
 import de.ddm.actors.patterns.Reaper;
-import de.ddm.actors.profiling.DependencyMiner;
-import de.ddm.profiler.SetChange;
+import de.ddm.profiler.SetDiff;
 import de.ddm.profiler.*;
 import de.ddm.serialization.AkkaSerializable;
 import lombok.AllArgsConstructor;
@@ -48,15 +47,16 @@ public class Master extends AbstractBehavior<Master.Message> {
         super(context);
         Reaper.watchWithDefaultReaper(this.getContext().getSelf());
 
-        this.dependencyMiner = context.spawn(DependencyMiner.create(), DependencyMiner.DEFAULT_NAME,
-                DispatcherSelector.fromConfig("akka.master-pinned-dispatcher"));
+        // this.dependencyMiner = context.spawn(DependencyMiner.create(),
+        // DependencyMiner.DEFAULT_NAME,
+        // DispatcherSelector.fromConfig("akka.master-pinned-dispatcher"));
     }
 
     /////////////////
     // Actor State //
     /////////////////
 
-    private final ActorRef<DependencyMiner.Message> dependencyMiner;
+    // private final ActorRef<DependencyMiner.Message> dependencyMiner;
 
     ////////////////////
     // Actor Behavior //
@@ -70,9 +70,9 @@ public class Master extends AbstractBehavior<Master.Message> {
                 .build();
     }
 
-    private Behavior<Message> handle(StartMessage message) {
-        this.dependencyMiner.tell(new DependencyMiner.StartMessage());
-        return this;
+    // private Behavior<Message> handle(StartMessage message) {
+    // this.dependencyMiner.tell(new DependencyMiner.StartMessage());
+    // return this;
     }
 
     private Behavior<Message> handle(ShutdownMessage message) {
