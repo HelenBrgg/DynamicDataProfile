@@ -1,4 +1,4 @@
-# Inclusion Dependencies:
+# Inclusion Dependencies
 
 Die Frage die beim finden von Inclusion Dependencies geklärt werden muss ist, ob alle Werte die ein Attribut X annehmen kann auch von Attribut Y angenommen werden können. Falls das der Fall ist, ist X abhängig von Y und man schreibt X ⊆ Y.
 Formal bedeutet das: ∀ t<sub>i</sub>[X] ∈ r<sub>i</sub> ∃ t<sub>j</sub>[Y] ∈ r<sub>j</sub> mit t<sub>i</sub>[X] = t<sub>j</sub>[Y].
@@ -8,14 +8,10 @@ Allgemein werden X und Y als Listen von Attributen gesehen, wobei stehts gelten 
 Es wird von *unary* Inclusion Dependencies gesprochen wenn gilt X ⊆ Y mit |X| = |Y| = 1. Falls |X| = |Y| = n gilt, handelt es sich um eine *n-ary* Inclusion Dependency.
 
 Inclusion Dependencies sind immer...
-**Reflexiv:** Es gilt immer X ⊆ X
-**Transitiv:** Es gilt X ⊆ Y \wedge Y ⊆ Z => X ⊆ Z
-**Permutationen:** Es gilt (X<sub>1</sub>, ... X<sub>n</sub>) ⊆ (Y<sub>1</sub>, ..., Y<sub>n</sub>), dann gilt auch (X<sub>σ1</sub>, ..., X<sub>σn</sub>) ⊆ (Y<sub>σ1</sub>, ..., Y<sub>σn</sub>) für alle Permutationen σ1, ..., σn 
 
-Inclusion Dependencies sind immer...
-*Reflexiv: Es gilt immer X ⊆ X
-*Transitiv: Es gilt X ⊆ Y \wedge Y ⊆ Z => X ⊆ Z
-*Permutationen: Es gilt (X<sub>1</sub>, ... X<sub>n</sub>) ⊆ (Y<sub>1</sub>, ..., Y<sub>n</sub>), dann gilt auch (X<sub>σ1</sub>, ..., X<sub>σn</sub>) ⊆ (Y<sub>σ1</sub>, ..., Y<sub>σn</sub>) für alle Permutationen σ1, ..., σn 
+* **Reflexiv:** Es gilt immer X ⊆ X
+* **Transitiv:** Es gilt X ⊆ Y \wedge Y ⊆ Z => X ⊆ Z
+* **Permutationen:** Es gilt (X<sub>1</sub>, ... X<sub>n</sub>) ⊆ (Y<sub>1</sub>, ..., Y<sub>n</sub>), dann gilt auch (X<sub>σ1</sub>, ..., X<sub>σn</sub>) ⊆ (Y<sub>σ1</sub>, ..., Y<sub>σn</sub>) für alle Permutationen σ1, ..., σn 
 
 
 ## Beispiel:
