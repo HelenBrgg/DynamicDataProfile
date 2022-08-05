@@ -16,7 +16,7 @@ Inclusion Dependencies sind immer...
 
 ## Beispiel:
 ***unary* Inclusion Dependencies:**
-![](\imgs\unary_IND_Example.jpg)
+![](/imgs/unary_IND_Example.jpg)
 X := Attribut "Name" aus Tabelle "Lending"
 Y := Attribut "Titel" aus Tabelle "Book"
 
@@ -25,7 +25,7 @@ Es ist auch leicht zu sehen, dass Y ⊆ X nicht gilt, da Y den Wert "3D Computer
 
 
 ***n-ary* Inclusion Dependencies:**
-![](\imgs\n-ary_IND_Example.jpg)
+![](/imgs/n-ary_IND_Example.jpg)
 X := Attribute "Student" und "Course" aus Tabelle "Lending"
 Y := Attribute "Name" und "Lecture" aus Tabelle "Student"
 
