@@ -231,9 +231,10 @@ if __name__ == '__main__':
     if len(sys.argv) != 5:
         print(f"""Usage: {sys.argv[0]} filepath total-rows batch-rows delete-chance
 
-        Environment:
-            - CSV_SEPARATOR[=','] separator character used for reading in csv file
+Environment:
+    - CSV_SEPARATOR[=','] separator character used for reading in csv file
         """)
+        exit(len(sys.argv) == 0 or sys.argv[0] == '-h' or sys.argv[0] == '--help')
 
     read_in = CSVReadIn(sys.argv[1], int(sys.argv[2]), int(sys.argv[3]), float(sys.argv[4]))
     read_in.run()
