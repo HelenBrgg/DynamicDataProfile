@@ -217,6 +217,8 @@ class CSVReadIn:
     
     def run(self):
         """Calls the Batcher class with a max_batch_size of 1000
+        
+        Reads out batches to stdout, multiple batches separated with an empty line
         """
         batcher = Batcher(self.openRowGenerator(), self.batch_rows)
         batch = batcher.nextBatch()
