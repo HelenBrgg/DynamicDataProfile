@@ -1,23 +1,15 @@
 package de.ddm.configuration;
 
-import com.opencsv.CSVParser;
-import com.opencsv.CSVParserBuilder;
-import com.opencsv.CSVReader;
-import com.opencsv.CSVReaderBuilder;
-import com.opencsv.enums.CSVReaderNullFieldIndicator;
-import com.opencsv.exceptions.CsvValidationException;
 import lombok.Data;
-
-import java.io.BufferedReader;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.io.File;
-import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 
 @Data
 public class InputConfiguration {
-
 	private String inputPath = "data" + File.separator + "TPCH";
 	private boolean fileHasHeader = true;
 	private Charset charset = StandardCharsets.UTF_8;
@@ -26,6 +18,7 @@ public class InputConfiguration {
 	private char valueEscape = '\\';
 	private boolean valueStrictQuotes = false;
 	private boolean valueIgnoreLeadingWhitespace = false;
+	private String dataGeneratorArgs = "10000 1024 0.0";
 
 	public void update(CommandMaster commandMaster) {
 		this.fileHasHeader = commandMaster.fileHasHeader;
@@ -35,35 +28,25 @@ public class InputConfiguration {
 		this.valueEscape = commandMaster.attributeEscape;
 		this.valueStrictQuotes = commandMaster.attributeStrictQuotes;
 		this.valueIgnoreLeadingWhitespace = commandMaster.attributeIgnoreLeadingWhitespace;
+		this.dataGeneratorArgs = commandMaster.dataGeneratorArgs;
 	}
 
-	public File[] getInputFiles() {
-		return new File(this.inputPath).listFiles();
+	public List<String> getInputFilePaths() {
+		return Stream.of(new File(this.inputPath).listFiles())
+			.map(file -> file.getAbsolutePath())
+			.collect(Collectors.toList());
 	}
 
-	public CSVReader createCSVReader(File inputFile) throws IOException {
-		CSVParser parser = new CSVParserBuilder()
-				.withSeparator(this.valueSeparator)
-				.withQuoteChar(this.valueQuote)
-				.withEscapeChar(this.valueEscape)
-				.withStrictQuotes(this.valueStrictQuotes)
-				.withIgnoreLeadingWhiteSpace(this.valueIgnoreLeadingWhitespace)
-				.withFieldAsNull(CSVReaderNullFieldIndicator.EMPTY_SEPARATORS)
-				.build();
-
-		BufferedReader buffer = Files.newBufferedReader(inputFile.toPath(), this.charset);
-		return new CSVReaderBuilder(buffer).withCSVParser(parser).build();
+	public String[] getDataGeneratorEnv() {
+		return new String[]{ String.format("CSV_SEPARATOR='%s'", this.valueSeparator) };
 	}
-
-	public String[] getHeader(File inputFile) throws IOException, CsvValidationException {
-		CSVReader reader = this.createCSVReader(inputFile);
-
-		String[] line = reader.readNext();
-		reader.close();
-
-		if (!this.fileHasHeader)
-			for (int i = 0; i < line.length; i++)
-				line[i] = "Attr_" + (i + 1);
-		return line;
+	public List<String[]> getDataGeneratorCommands() {
+		return this.getInputFilePaths().stream()
+			.map((String filepath) -> {
+				ArrayList<String> arr = new ArrayList<>(List.of("scripts/datagenerator.py", filepath));
+				arr.addAll(List.of(this.dataGeneratorArgs.split(" ")));
+				return arr.toArray(new String[arr.size()]);
+			})
+			.collect(Collectors.toList());
 	}
 }

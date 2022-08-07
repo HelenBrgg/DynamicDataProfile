@@ -63,13 +63,8 @@ public class Master extends AbstractBehavior<Master.Message> {
         //  TODO do we need to use DispatcherSelector here, like in Worker.java?
 
         this.dataWorker = context.spawn(DataWorker.create(1, HeapColumnArray::new, HeapColumnSet::new), "data-worker");
-        try {
-            this.inputWorker = context.spawn(InputWorker.create(new DataGeneratorSource(), this.dataWorker.narrow()), "input-worker");
-        } catch (Exception ioException) {
-            System.out.println("failed to create InputWorker: " + ioException.toString());
-            System.exit(1);
-        }
-        this.planner = context.spawn(Planner.create(new CandidateGenerator(), this.inputWorker.narrow(), this.dataWorker.narrow()), "planner");
+        this.inputWorker = context.spawn(InputWorker.create(this.dataWorker.narrow()), "input-worker");
+        this.planner = context.spawn(Planner.create(this.inputWorker.narrow(), this.dataWorker.narrow()), "planner");
     }
 
     ////////////////////

@@ -62,21 +62,19 @@ public class Planner extends AbstractBehavior<Planner.Message> {
     ////////////////////////
 
     public static Behavior<Message> create(
-        CandidateGenerator candidateGenerator,
         ActorRef<InputWorker.Message> inputWorker,
         ActorRef<DataWorker.Message> dataWorker
     ){
-        return Behaviors.setup(ctx -> new Planner(ctx, candidateGenerator, inputWorker, dataWorker));
+        return Behaviors.setup(ctx -> new Planner(ctx, inputWorker, dataWorker));
     }
 
     private Planner(
         ActorContext<Message> context,
-        CandidateGenerator candidateGenerator,
         ActorRef<InputWorker.Message> inputWorker,
         ActorRef<DataWorker.Message> dataWorker
     ){
         super(context);
-        this.candidateGenerator = candidateGenerator;
+        this.candidateGenerator = new CandidateGenerator();
         this.inputWorker = inputWorker;
         this.dataWorker = dataWorker;
 
@@ -97,11 +95,15 @@ public class Planner extends AbstractBehavior<Planner.Message> {
     }
 
     private Behavior<Message> handle(MergeResultPart result) {
+        this.getContext().getLog().info("received merge-result-part for {}, final={}, workerId={}", result.attribute, result.finalPart, result.workerId);
+
         this.candidateGenerator.updateAttribute(result.getAttribute(), result.isAdditions(), result.isRemovals(), result.getMetadata());
 
         if (result.isFinalPart()) {
             /* generate new candidates to check */
             Set<Candidate> newCandidates = this.candidateGenerator.generateCandidates();
+
+            this.getContext().getLog().info("generated new candidates: {}", newCandidates.toString());
 
             /* send subset-check requests */
             newCandidates.forEach(candidate -> {
@@ -109,6 +111,15 @@ public class Planner extends AbstractBehavior<Planner.Message> {
                 this.dataWorker.tell(request);
                 this.pendingSubsetChecks += 1;
             });
+
+            if (newCandidates.isEmpty()) {
+                this.inputWorker.tell(new InputWorker.IdleMessage());
+
+                // TODO move this into a function
+                /* schedule next merge */
+                DataWorker.MergeRequest nextMerge = new DataWorker.MergeRequest(this.getContext().getSelf().narrow());
+                this.getContext().scheduleOnce(Duration.ofMillis(2000), this.dataWorker, nextMerge);
+            }
         }
 
         return this;
@@ -124,6 +135,7 @@ public class Planner extends AbstractBehavior<Planner.Message> {
             InputWorker.IdleMessage idle = new InputWorker.IdleMessage();
             this.inputWorker.tell(idle);
             
+            // TODO move this into a function
             /* schedule next merge */
             DataWorker.MergeRequest nextMerge = new DataWorker.MergeRequest(this.getContext().getSelf().narrow());
             this.getContext().scheduleOnce(Duration.ofMillis(2000), this.dataWorker, nextMerge);

@@ -23,6 +23,8 @@ public class Metadata {
     public Optional<CandidateStatus> precheckPossibleSubset(Metadata other){
         if (this.cardinality > other.cardinality) return Optional.of(CandidateStatus.ruledOutByCardinality());
 
+        if (this.minMax.size() == 0) return Optional.empty();
+
         Value minA = this.minMax.get(0);
         Value maxA = (this.minMax.size() == 2) ? this.minMax.get(1) : minA;
 

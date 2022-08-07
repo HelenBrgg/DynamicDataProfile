@@ -41,4 +41,7 @@ public class CommandMaster extends Command {
 
 	@Parameter(names = {"-viw", "--valueIgnoreLeadingWhitespace"}, description = "Ignore i.e. delete all whitespaces preceding any read value", required = false, arity = 1)
 	boolean attributeIgnoreLeadingWhitespace = InputConfigurationSingleton.get().isValueIgnoreLeadingWhitespace();
+
+	@Parameter(names = {"-dg", "--dataGeneratorArgs"}, description = "Arguments which will be passed to the data-generator script", required = false, arity = 1)
+	String dataGeneratorArgs = InputConfigurationSingleton.get().getDataGeneratorArgs();
 }

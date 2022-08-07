@@ -9,6 +9,7 @@ import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
 import akka.actor.typed.javadsl.Receive;
 import de.ddm.serialization.AkkaSerializable;
+import de.ddm.structures.DataGeneratorSource;
 import de.ddm.structures.Source;
 import de.ddm.structures.Table;
 
@@ -29,20 +30,19 @@ public class InputWorker extends AbstractBehavior<InputWorker.Message> {
     // Actor State //
     /////////////////
 
-    private final Source source;
+    private Source source;
     private final ActorRef<DataWorker.NewBatchMessage> dataWorker;
 
-    public static Behavior<Message> create(Source source, ActorRef<DataWorker.NewBatchMessage> dataWorker) {
-        return Behaviors.setup(ctx -> new InputWorker(ctx, source, dataWorker));
+    public static Behavior<Message> create(ActorRef<DataWorker.NewBatchMessage> dataWorker) {
+        return Behaviors.setup(ctx -> new InputWorker(ctx, dataWorker));
     }
 
     private InputWorker(
         ActorContext<InputWorker.Message> context, 
-        Source source,
         ActorRef<DataWorker.NewBatchMessage> dataWorker
     ){
         super(context);
-        this.source = source;
+        try { this.source = new DataGeneratorSource(this.getContext().getLog()); } catch (Exception ex) { System.exit(1); }
         this.dataWorker = dataWorker.narrow();
     }
 
@@ -54,6 +54,8 @@ public class InputWorker extends AbstractBehavior<InputWorker.Message> {
     }
 
     private Behavior<Message> handle(IdleMessage message) {
+        this.getContext().getLog().info("received idle messsage");
+
         Optional<Table> batch = this.source.nextTable();
 
         if (batch.isEmpty()) {

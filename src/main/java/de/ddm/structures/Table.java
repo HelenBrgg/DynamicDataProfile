@@ -31,6 +31,11 @@ public class Table {
     public static class Attribute {
         public String tableName;
         public String attribute;
+
+        @Override
+        public String toString(){
+            return String.format("%s[%s]", this.tableName, this.attribute);
+        }
     }
 
     /**
@@ -52,25 +57,30 @@ public class Table {
 
     public static Table parseCSV(String csvString, String tableName) throws IOException, CsvException {
         CSVReader reader = new CSVReader(new StringReader(csvString));
-        List<String[]> lines = reader.readAll();
+        List<String[]> rawRows = reader.readAll();
         reader.close();
 
-        List<Attribute> tableAttributes = List.of(lines.get(0)).stream()
+        List<Attribute> attributes = Stream.of(rawRows.get(0))
+            .skip(1) // skip position column
             .map(attr -> new Attribute(tableName, attr))
             .collect(Collectors.toList());
-        tableAttributes.remove(0); // remove position column
 
-        List<Integer> tablePositions = new ArrayList<>();
-        List<Column> tableColumns = Stream.generate(Column::new).limit(tableAttributes.size())
-                .collect(Collectors.toList());
+        List<Integer> positions = rawRows.stream()
+            .skip(1) // skip header row
+            .map(rawRow -> Integer.parseInt(rawRow[0]))
+            .collect(Collectors.toList());
+        List<Column> columns = Stream.generate(Column::new)
+            .limit(attributes.size())
+            .collect(Collectors.toList());
 
-        for (int i = 1; i < lines.size(); i++) {
-            tablePositions.add(Integer.parseInt(lines.get(i)[0]));
-            for (int j = 1; j < lines.get(i).length; j++) {
-                tableColumns.get(j - 1).values.add(Value.fromString(lines.get(i)[j]));
+        for (int i = 1; i < rawRows.size(); i++) { // each row
+            for (int j = 1; j < attributes.size(); j++) { // each column
+                Value value = Value.fromString(rawRows.get(i)[j]);
+                columns.get(j - 1).values.add(value);
             }
         }
-        return new Table(tableName, tableAttributes, tableColumns, tablePositions);
+
+        return new Table(tableName, attributes, columns, positions);
     }
 
     public IntStream streamPositions(){

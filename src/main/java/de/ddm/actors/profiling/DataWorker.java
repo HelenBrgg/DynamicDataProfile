@@ -145,6 +145,9 @@ public class DataWorker extends AbstractBehavior<DataWorker.Message> {
     }
 
     private Behavior<Message> handle(NewBatchMessage message) {
+        // TODO add Table.getRowCount() ?
+        this.getContext().getLog().info("received new batch of {} containing {} rows", message.getBatchTable().name, message.getBatchTable().positions.size());
+
         for (int i = 0; i < message.batchTable.attributes.size(); ++i){
             Table.Attribute attr = message.batchTable.attributes.get(i);
             AttributeState state = this.attributeStates.computeIfAbsent(attr, (_attr) -> new AttributeState(this.arrayFactory, this.setFactory));
@@ -155,13 +158,18 @@ public class DataWorker extends AbstractBehavior<DataWorker.Message> {
     }
 
     private Behavior<Message> handle(MergeRequest request) {
+        this.getContext().getLog().info("received merge request, aborting all subset-checks");
+
         this.remoteSubsetChecks.clear();
 
+        // FIXME hack
+        int[] partsLeft = new int[]{ this.attributeStates.size() };
         this.attributeStates.forEach((attr, state) -> {
             SetDiff diff = state.mergeSegments();
             boolean additions = !diff.getInserted().isEmpty();
             boolean removals = !diff.getRemoved().isEmpty();
-            Planner.MergeResultPart result = new Planner.MergeResultPart(attr, additions, removals, state.metadata, true, this.workerId);
+            partsLeft[0] -= 1;
+            Planner.MergeResultPart result = new Planner.MergeResultPart(attr, additions, removals, state.metadata, partsLeft[0] == 0, this.workerId);
             request.resultRef.tell(result);
         });
 
@@ -225,6 +233,8 @@ public class DataWorker extends AbstractBehavior<DataWorker.Message> {
     }
 
     private Behavior<Message> handle(SubsetCheckRequest request) {
+        this.getContext().getLog().info("received subset-check request for {}, remote={}", request.getCandidate(), request.getRemoteRef().isPresent());
+
         Table.Attribute attrA = request.getCandidate().getAttributeA();
         Table.Attribute attrB = request.getCandidate().getAttributeB();
 
@@ -243,15 +253,14 @@ public class DataWorker extends AbstractBehavior<DataWorker.Message> {
 
 
         AttributeState stateA = this.attributeStates.computeIfAbsent(attrA, _attrA -> new AttributeState(arrayFactory, setFactory));
-
-        // TODO check metadata here?
-
         CandidateStatus status;
         if (stateB.oldSegmentSet.containsAll(stateA.oldSegmentSet.queryAll())) {
             status = CandidateStatus.succeededCheck();
         } else {
             status = CandidateStatus.failedCheck();
         }
+        SubsetCheckResult result = new SubsetCheckResult(request.getCandidate(), status, this.workerId);
+        request.getResultRef().tell(result);
 
         return this;
     }
