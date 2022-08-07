@@ -9,139 +9,125 @@ import akka.actor.typed.javadsl.Receive;
 import akka.actor.typed.receptionist.Receptionist;
 import de.ddm.actors.Master;
 import de.ddm.actors.patterns.LargeMessageProxy;
+import de.ddm.actors.profiling.Planner.SubsetCheckResult;
 import de.ddm.serialization.AkkaSerializable;
-import de.ddm.structures.Column;
-import de.ddm.structures.InclusionDependency;
-import de.ddm.structures.Task;
+import de.ddm.structures.AttributeState;
+import de.ddm.structures.Candidate;
+import de.ddm.structures.CandidateStatus;
+import de.ddm.structures.ColumnArray;
+import de.ddm.structures.ColumnSet;
+import de.ddm.structures.Metadata;
+import de.ddm.structures.SetDiff;
+import de.ddm.structures.Table;
+import de.ddm.structures.Value;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import de.ddm.profiler.*;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public class DataNodeWorker extends AbstractBehavior<DataNodeWorker.Message> {
+public class DataWorker extends AbstractBehavior<DataWorker.Message> {
 
     ////////////////////
     // Actor Messages //
     ////////////////////
 
-    public interface Message extends AkkaSerializable, LargeMessageProxy.LargeMessage {
-    }
-
-    // TODO do we need this here?
-    @AllArgsConstructor
-    public static class ReceptionistListingMessage implements Message {
-        private static final long serialVersionUID = -5246338806092216222L;
-        Receptionist.Listing listing;
-    }
+    public interface Message extends LargeMessageProxy.LargeMessage {}
 
     @AllArgsConstructor
-    public static class PostTableMessage implements Message {
-        private static final long serialVersionUID = 200;
-        public String attribute;
-        public List<ValueWithPosition> values;
+    @Getter
+    public static class NewBatchMessage implements Message {
+        private static final long serialVersionUID = 0xDADA_0001;
+
+        // TODO timestamp
+        private Table batchTable;
     }
 
     @AllArgsConstructor
-    public static class MergeMessage implements Message {
-        private static final long serialVersionUID = 201;
-        String attribute;
+    public static class MergeRequest implements Message {
+        private static final long serialVersionUID = 0xDADA_0002;
+
+        private ActorRef<Planner.MergeResultPart> resultRef;
     }
 
     @AllArgsConstructor
-    public static class SubsetCheckMessage implements Message {
-        private static final long serialVersionUID = 202;
-        String referencedAttribute;
-        String dependentAttribute;
-        ActorRef<DataNodeWorker.Message> dependentWorker;
+    @Getter
+    public static class SetQueryRequest implements Message {
+        private static final long serialVersionUID = 0xDADA_0003;
+
+        private Table.Attribute attribute;
+        private Optional<Value> fromValue;
+
+        private ActorRef<SetQueryResult> resultRef;
     }
 
     @AllArgsConstructor
-    public static class MetadataRequestMessage implements Message {
-        private static final long serialVersionUID = 203;
-        String attribute;
-        ActorRef<DataNodeWorker.Message> requestor; // meine eigene??
+    @Getter
+    public static class SetQueryResult implements Message {
+        private static final long serialVersionUID = 0xDADA_0004;
+
+        private Table.Attribute attribute;
+        private List<Value> values; // TODO should this be Stream<Value>?
+        private boolean endOfSet;
+
+        private int workerId;
+
+        public Optional<Value> lastValue() {
+            if (this.values.isEmpty()) return Optional.empty();
+            return Optional.of(this.values.get(this.values.size() - 1));
+        }
     }
 
     @AllArgsConstructor
-    public static class MetadataMessage implements Message {
-        private static final long serialVersionUID = 205;
-        private String attribute;
-        Metadata metadata;
+    @Getter
+    public static class SubsetCheckRequest implements Message {
+        private static final long serialVersionUID = 0xDADA_0005;
+
+        private Candidate candidate;
+        // TODO private int mergeId;
+
+        private Optional<ActorRef<SetQueryRequest>> remoteRef;
+        private ActorRef<Planner.SubsetCheckResult> resultRef;
     }
 
-    @AllArgsConstructor
-    public static class ValueRequestMessage implements Message {
-        private static final long serialVersionUID = 207;
-        public String attribute;
-        ActorRef<DataNodeWorker.Message> requestor;
-    }
-
-    @AllArgsConstructor
-    public static class ValueMessage implements Message {
-        private static final long serialVersionUID = 209;
-        String attribute;
-        List<Value> valueList;
-    }
-
-    /*
-     * @Getter
-     * 
-     * @NoArgsConstructor
-     * 
-     * @AllArgsConstructor
-     * public static class TaskMessage implements Message {
-     * private static final long serialVersionUID = -4667745204456518160L;
-     * ActorRef<LargeMessageProxy.Message> dependencyMinerLargeMessageProxy;
-     * 
-     * Task task;
-     * Map<String, Set<String>> distinctValuesA;
-     * Map<String, Set<String>> distinctValuesB;
-     * 
-     * private int getSetMemorySize(Set<String> set) {
-     * return set.stream().mapToInt(value -> value.length() * 2).sum();
-     * }
-     * 
-     * public int getMemorySize() {
-     * return
-     * distinctValuesA.values().stream().mapToInt(this::getSetMemorySize).sum() +
-     * distinctValuesB.values().stream().mapToInt(this::getSetMemorySize).sum();
-     * }
-     * }
-     */
-
-    ////////////////////////
-    // Actor Construction //
-    ////////////////////////
-
-    public static final String DEFAULT_NAME = "DataNodeWorker";
-
-    public static Behavior<Message> create() {
-        return Behaviors.setup(DataNodeWorker::new);
-    }
-
-    private DataNodeWorker(ActorContext<Message> context) {
-        super(context);
-
-        final ActorRef<Receptionist.Listing> listingResponseAdapter = context.messageAdapter(Receptionist.Listing.class,
-                ReceptionistListingMessage::new);
-        context.getSystem().receptionist()
-                .tell(Receptionist.subscribe(DependencyMiner.dependencyMinerService, listingResponseAdapter));
-
-        this.largeMessageProxy = this.getContext().spawn(
-                LargeMessageProxy.create(this.getContext().getSelf().unsafeUpcast()), LargeMessageProxy.DEFAULT_NAME);
-    }
 
     /////////////////
     // Actor State //
     /////////////////
 
-    private final ActorRef<LargeMessageProxy.Message> largeMessageProxy;
-    Map<String, AttributeState> attributes;
-    List<SubsetCheckMessage> pendingSubsetChecks;
-    ActorRef<MasterNodeWorker.Message> master;
+    private final int workerId;
+    private final ColumnArray.Factory arrayFactory;
+    private final ColumnSet.Factory setFactory;
+    private final Map<Table.Attribute, AttributeState> attributeStates = new HashMap<>();
+
+    // grouped by A of A c B (A is stored remotely)
+    private final Map<Table.Attribute, List<SubsetCheckRequest>> remoteSubsetChecks = new HashMap<>();
+
+
+    ////////////////////////
+    // Actor Construction //
+    ////////////////////////
+
+    public static Behavior<Message> create(
+        int workerId,
+        ColumnArray.Factory arrayFactory,
+        ColumnSet.Factory setFactory
+    ){
+        return Behaviors.setup(ctx -> new DataWorker(ctx, workerId, arrayFactory, setFactory));
+    }
+
+    private DataWorker(
+        ActorContext<DataWorker.Message> context, 
+        int workerId,
+        ColumnArray.Factory arrayFactory,
+        ColumnSet.Factory setFactory
+    ){
+        super(context);
+        this.workerId = workerId;
+        this.arrayFactory = arrayFactory;
+        this.setFactory = setFactory;
+    }
 
     ////////////////////
     // Actor Behavior //
@@ -150,137 +136,123 @@ public class DataNodeWorker extends AbstractBehavior<DataNodeWorker.Message> {
     @Override
     public Receive<Message> createReceive() {
         return newReceiveBuilder()
-                .onMessage(ReceptionistListingMessage.class, this::handle)
-                .onMessage(PostTableMessage.class, this::handle)
-                .onMessage(MergeMessage.class, this::handle)
-                .onMessage(SubsetCheckMessage.class, this::handle)
-                .onMessage(MetadataRequestMessage.class, this::handle)
-                .onMessage(MetadataMessage.class, this::handle)
-                .onMessage(ValueRequestMessage.class, this::handle)
-                .onMessage(ValueMessage.class, this::handle)
-                .build();
+            .onMessage(NewBatchMessage.class, this::handle)
+            .onMessage(MergeRequest.class, this::handle)
+            .onMessage(SetQueryRequest.class, this::handle)
+            .onMessage(SetQueryResult.class, this::handle)
+            .onMessage(SubsetCheckRequest.class, this::handle)
+            .build();
     }
 
-    private Behavior<Message> handle(ReceptionistListingMessage message) {
-        Set<ActorRef<DependencyMiner.Message>> dependencyMiners = message.getListing()
-                .getServiceInstances(DependencyMiner.dependencyMinerService);
-        for (ActorRef<DependencyMiner.Message> dependencyMiner : dependencyMiners)
-            dependencyMiner
-                    .tell(new DependencyMiner.RegistrationMessage(this.getContext().getSelf(), this.largeMessageProxy));
+    private Behavior<Message> handle(NewBatchMessage message) {
+        for (int i = 0; i < message.batchTable.attributes.size(); ++i){
+            Table.Attribute attr = message.batchTable.attributes.get(i);
+            AttributeState state = this.attributeStates.computeIfAbsent(attr, (_attr) -> new AttributeState(this.arrayFactory, this.setFactory));
+
+            state.currentSegmentArray.setValues(message.batchTable.streamColumnWithPositions(i));
+        }
         return this;
     }
 
-    /*
-     * private Behavior<Message> handle(TaskMessage message) {
-     * this.getContext().getLog().info(
-     * "Received task table {} with {} columns and {} distinct values, task table {} with {} columns and {} distinct values"
-     * ,
-     * message.task.getTableNameA(), message.task.getColumnNamesA().size(),
-     * message.distinctValuesA.values().stream().mapToInt(set -> set.size()).sum(),
-     * message.task.getTableNameB(), message.task.getColumnNamesB().size(),
-     * message.distinctValuesB.values().stream().mapToInt(set -> set.size()).sum(),
-     * message.getMemorySize());
-     * 
-     * List<InclusionDependency> inclusionDeps = new ArrayList<>();
-     * message.distinctValuesA.forEach((columnA, setA) -> {
-     * message.distinctValuesB.forEach((columnB, setB) -> {
-     * int cardinalityA = setA.size();
-     * int cardinalityB = setB.size();
-     * 
-     * // NOTE both or none of these branches may be executed
-     * if (cardinalityA <= cardinalityB && setB.containsAll(setA)) {
-     * inclusionDeps.add(new InclusionDependency(message.task.getTableNameA(),
-     * message.task.getTableNameB(), columnA, columnB));
-     * }
-     * if (cardinalityB <= cardinalityA && setA.containsAll(setB)) {
-     * inclusionDeps.add(new InclusionDependency(message.task.getTableNameB(),
-     * message.task.getTableNameA(), columnB, columnA));
-     * }
-     * });
-     * });
-     * 
-     * this.getContext().getLog().info(
-     * "Found {} INDs for table {} and table {}: {}",
-     * inclusionDeps.size(), message.task.getTableNameA(),
-     * message.task.getTableNameB(), inclusionDeps);
-     * 
-     * LargeMessageProxy.LargeMessage completionMessage = new
-     * DependencyMiner.CompletionMessage(this.getContext().getSelf(),
-     * inclusionDeps);
-     * this.largeMessageProxy.tell(new
-     * LargeMessageProxy.SendMessage(completionMessage,
-     * message.getDependencyMinerLargeMessageProxy()));
-     * 
-     * return this;
-     * }
-     */
-    private Behavior<Message> handle(PostTableMessage message) {
-        this.attributes.
+    private Behavior<Message> handle(MergeRequest request) {
+        this.remoteSubsetChecks.clear();
+
+        this.attributeStates.forEach((attr, state) -> {
+            SetDiff diff = state.mergeSegments();
+            boolean additions = !diff.getInserted().isEmpty();
+            boolean removals = !diff.getRemoved().isEmpty();
+            Planner.MergeResultPart result = new Planner.MergeResultPart(attr, additions, removals, state.metadata, true, this.workerId);
+            request.resultRef.tell(result);
+        });
+
         return this;
     }
 
-    private Behavior<Message> handle(MergeMessage message) {
+    private Behavior<Message> handle(SetQueryRequest request) {
+        if (!this.attributeStates.containsKey(request.attribute)) {
+            SetQueryResult result = new SetQueryResult(request.attribute, List.of(), true, this.workerId);
+            request.resultRef.tell(result);
+            return this;
+        }
+
+        AttributeState state = this.attributeStates.get(request.attribute);
+
+        List<Value> values = state.oldSegmentSet.queryChunk(request.fromValue).collect(Collectors.toList());
+        boolean hasMore = !values.isEmpty() && state.metadata.getMax().map((max) -> values.get(values.size() - 1).isLessThan(max)).orElse(false);
+        
+        SetQueryResult result = new SetQueryResult(request.attribute, values, hasMore, this.workerId);
+        request.resultRef.tell(result);
+
         return this;
     }
 
-    private Behavior<Message> handle(SubsetCheckMessage message) {
-        this.pendingSubsetChecks.add(message);
-        message.dependentWorker
-                .tell(new MetadataRequestMessage(message.dependentAttribute, this.getContext().getSelf()));
-        return this;
-    }
+    private Behavior<Message> handle(SetQueryResult queryResult) {
+        if (!this.attributeStates.containsKey(queryResult.attribute)) {
+            return this;
+        }
 
-    private Behavior<Message> handle(MetadataRequestMessage message) {
-        Metadata metadata = this.attributes.get(message.attribute).metadata;
-        message.requestor.tell(new MetadataMessage(message.attribute, metadata));
-        return this;
-    }
+        List<SubsetCheckRequest> attrSubsetChecks = this.remoteSubsetChecks.get(queryResult.getAttribute());
 
-    private Behavior<Message> handle(MetadataMessage message) {
-        for (SubsetCheckMessage subsetCheck : pendingSubsetChecks) {
-            if (subsetCheck.dependentAttribute != message.attribute)
-                continue;
-            Metadata referencedMetadata = this.attributes.get(subsetCheck.referencedAttribute).metadata;
-            if (referencedMetadata.distinctCount < message.metadata.distinctCount) {
-                this.master.tell(new MasterNodeWorker.SubsetCheckResultMessage(subsetCheck.referencedAttribute,
-                        subsetCheck.dependentAttribute,
-                        SubsetCheckResult.ruledOutByCardinality()));
+        // update all running checks on this dependent attribute
+        attrSubsetChecks.removeIf(checkRequest -> {
+            AttributeState stateB = this.attributeStates.get(checkRequest.candidate.getAttributeB());
+
+            if (!stateB.oldSegmentSet.containsAll(queryResult.values.stream())) {
+                CandidateStatus status = CandidateStatus.failedCheck();
+                SubsetCheckResult checkResult = new SubsetCheckResult(checkRequest.candidate, status, this.workerId);
+                checkRequest.resultRef.tell(checkResult);
+                return true;
             }
-            // TODO else if()
-            else {
-                subsetCheck.dependentWorker
-                        .tell(new ValueRequestMessage(subsetCheck.dependentAttribute, this.getContext().getSelf()));
+
+            if (queryResult.isEndOfSet()) {
+                CandidateStatus status = CandidateStatus.succeededCheck();
+                SubsetCheckResult result = new SubsetCheckResult(checkRequest.candidate, status, this.workerId);
+                checkRequest.resultRef.tell(result);
+                return true;
             }
+
+            return false;
+        });
+
+        // if there are remote values left and are any remote checks left, we need to query more
+        if (!queryResult.isEndOfSet() && !remoteSubsetChecks.isEmpty()) {
+            SetQueryRequest nextQuery = new SetQueryRequest(queryResult.getAttribute(), queryResult.lastValue(), this.getContext().getSelf().narrow());
+
+            attrSubsetChecks.forEach(checkRequest -> checkRequest.remoteRef.get().tell(nextQuery));
         }
 
         return this;
     }
 
-    private Behavior<Message> handle(ValueRequestMessage message) {
-        List<Value> valueList = this.attributes.get(message.attribute).currentSegment.queryRange()
-                .collect(Collectors.toList());
-        message.requestor.tell(new ValueMessage(message.attribute, valueList));
-        return this;
-    }
-    // TODO largeMessageProxy + nur Hälfte schicken + Logik für nur Hälfte schicken
+    private Behavior<Message> handle(SubsetCheckRequest request) {
+        Table.Attribute attrA = request.getCandidate().getAttributeA();
+        Table.Attribute attrB = request.getCandidate().getAttributeB();
 
-    private Behavior<Message> handle(ValueMessage message) {
-        for (SubsetCheckMessage subsetCheck : pendingSubsetChecks) {
-            if (subsetCheck.dependentAttribute != message.attribute)
-                continue;
-            boolean result = this.attributes.get(subsetCheck.referencedAttribute).currentSegment
-                    .containsAll(message.valueList.stream());
-            if (result) {
-                this.master.tell(new MasterNodeWorker.SubsetCheckResultMessage(subsetCheck.referencedAttribute,
-                        subsetCheck.dependentAttribute,
-                        SubsetCheckResult.passedCheck()));
-            } else {
-                this.master.tell(new MasterNodeWorker.SubsetCheckResultMessage(subsetCheck.referencedAttribute,
-                        subsetCheck.dependentAttribute,
-                        SubsetCheckResult.failedCheck(new HashMap<Value, Integer>())));
-            }
+        // if we don't have any data yet, it's fine to start out with an empty AttributeState
+        AttributeState stateB = this.attributeStates.computeIfAbsent(attrB, _attrB -> new AttributeState(arrayFactory, setFactory));
+
+        if (request.getRemoteRef().isPresent()) {
+            // TODO check if identical subset-check-req is already present
+            this.remoteSubsetChecks
+                .computeIfAbsent(attrA, _attrA -> new ArrayList<>())
+                .add(request);
+            SetQueryRequest queryRequest = new SetQueryRequest(attrA, Optional.empty(), this.getContext().getSelf().narrow());
+            request.remoteRef.get().tell(queryRequest);
+            return this;
         }
+
+
+        AttributeState stateA = this.attributeStates.computeIfAbsent(attrA, _attrA -> new AttributeState(arrayFactory, setFactory));
+
+        // TODO check metadata here?
+
+        CandidateStatus status;
+        if (stateB.oldSegmentSet.containsAll(stateA.oldSegmentSet.queryAll())) {
+            status = CandidateStatus.succeededCheck();
+        } else {
+            status = CandidateStatus.failedCheck();
+        }
+
         return this;
     }
-
 }

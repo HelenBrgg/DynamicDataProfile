@@ -8,9 +8,14 @@ import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
 import akka.actor.typed.javadsl.Receive;
 import de.ddm.actors.patterns.Reaper;
-import de.ddm.profiler.SetDiff;
-import de.ddm.profiler.*;
+import de.ddm.actors.profiling.DataWorker;
+import de.ddm.actors.profiling.InputWorker;
+import de.ddm.actors.profiling.Planner;
 import de.ddm.serialization.AkkaSerializable;
+import de.ddm.structures.CandidateGenerator;
+import de.ddm.structures.DataGeneratorSource;
+import de.ddm.structures.HeapColumnArray;
+import de.ddm.structures.HeapColumnSet;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
@@ -33,6 +38,14 @@ public class Master extends AbstractBehavior<Master.Message> {
         private static final long serialVersionUID = 7516129288777469221L;
     }
 
+    /////////////////
+    // Actor State //
+    /////////////////
+
+    private ActorRef<DataWorker.Message> dataWorker;
+    private ActorRef<InputWorker.Message> inputWorker;
+    private ActorRef<Planner.Message> planner;
+
     ////////////////////////
     // Actor Construction //
     ////////////////////////
@@ -47,16 +60,17 @@ public class Master extends AbstractBehavior<Master.Message> {
         super(context);
         Reaper.watchWithDefaultReaper(this.getContext().getSelf());
 
-        // this.dependencyMiner = context.spawn(DependencyMiner.create(),
-        // DependencyMiner.DEFAULT_NAME,
-        // DispatcherSelector.fromConfig("akka.master-pinned-dispatcher"));
+        //  TODO do we need to use DispatcherSelector here, like in Worker.java?
+
+        this.dataWorker = context.spawn(DataWorker.create(1, HeapColumnArray::new, HeapColumnSet::new), "data-worker");
+        try {
+            this.inputWorker = context.spawn(InputWorker.create(new DataGeneratorSource(), this.dataWorker.narrow()), "input-worker");
+        } catch (Exception ioException) {
+            System.out.println("failed to create InputWorker: " + ioException.toString());
+            System.exit(1);
+        }
+        this.planner = context.spawn(Planner.create(new CandidateGenerator(), this.inputWorker.narrow(), this.dataWorker.narrow()), "planner");
     }
-
-    /////////////////
-    // Actor State //
-    /////////////////
-
-    // private final ActorRef<DependencyMiner.Message> dependencyMiner;
 
     ////////////////////
     // Actor Behavior //
@@ -70,18 +84,15 @@ public class Master extends AbstractBehavior<Master.Message> {
                 .build();
     }
 
-    // private Behavior<Message> handle(StartMessage message) {
-    // this.dependencyMiner.tell(new DependencyMiner.StartMessage());
-    // return this;
+    private Behavior<Message> handle(StartMessage message) {
+       this.inputWorker.tell(new InputWorker.IdleMessage());
+       return this;
     }
 
     private Behavior<Message> handle(ShutdownMessage message) {
-        // If we expect the system to still be active when the a ShutdownMessage is
-        // issued,
-        // we should propagate this ShutdownMessage to all active child actors so that
-        // they
-        // can end their protocols in a clean way. Simply stopping this actor also stops
-        // all
+        // If we expect the system to still be active when the a ShutdownMessage is issued,
+        // we should propagate this ShutdownMessage to all active child actors so that they
+        // can end their protocols in a clean way. Simply stopping this actor also stops all
         // child actors, but in a hard way!
         return Behaviors.stopped();
     }

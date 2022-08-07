@@ -1,4 +1,4 @@
-package de.ddm.profiler;
+package de.ddm.structures;
 
 import java.util.Optional;
 import java.util.List;
@@ -10,10 +10,14 @@ import lombok.AllArgsConstructor;
  * 
  * @see Source
  */
-
 @AllArgsConstructor
 public class DummySource implements Source {
-    private List<Table> table;
+    private List<Table> dummyTables;
+
+    @Override
+    public boolean isFinished() {
+        return this.dummyTables.isEmpty();
+    }
 
     /**
      * Returns the next table of the source in case it is available.
@@ -21,11 +25,10 @@ public class DummySource implements Source {
      * @return the new table or none if non is available
      */
     @Override
-    public Table nextTable() {
-        if (this.table.isEmpty()) {
-            return null;
-        } else {
-            return this.table.remove(0);
+    public Optional<Table> nextTable() {
+        if (this.isFinished()) {
+            return Optional.empty();
         }
+        return Optional.of(this.dummyTables.remove(0));
     }
 }

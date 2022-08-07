@@ -1,10 +1,25 @@
-package de.ddm.profiler;
+package de.ddm.structures;
 
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
 @EqualsAndHashCode
 public class Value implements Comparable<Value> {
-    public static Value NULL = Value.fromString("");
+    public static Value EMPTY = new Value("");
+
+    /**
+    * Contains: 
+    * - a value
+    * - the position of the value in a column 
+    * @see  Value
+    */
+    @Getter
+    @AllArgsConstructor
+    public static class WithPosition {
+        public Value value;
+        public int position;
+    }
 
     private String shortstr;
 
@@ -13,6 +28,7 @@ public class Value implements Comparable<Value> {
     }
 
     public static Value fromString(String str) {
+        if (str.isEmpty()) return EMPTY;
         if (str.charAt(0) != '$' && str.length() > 64) {
             return new Value("$" + str.length() + "$" + Integer.toString(str.hashCode()));
         }
@@ -28,7 +44,13 @@ public class Value implements Comparable<Value> {
         return this.shortstr.compareTo(b.shortstr); // TODO compare object refs?
     };
 
-    // public byte[] getLongHash(){};
+    public boolean isLessThan(Value b){
+        return this.compareTo(b) < 0;
+    }
+    public boolean isGreaterThan(Value b){
+        return this.compareTo(b) > 0;
+    }
+
     public String toString() {
         return this.shortstr;
     }

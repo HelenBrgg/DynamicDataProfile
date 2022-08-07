@@ -1,20 +1,18 @@
-import java.util.function.BiConsumer;
-import java.util.stream.IntStream;
-
+package de.ddm.structures;
 import lombok.NoArgsConstructor;
-
 import java.util.List;
 
 @NoArgsConstructor
 public class ModuloPartitioningStrategy implements PartitioningStrategy {
-    List<String> attributesByWorkerId;
+    private List<Table.Attribute> attributesByWorkerId;
 
-    List<PartitioningStrategy.Partition> partitionRange(String attribute, int rangeBegin, int rangeEndInclusive) {
+    @Override
+    public List<PartitioningStrategy.Partition> partitionRange(Table.Attribute attribute, int rangeBegin, int rangeEndInclusive) {
         int workerId = this.attributesByWorkerId.indexOf(attribute);
         if (workerId == -1) {
             this.attributesByWorkerId.add(attribute);
             workerId = this.attributesByWorkerId.size() - 1;
         }
-        return Arrays.asList(new PartitioningStrategy.Partition(attribute, rangeBegin, rangeEnd, workerId));
+        return List.of(new PartitioningStrategy.Partition(attribute, rangeBegin, rangeEndInclusive, workerId));
     }
 }

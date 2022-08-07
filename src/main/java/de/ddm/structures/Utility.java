@@ -1,22 +1,25 @@
-package de.ddm.profiler;
+package de.ddm.structures;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+// TODO move these methods into the appropriate classes, if possible
 public abstract class Utility {
-    public static Map<Value, Long> calulateValueCountDelta(List<ValueWithPosition> newValues, List<Value> oldValues) {
-        Map<Value, Long> decreasedCounts = oldValues.stream().collect(Collectors.groupingBy(
-                v -> v, Collectors.counting()));
-        Map<Value, Long> deltaCounts = newValues.stream().collect(Collectors.groupingBy(
-                v -> v.value, Collectors.counting()));
+    public static Map<Value, Long> calulateCountDeltas(Stream<Value> newValues, Stream<Value> oldValues) {
+        Map<Value, Long> decreasedCounts = oldValues
+                .collect(Collectors.groupingBy(v -> v, Collectors.counting()));
+        Map<Value, Long> deltaCounts = newValues
+                .collect(Collectors.groupingBy(v -> v, Collectors.counting()));
 
         for (Map.Entry<Value, Long> entry : decreasedCounts.entrySet()) {
             deltaCounts.merge(
                     entry.getKey(),
                     -entry.getValue(),
                     (positiveCount, negativeCount) -> positiveCount - negativeCount);
-            // TODO remove if delta count is 0?
         }
+
+        deltaCounts.values().removeIf(count -> count == 0);
 
         return deltaCounts;
     }

@@ -8,10 +8,10 @@ import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
 import akka.actor.typed.javadsl.Receive;
 import de.ddm.actors.patterns.Reaper;
-import de.ddm.actors.profiling.DataNodeWorker;
-import de.ddm.profiler.*;
+import de.ddm.actors.profiling.DataWorker;
 import de.ddm.serialization.AkkaSerializable;
 import de.ddm.singletons.SystemConfigurationSingleton;
+import de.ddm.structures.*;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
@@ -32,6 +32,12 @@ public class Worker extends AbstractBehavior<Worker.Message> {
 		private static final long serialVersionUID = 7516129288777469221L;
 	}
 
+	/////////////////
+	// Actor State //
+	/////////////////
+
+	final List<ActorRef<DataWorker.Message>> workers;
+
 	////////////////////////
 	// Actor Construction //
 	////////////////////////
@@ -46,20 +52,15 @@ public class Worker extends AbstractBehavior<Worker.Message> {
 		super(context);
 		Reaper.watchWithDefaultReaper(this.getContext().getSelf());
 
-		final int numWorkers = SystemConfigurationSingleton.get().getNumWorkers();
+		// int numWorkers = SystemConfigurationSingleton.get().getNumWorkers();
+		int numWorkers = 1;
 
 		this.workers = new ArrayList<>(numWorkers);
 		for (int id = 0; id < numWorkers; id++)
 			// wo berechnen wir nochmal die Workeranzahl? hängt ja an der Anzahl Attributes
-			this.workers.add(context.spawn(DataNodeWorker.create(), DataNodeWorker.DEFAULT_NAME + "_" + id,
+			this.workers.add(context.spawn(DataWorker.create(id, HeapColumnArray::new, HeapColumnSet::new), "data-worker-" + id,
 					DispatcherSelector.fromConfig("akka.worker-pool-dispatcher")));
 	}
-
-	/////////////////
-	// Actor State //
-	/////////////////
-
-	final List<ActorRef<DataNodeWorker.Message>> workers;
 
 	////////////////////
 	// Actor Behavior //

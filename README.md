@@ -27,7 +27,7 @@ To run the master system and a dedicated worker system on a different host:
 
 ```sh
 # on the master system host
-java -Xmx3g -ea -cp target/ddm-akka-1.0.jar de.ddm.Main master -w 0 -h MASTER_P
+java -Xmx3g -ea -cp target/ddm-akka-1.0.jar de.ddm.Main master -w 0 -h MASTER_IP
 
 # on the worker system host
 java -Xmx3g -ea -cp target/ddm-akka-1.0.jar de.ddm.Main worker -w 0 -mh MASTER_IP -h WORKER_IP
