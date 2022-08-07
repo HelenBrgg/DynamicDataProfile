@@ -173,17 +173,14 @@ class Batcher:
         :rtype: String
         """
         batch = ''
-        attributes = self.row_generator.attributes()
-        attr_string = ','.join(attributes)
         while len(batch) < self.max_batch_size:
             row = self.row_generator.nextRow()
             if row is None:
                 break
-            row_string = ','.join(row)
-            batch += '\n' + row_string
+            batch += '\n' + ','.join(row)
         if batch == '':
             return None
-        return attr_string + batch
+        return ','.join(self.row_generator.attributes()) + batch
 
 
 class CSVReadIn:
@@ -191,17 +188,17 @@ class CSVReadIn:
     creates a reader, then a repeater, then a deleter and than give it to the Batcher 
     creates a batch that can be submitted to the system
     """
-    def __init__(self, filepath: str, total_rows: int, batch_rows: int, delete_chance: float):
+    def __init__(self, filepath: str, total_rows: int, max_batch_size: int, delete_chance: float):
         """Constructor method
         
         :param filepath: path to the csv file
         :param total_rows: total number of rows to generate
-        :param batch_rows: desired number of rows in a batch
+        :param batch_rows: desired size of a batch in bytes
         :param delete_change: change of generation deleting a row instead of creating one
         """
         self.filepath = filepath
         self.total_rows = total_rows
-        self.batch_rows = batch_rows
+        self.max_batch_size = max_batch_size
         self.delete_chance = delete_chance
     
     def openRowGenerator(self):
@@ -213,14 +210,14 @@ class CSVReadIn:
         reader = CSVRowReader(self.filepath)
         repeater = RowRepeater(self.total_rows, reader)
         deleter = RowDeleter(self.delete_chance, repeater)
-        return deleter
+        return repeater
     
     def run(self):
-        """Calls the Batcher class with a max_batch_size of 1000
+        """Calls the Batcher class with a configurable max_batch_size
         
         Reads out batches to stdout, multiple batches separated with an empty line
         """
-        batcher = Batcher(self.openRowGenerator(), self.batch_rows)
+        batcher = Batcher(self.openRowGenerator(), self.max_batch_size)
         batch = batcher.nextBatch()
         while batch is not None:
             print(batch)
@@ -230,7 +227,7 @@ class CSVReadIn:
 if __name__ == '__main__':
     if len(sys.argv) != 5:
         print(
-            f"Usage: {sys.argv[0]} FILEPATH TOTAL-ROWS BATCH-ROWS DELETE-CHANCE \n" +
+            f"Usage: {sys.argv[0]} FILEPATH TOTAL-ROWS MAX-BATCH-SIZE DELETE-CHANCE \n" +
             "\n" +
             "Environment: \n" +
             "\n" +
