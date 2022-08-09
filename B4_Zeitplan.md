@@ -1,23 +1,36 @@
 # Zeitplan
 
 **Beginn der Zusammenarbeit: 24.10.2021**
+
 **Aufgabe**
 
 - Einen Algorithmus entwickeln der auf dynamischen Datensätzen Abhängigkeiten findet
 - Einen Datengenerator der zufällige Daten generiert um die dynamischen Datensätze zu simulieren
 
-** Konzeptions- und Recherchephase: 24.10.2021 - 20.12.2022 **
-In der Zeit haben wir uns in der Gruppe im Wochentakt getroffen und besprochen. Dazwischen hat jeder für sich recherchiert. Die Kontakttermine mit Herrn Papenbrock hatten wir im 2 oder 4 Wochentakt. Dort haben wir unsere Ideen vorgestellt und besprochen. Parallel haben wir für das Modul Verteilte Systeme an einer Programmieraufgabe gearbeitet, in der wir ebenfalls mit einem verteilten Algorithmus Inklusionsabhängigkeiten finden sollten.
+Wir haben das Projekt in folgende inhaltliche Phasen unterteilt:
 
-**Ergebnisse der ersten Phase**
+- Recherche
 
-- Ein verteiltes System mit Akka in Java bauen
-- Pruningpipeline um möglichst zeit- und datensparend nach Updates KOmbinationen für Inklusionsabhängigkeiten auszuschließen
-- Auffinden von unären Inklusionsabhängigkeiten
+- Konzeptionierung und Umsetzung
+
+  - Datengenerator
+  - Dynamischer Algorithmus
+
+- Hausarbeit
+
+**Recherchephase: 24.10.2021 - 20.12.2022**
+In der Zeit haben wir uns in der Gruppe im Wochentakt getroffen und besprochen. Dazwischen hat jeder für sich recherchiert. Es ging darum zunächst das Thema zu durchdringen und Inspirationen zu sammeln, wie wir das Ganze umsetzen können. Die Kontakttermine mit Herrn Papenbrock hatten wir im 2 oder 4 Wochentakt. Dort haben wir unsere Ideen vorgestellt und besprochen. Parallel haben wir für das Modul Verteilte Systeme an einer Programmieraufgabe gearbeitet, in der wir mit einem verteilten Algorithmus auf statischen Daten Inclusion Dependencies finden sollten.
 
 **Meilenstein 1: Abschluss Recherchearbeit**
 
-In der ersten Phase haben wir regelmäßige Treffen für eine oder zwei Stunden vorgezogen. In der nächsten Phase sind wir dazu übergegangen uns in größeren Abständen zu Blockwochen oder Sprintwochenenden zu treffen um am Stück runterprogrammieren zu können.
+**Ergebnisse der ersten Phase**
+Nach der Recherchephase haben wir uns auf folgende Aufgaben festgelegt
+
+- Auffinden von unären Inclusion Dependencies in dynamischen Datensätzen
+- Ein verteiltes System mit Akka in Java bauen, in dem die Inclusion Dependencies gesucht werden
+- Eine Pipeline an Pruningschritten zu bauen um möglichst zeit- und datensparend Kombinationen für Inclusion Dependencies auszuschließen
+
+In der ersten Phase hatten wir regelmäßige Treffen für eine oder zwei Stunden. In der nächsten Phase sind wir dazu übergegangen uns in größeren Abständen zu Blockwochen oder Sprintwochenenden zu treffen um am Stück runterprogrammieren zu können.
 
 Erste Programmiereinheit: 04.04.2022 - 08.04.2022
 
