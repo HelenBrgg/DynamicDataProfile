@@ -19,6 +19,8 @@ Wir haben das Projekt in folgende Phasen unterteilt
 
 - Hausarbeit
 
+![](imgs/Zeitplan.png)
+
 ## Phase 1: Recherchephase
 
 24.10.2021 - 18.01.2021
@@ -74,7 +76,5 @@ Nachdem die Architektur für den Algorithmus noch einmal überarbeitet wurde, wu
 ## Phase 3: Hausarbeit
 
 Parallel zur Fertigstellung des dynamischen Algorithmus wurde die Hausarbeit zu der Projektarbeit erstellt.
-
-imgs/Zeitplan.png
 
 Protokolle für Kontakttermine im Anhang
