@@ -1,6 +1,6 @@
 # Inclusion Dependencies
 
-Inclusion Dependencies beschreben, ob alle Werte die ein Attribut $X$ annehmen kann auch von Attribut $Y$ angenommen werden können. $X$ und $Y$ können aus Instanzen des gleichen Schemas (= in der gleichen Tabelle) stammen, oder auch aus Instanzen zwei verschiedenen Schematas.
+Inclusion Dependencies beschreiben, ob alle Werte die ein Attribut $X$ annehmen kann auch von Attribut $Y$ angenommen werden können. $X$ und $Y$ können aus Instanzen des gleichen Schemas (= in der gleichen Tabelle) stammen, oder auch aus Instanzen zwei verschiedenen Schematas.
 
 Falls das der Fall ist, ist X abhängig von Y und man schreibt $X ⊆ Y$.
 
