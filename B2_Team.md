@@ -13,6 +13,7 @@ Aufgaben:
 Ragna Solterbeck (Master Data Science)
 Aufgaben:
 
--Konzeption und Entwicklung des Datengenerators im Pairprogramming mit Felix Köpge.
+- Konzeption und Entwicklung des Datengenerators im Pairprogramming mit Felix Köpge
+- Erstellung der Diagramme
 
 Aufgabenfeld + Pairprogramming
