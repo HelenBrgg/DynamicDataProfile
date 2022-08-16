@@ -4,6 +4,8 @@
 
 Die Inserts, Updates und Deletes werden zunächst gespeichert.
 
+## Pruning
+
 In der Pruningphase sollen durch Vorarbeit viele mögliche Kandidaten für Inclusion Dependencies ausgeschlossen werden. Anstatt also, dass wie bei einem statischen Algorithmus, auf der gesamten Datenmenge nach Inclusion Dependencies gesucht wird, wird nur in den Attributen gesucht, in denen eine Abhängigkeit überhaupt in Frage kommt. Im Status Quo suchen wir lediglich nach unären Inclusion Dependencies. Als Fortführung könnte man nach n-ären Inclusion Dependencies suchen.
 
 In einer Pipeline werden nacheinander durch verschiedene Prüfungen Kandidaten ausgeschlossen.
@@ -15,13 +17,15 @@ In einer Pipeline werden nacheinander durch verschiedene Prüfungen Kandidaten a
 
 2. Aus den Metadaten der Attribute kann man auch Kandidaten ausschließen.
 
-2a) Kardinalitäten
-Wenn A mehr einzigartige Werte als B hat, dann kann A nicht in B enthalten sein. Somit muss eine Inclusion Dependency von A in B nur überprüft werden, wenn |A|<|B| oder |A|=|B|. Nicht aber wenn |A|>|B|.
+- a) Kardinalitäten
+  Wenn A mehr einzigartige Werte als B hat, dann kann A nicht in B enthalten sein. Somit muss eine Inclusion Dependency von A in B nur überprüft werden, wenn |A|<|B| oder |A|=|B|. Nicht aber wenn |A|>|B|.
 
-2b) Min-/Max-Werte
-Für die Extremwerte in einem Attribut kann man überprüfen ob eine Inclusion Dependency besteht. Wenn der Maxwert von A größer ist als der Maxwert von B, so enthält A Werte die es nicht in B gibt, also kann A nicht in B enthalten sein, B aber in A. Dasselbe gilt für den Minwert. Wenn der kleinste Wert in A kleiner ist als in B, kann A nicht in B enthalten sein. B aber in A. Somit können bei allen Kombinationen von Inclusion Dependencies die Min- und Maxwerte überprüft werden.
+- b) Min-/Max-Werte
+  Für die Extremwerte in einem Attribut kann man überprüfen ob eine Inclusion Dependency besteht. Wenn der Maxwert von A größer ist als der Maxwert von B, so enthält A Werte die es nicht in B gibt, also kann A nicht in B enthalten sein, B aber in A. Dasselbe gilt für den Minwert. Wenn der kleinste Wert in A kleiner ist als in B, kann A nicht in B enthalten sein. B aber in A. Somit können bei allen Kombinationen von Inclusion Dependencies die Min- und Maxwerte überprüft werden.
 
-2c)Datentyp
-Wenn A Datentypen enthält die es nicht in B gibt, dann kann A nicht in B sein.
+- c) Datentyp
+  Wenn A Datentypen enthält, die es nicht in B gibt, dann kann A nicht in B sein.
 
-3.
+3. Bloom Filter
+
+## Kandidaten Checken
