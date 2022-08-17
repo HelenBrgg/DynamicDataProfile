@@ -28,4 +28,11 @@ In einer Pipeline werden nacheinander durch verschiedene Prüfungen Kandidaten a
 
 3. Bloom Filter
 
+Ein weiterer Ausschluss findet durch Nutzung von Bloom Filtern statt. Diese erstellen pro Attribut ein Art Filter, in Form eines Hashwertes...
+
 ## Kandidaten Checken
+
+Nachdem wir in der Vorarbeit die Anzahl an Attributen, die wir auf Inclusion Dependencies überprüfen so weit wie möglich reduziert haben, werden nun die übrig gebliebenen Kandidaten überprüft. Erst jetzt werden die gespeicherten Tabellen abgerufen um die relevanten Spalten miteinander zu vergleichen.
+Hierbei betreiben wir ebenfalls eine Optimierung. Wenn eine gewisse Anzahl an Werten in beiden Attributen untersucht wurde, und die Anzahl verbliebener Werte nicht mehr ausreicht um noch eine Inclusion Dependency zu ergebn, brechen wir ab. Beispiel:
+A hat 100 einzigarte Werte, B hat 80 einzigartige Werte: Wenn in den ersten 21 Werten von A kein einziger Wert von B auftaucht, so kann B nicht mehr vollständig in A enthalten sein. Hier kann bereits abgebrochen werden.
+Diese Optimierung könnte man auch in einem statischen Algorithmus anwenden.
