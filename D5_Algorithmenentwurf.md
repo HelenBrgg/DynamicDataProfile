@@ -29,7 +29,13 @@ Wenn A mehr einzigartige Werte als B hat, dann kann A nicht in B enthalten sein.
 
 #### Min-/Max-Werte
 
-Für die Extremwerte in einem Attribut kann man überprüfen ob eine Inclusion Dependency besteht. Wenn der Maxwert von A größer ist als der Maxwert von B, so enthält A Werte die es nicht in B gibt, also kann A nicht in B enthalten sein, B aber in A. Dasselbe gilt für den Minwert. Wenn der kleinste Wert in A kleiner ist als in B, kann A nicht in B enthalten sein. B aber in A. Somit können bei allen Kombinationen von Inclusion Dependencies die Min- und Maxwerte überprüft werden.
+Für die Extremwerte in einem Attribut kann man überprüfen ob eine Inclusion Dependency besteht.
+
+Wenn der Maxwert von A größer ist als der Maxwert von B, so enthält A Werte die es nicht in B gibt, also kann A nicht in B enthalten sein, B aber in A.
+
+Wenn der Minwert in A kleiner ist als in B, kann A nicht in B enthalten sein, B aber in A.
+
+Somit können bei allen Kombinationen von Inclusion Dependencies die Min- und Maxwerte überprüft werden.
 
 #### Datentyp
 
@@ -39,9 +45,11 @@ Wenn A Datentypen enthält, die es nicht in B gibt, dann kann A nicht in B sein.
 
 #### Bloom Filter
 
-Ein weiterer Ausschluss findet durch Nutzung von Bloom Filtern statt. Genutzt wird ein Counting-Bloomfilter mit einer Größe von 128 und zwei Hash-Funktionen. Bloomfilter sind eine probabilistische Datenstruktur, die Daten repräsentieren. Ein Bloom Filter ist ein Array aus m bits, die ein Set aus n Elementen repräsentiert. ZU Beginn sind alle bits auf null. Für jedes Element im Set werden nun k Hashfunktionen ausgeführt, die ein Element auf eine Nummer zwischen eins bis m mappen. Jede dieser Positionen im Array werden dann auf eins gesetzt. Will man nun prüfen ob ein Element in einer Datenmenge enthalten ist, kann man die Werte berechnen und prüfen ob die Positionen auf eins sind. Wegen Kollisionen kann das Verfahren zu False Positives führen. Allerdings nicht zu False Negatives. Wenn ein Element im Array auf Null ist, so wurde der Wert definitiv noch nicht gesehen.
+Ein weiterer Ausschluss findet durch Nutzung von Bloom Filtern statt. Genutzt wird ein Counting-Bloomfilter mit einer Größe von 128 und zwei Hash-Funktionen.
 
-Counting Bloomfilter ergänzen Bloomfilter dahingehend, dass nun mitgezählt wie oft, ein Bit im Array auf eins gesetzt wird. Das ermöglicht auch Elemente zu löschen.
+Bloomfilter sind eine probabilistische Datenstruktur, die Daten repräsentieren. Ein Bloom Filter ist ein Array aus `m` Bits, die ein Set aus `n` Elementen repräsentiert. ZU Beginn sind alle Bits auf `0`. Für jedes Element im Set werden nun `k` Hashfunktionen ausgeführt, die ein Element auf eine Nummer zwischen `1` bis `m` mappen. Jede dieser Positionen im Array werden dann auf `1` gesetzt. Will man nun prüfen ob ein Element in einer Datenmenge enthalten ist, kann man die Werte berechnen und prüfen ob die Positionen auf `1` sind. Wegen Kollisionen kann das Verfahren zu False Positives führen, allerdings nicht zu False Negatives. Wenn ein Element im Array `0` ist, so wurde der Wert definitiv noch nicht gesehen.
+
+Counting Bloomfilter ergänzen Bloomfilter dahingehend, dass nun mitgezählt wie oft ein Bit im Array auf `1` gesetzt wird. Das ermöglicht auch Elemente zu löschen.
 
 https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.457.4228&rep=rep1&type=pdf
 
