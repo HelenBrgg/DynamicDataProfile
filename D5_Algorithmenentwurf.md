@@ -21,20 +21,32 @@ Die Logischen Implikationen sind zum Beispiel:
 
 Aus den Metadaten der Attribute kann man auch Permutationen ausschließen. Durch eine Single Column Analysis erhalten wir verschieden Metadaten.
 
-|  A  |    B    |      C       |
-| :-: | :-----: | :----------: |
-|  1  |  Mars   |  Luxemburg   |
-|  2  | Jupiter |   Singapur   |
-|  3  | Jupiter | Lichtenstein |
-|  4  |  Luna   |   Singapur   |
+<table>
+<tr><th>Tabelle 1  </th><th>Tabelle 2 </th></tr>
+<tr><td>
 
-|  X  |  Y   |   Z    |
-| :-: | :--: | :----: |
-| 10  | Mars | Berlin |
-| 20  | Mars | Berlin |
-| 30  | Luna | Berlin |
+|   A | B       | C            |
+| --: | :------ | :----------- |
+|   1 | Mars    | Luxemburg    |
+|   2 | Jupiter | Singapur     |
+|   3 | Jupiter | Lichtenstein |
+|   4 | Luna    | Singapur     |
 
-![](imgs/Kardinalitäten.png)
+</td><td>
+
+|   X | Y    | Z      |
+| --: | :--- | :----- |
+|  10 | Mars | Berlin |
+|  20 | Mars | Berlin |
+|  30 | Luna | Berlin |
+
+</td></tr> </table>
+
+|              Metadata | Charakterisierung                                                        | Beispiel                                                 |
+| --------------------: | :----------------------------------------------------------------------- | :------------------------------------------------------- |
+|            `num_rows` | Anzahl der Zeilen in einer Spalte                                        | num_rows(A) = 4<br>num_rows(X) = 3                       |
+| `num_distinct_values` | Anzahl aller unterschiedlichen Werte, die in einer Spalte vorkommen      | num_distinct_values(B) = 3<br>num_distinct_values(Y) = 2 |
+|          `uniqueness` | Anzahl der Zeilen dividiert durch die Anzahl der unterschiedlichen Werte | uniqueness(B) = 0.75<br>uniqueness(Y) = 0.6666           |
 
 Innerhalb einer Tabelle ist num_rows für jede Spalte gleich. Über Tabellen hinweg darf es verschieden sein.
 
@@ -42,7 +54,13 @@ Eine `uniqueness` von `1.0` bedeutet, alle Werte einer Spalte sind unterschiedli
 
 Eine `uniqueness` von `0.0` bedeutet, alle Werte einer Spalte sind gleich.
 
-![](imgs/Datapattern.png)
+Data Patterns
+
+|                                     Metadata | Charakterisierung                                                                                       | Beispiel                                                                                                         |
+| -------------------------------------------: | :------------------------------------------------------------------------------------------------------ | :--------------------------------------------------------------------------------------------------------------- |
+|                                   `datatype` | Gemeinsamer Datentyp für alle Werte einer Spalte                                                        | datatype(A) = UnsignedInteger <br>datatype(B) = String                                                           |
+|         `highest_number` <br>`lowest_number` | Höchster Zahlenwert einer Spalte <br> Niedrigster Zahlenwert einer Spalte                               | highest_number(X) = 30 <br> lowest_number(X) = 10                                                                |
+| `max_string_length` <br> `min_string_length` | Maximale Länge eines Werts betrachtet als String <br> Minimale Länge eines Werts betrachtet als String. | max_string_length(A) = 1 <br> min_string_length(A) = 1 <br>max_string_length(B) = 7<br> min_string_length(B) = 4 |
 
 Mögliche Datentypen:
 
