@@ -47,7 +47,7 @@ class CSVRowReader:
     def reset(self):
         """resets the reader and the index and calls the first line again.
         """
-        self.reader = csv.reader(open(self.filepath, encoding='utf-8'),delimiter=',')
+        self.reader = csv.reader(open(self.filepath, encoding='utf-8'),delimiter=CSV_SEPARATOR)
         self.index = -1
         next(self.reader)
 
