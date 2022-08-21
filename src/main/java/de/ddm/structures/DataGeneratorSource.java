@@ -1,31 +1,38 @@
 package de.ddm.structures;
 
-import de.ddm.singletons.InputConfigurationSingleton;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.beust.jcommander.Strings;
+import com.opencsv.exceptions.CsvException;
+
+import de.ddm.singletons.InputConfigurationSingleton;
 
 public class DataGeneratorSource implements Source {
     private final Logger logger;
+    private String tableName;
     private final BufferedReader procReader;
     private boolean finished = false;
 
-    public DataGeneratorSource() throws IOException {
+    public DataGeneratorSource(String[] env, String[] command) throws IOException {
         this.logger = LoggerFactory.getLogger("data-generator");
 
-        String[] commands = InputConfigurationSingleton.get().getDataGeneratorCommands().get(0);
-        String[] env = InputConfigurationSingleton.get().getDataGeneratorEnv();
+        // String[] command = InputConfigurationSingleton.get().getDataGeneratorCommands().get(0);
+        // String[] env = InputConfigurationSingleton.get().getDataGeneratorEnv();
 
-        this.logger.info("spawning data-generator process with: {} {}", Strings.join(" ", env), Strings.join(" ", commands));
+        this.logger.info("spawning data-generator process with: {} {}", Strings.join(" ", env), Strings.join(" ", command));
 
-        ProcessBuilder builder = new ProcessBuilder(List.of(commands));
+        this.tableName = Paths.get(command[1]).getFileName().toString().replaceFirst("[.][^.]+$", "");
+
+        ProcessBuilder builder = new ProcessBuilder(List.of(command));
         builder.environment().put("CSV_SEPARATOR", ";"); // TODO
         builder.redirectErrorStream(true);
 
@@ -51,19 +58,19 @@ public class DataGeneratorSource implements Source {
             }
 
             if (lines.size() < 2) {
-                this.logger.info("closing data-generator process");
+                this.logger.info("closing data-generator process for {}", this.tableName);
 
                 this.finished = true;
                 this.procReader.close();
                 return Optional.empty(); // not a full batch
             }
 
-            this.logger.info("read batch from data-generator");
+            this.logger.info("read batch from {}", this.tableName);
 
             String csv = String.join("\n", lines);
-            return Optional.of(Table.parseCSV(csv, "T"));
-        } catch (Exception e) {
-            this.logger.error("failed to read table {}", e.toString());
+            return Optional.of(Table.parseCSV(csv, this.tableName));
+        } catch (IOException | CsvException e) {
+            this.logger.error("failed to read table {}: {}", this.tableName, e.toString());
 
             this.finished = true;
             try { this.procReader.close(); } catch (IOException _e) {}

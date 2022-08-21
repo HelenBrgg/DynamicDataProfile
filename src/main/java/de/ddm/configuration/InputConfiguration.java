@@ -34,6 +34,7 @@ public class InputConfiguration {
 	public List<String> getInputFilePaths() {
 		return Stream.of(new File(this.inputPath).listFiles())
 			.map(file -> file.getAbsolutePath())
+			.filter(path -> path.endsWith(".csv"))
 			.collect(Collectors.toList());
 	}
 

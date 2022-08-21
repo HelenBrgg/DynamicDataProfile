@@ -27,7 +27,8 @@ public class Value implements Comparable<Value> {
         this.shortstr = shortstr;
     }
 
-    public static Value fromString(String str) {
+    public static Value fromString(String unstrippedStr) {
+        String str = unstrippedStr.strip();
         if (str.isEmpty()) return EMPTY;
         if (str.charAt(0) != '$' && str.length() > 64) {
             return new Value("$" + str.length() + "$" + Integer.toString(str.hashCode()));

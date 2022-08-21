@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.Date;
 
 import com.opencsv.CSVWriter;
@@ -11,6 +12,7 @@ import com.opencsv.CSVWriter;
 import akka.actor.Status;
 
 public class CsvLogSink implements Sink {
+    private final Instant begin;
     private final CSVWriter writer;
 
     private static String getTimestamp() {
@@ -19,9 +21,9 @@ public class CsvLogSink implements Sink {
     }
 
     public CsvLogSink(String csvFile) throws IOException {
-        File file = new File(csvFile);
-        FileWriter fileWriter = new FileWriter(file);
-        this.writer = new CSVWriter(fileWriter);
+        this.begin = Instant.now();
+        this.writer = new CSVWriter(new FileWriter(new File(csvFile)));
+        // header row
         this.writer.writeNext(new String[]{"timestamp", "attribute_a", "attribute_b", "is_valid", "reason", "comparision_count"});
     }
 
@@ -32,7 +34,7 @@ public class CsvLogSink implements Sink {
     @Override
     public void putResult(Candidate candidate, CandidateStatus status) {
         this.writer.writeNext(new String[]{
-            getTimestamp(),
+            "" + (Instant.now().getEpochSecond() - this.begin.getEpochSecond()),
             candidate.getAttributeA().toString(),
             candidate.getAttributeB().toString(),
             "" + status.isValid(),

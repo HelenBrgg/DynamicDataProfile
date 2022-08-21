@@ -70,7 +70,6 @@ public class Table {
             .skip(1) // skip position column
             .map(attr -> new Attribute(tableName, attr))
             .collect(Collectors.toList());
-
         table.positions = rawRows.stream()
             .skip(1) // skip header row
             .map(rawRow -> Integer.parseInt(rawRow[0]))
@@ -79,10 +78,13 @@ public class Table {
             .limit(table.attributes.size())
             .collect(Collectors.toList());
 
-        for (int i = 1; i < rawRows.size(); i++) { // each row
-            for (int j = 1; j < table.attributes.size(); j++) { // each column
-                Value value = Value.fromString(rawRows.get(i)[j]);
-                table.columns.get(j - 1).values.add(value);
+        for (String[] rawRow : rawRows) { // each row
+            for (int j = 0; j < table.attributes.size(); j++) { // each column
+                if (rawRow.length <= j + 1) {
+                    assert false : "table " + tableName + ", attributes: " + table.attributes + ", row: " + String.join("|", rawRow);
+                }
+                Value value = Value.fromString(rawRow[j + 1]);
+                table.columns.get(j).values.add(value);
             }
         }
 
