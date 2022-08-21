@@ -42,7 +42,12 @@ public class InputWorker extends AbstractBehavior<InputWorker.Message> {
         ActorRef<DataWorker.NewBatchMessage> dataWorker
     ){
         super(context);
-        try { this.source = new DataGeneratorSource(this.getContext().getLog()); } catch (Exception ex) { System.exit(1); }
+        try {
+             this.source = new DataGeneratorSource();
+        } catch (Exception ex) {
+            System.out.println("failed to create data generator source" + ex.toString());
+            System.exit(1);
+        }
         this.dataWorker = dataWorker.narrow();
     }
 

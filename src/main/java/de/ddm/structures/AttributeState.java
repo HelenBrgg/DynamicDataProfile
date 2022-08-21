@@ -1,11 +1,9 @@
 package de.ddm.structures;
 
-import de.ddm.structures.Table.Column;
-import lombok.AllArgsConstructor;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
+// TODO move this into DataWorker?
 public class AttributeState {
     public ColumnArray currentSegmentArray;
     public ColumnArray oldSegmentArray;

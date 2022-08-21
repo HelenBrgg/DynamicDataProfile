@@ -18,7 +18,7 @@ public class InputConfiguration {
 	private char valueEscape = '\\';
 	private boolean valueStrictQuotes = false;
 	private boolean valueIgnoreLeadingWhitespace = false;
-	private String dataGeneratorArgs = "10000 1024 0.0";
+	private String dataGeneratorArgs = "10000 18096 0.0";
 
 	public void update(CommandMaster commandMaster) {
 		this.fileHasHeader = commandMaster.fileHasHeader;

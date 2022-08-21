@@ -50,7 +50,7 @@ public class Worker extends AbstractBehavior<Worker.Message> {
 
 	private Worker(ActorContext<Message> context) {
 		super(context);
-		Reaper.watchWithDefaultReaper(this.getContext().getSelf());
+		// Reaper.watchWithDefaultReaper(this.getContext().getSelf());
 
 		// int numWorkers = SystemConfigurationSingleton.get().getNumWorkers();
 		int numWorkers = 1;

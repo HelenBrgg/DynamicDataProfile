@@ -8,14 +8,18 @@ import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
 import akka.actor.typed.javadsl.Receive;
 import de.ddm.actors.patterns.Reaper;
+import de.ddm.actors.profiling.DataDistributor;
 import de.ddm.actors.profiling.DataWorker;
 import de.ddm.actors.profiling.InputWorker;
 import de.ddm.actors.profiling.Planner;
 import de.ddm.serialization.AkkaSerializable;
 import de.ddm.structures.CandidateGenerator;
+import de.ddm.structures.CsvLogSink;
 import de.ddm.structures.DataGeneratorSource;
 import de.ddm.structures.HeapColumnArray;
 import de.ddm.structures.HeapColumnSet;
+import de.ddm.structures.ModuloPartitioningStrategy;
+import de.ddm.structures.Sink;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
@@ -58,13 +62,21 @@ public class Master extends AbstractBehavior<Master.Message> {
 
     private Master(ActorContext<Message> context) {
         super(context);
-        Reaper.watchWithDefaultReaper(this.getContext().getSelf());
+        // Reaper.watchWithDefaultReaper(this.getContext().getSelf());
 
-        //  TODO do we need to use DispatcherSelector here, like in Worker.java?
-
-        this.dataWorker = context.spawn(DataWorker.create(1, HeapColumnArray::new, HeapColumnSet::new), "data-worker");
+        // this.dataWorker = context.spawn(DataWorker.create(1, HeapColumnArray::new, HeapColumnSet::new), "data-worker");
+        this.dataWorker = context.spawn(DataDistributor.create(HeapColumnArray::new, HeapColumnSet::new, new ModuloPartitioningStrategy(5), 5), "data-distributor");
         this.inputWorker = context.spawn(InputWorker.create(this.dataWorker.narrow()), "input-worker");
-        this.planner = context.spawn(Planner.create(this.inputWorker.narrow(), this.dataWorker.narrow()), "planner");
+        Reaper.watchWithDefaultReaper(inputWorker);
+
+        Sink sink = null;
+        try {
+             sink = new CsvLogSink();
+        } catch (Exception ex) {
+            System.out.println("failed to create csv log sink" + ex.toString());
+            System.exit(1);
+        }
+        this.planner = context.spawn(Planner.create(sink, this.inputWorker.narrow(), this.dataWorker.narrow()), "planner");
     }
 
     ////////////////////

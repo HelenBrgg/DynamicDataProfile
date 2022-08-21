@@ -8,8 +8,10 @@ import java.util.stream.Stream;
 public abstract class Utility {
     public static Map<Value, Long> calulateCountDeltas(Stream<Value> newValues, Stream<Value> oldValues) {
         Map<Value, Long> decreasedCounts = oldValues
+                .filter(val -> !val.equals(Value.EMPTY))
                 .collect(Collectors.groupingBy(v -> v, Collectors.counting()));
         Map<Value, Long> deltaCounts = newValues
+                .filter(val -> !val.equals(Value.EMPTY))
                 .collect(Collectors.groupingBy(v -> v, Collectors.counting()));
 
         for (Map.Entry<Value, Long> entry : decreasedCounts.entrySet()) {
@@ -26,10 +28,12 @@ public abstract class Utility {
 
     public static SetDiff calculateSetDiff(Map<Value, Long> deltaCounts, Map<Value, Long> totalCounts) {
         Set<Value> addedValues = totalCounts.entrySet().stream()
+                .filter(entry -> !entry.getKey().equals(Value.EMPTY))
                 .filter(entry -> entry.getValue() == deltaCounts.get(entry.getKey()))
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toSet());
         Set<Value> removedValues = totalCounts.entrySet().stream()
+                .filter(entry -> !entry.getKey().equals(Value.EMPTY))
                 .filter(entry -> entry.getValue() == 0)
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toSet());

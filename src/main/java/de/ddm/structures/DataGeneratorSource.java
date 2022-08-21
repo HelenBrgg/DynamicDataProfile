@@ -17,12 +17,12 @@ public class DataGeneratorSource implements Source {
     private final BufferedReader procReader;
     private boolean finished = false;
 
-    public DataGeneratorSource(Logger logger) throws IOException {
-        this.logger = logger;//LoggerFactory.getLogger("data-generator");
+    public DataGeneratorSource() throws IOException {
+        this.logger = LoggerFactory.getLogger("data-generator");
 
-        Runtime rt = Runtime.getRuntime();
         String[] commands = InputConfigurationSingleton.get().getDataGeneratorCommands().get(0);
         String[] env = InputConfigurationSingleton.get().getDataGeneratorEnv();
+
         this.logger.info("spawning data-generator process with: {} {}", Strings.join(" ", env), Strings.join(" ", commands));
 
         ProcessBuilder builder = new ProcessBuilder(List.of(commands));
@@ -31,9 +31,6 @@ public class DataGeneratorSource implements Source {
 
         Process proc = builder.start();
         procReader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-
-        // Process proc = rt.exec(commands, env);
-        // procReader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
     }
 
     @Override
@@ -62,8 +59,8 @@ public class DataGeneratorSource implements Source {
             }
 
             this.logger.info("read batch from data-generator");
-            String csv = String.join("\n", lines);
 
+            String csv = String.join("\n", lines);
             return Optional.of(Table.parseCSV(csv, "T"));
         } catch (Exception e) {
             this.logger.error("failed to read table {}", e.toString());

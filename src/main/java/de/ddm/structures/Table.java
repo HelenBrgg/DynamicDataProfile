@@ -24,7 +24,6 @@ import java.util.stream.Stream;
  * @see ValueWithPosition
  */
 
-@AllArgsConstructor
 public class Table {
     @AllArgsConstructor
     @EqualsAndHashCode
@@ -45,42 +44,49 @@ public class Table {
      * @see Value
      *
      */
+    @AllArgsConstructor
     @NoArgsConstructor
     public static class Column {
         public List<Value> values = new ArrayList<>();
     }
 
-    public String name;
+    public final String name;
     public List<Attribute> attributes = new ArrayList<>();
     public List<Column> columns = new ArrayList<>();
     public List<Integer> positions = new ArrayList<>();
+
+    public Table(String name){
+        this.name = name;
+    }
 
     public static Table parseCSV(String csvString, String tableName) throws IOException, CsvException {
         CSVReader reader = new CSVReader(new StringReader(csvString));
         List<String[]> rawRows = reader.readAll();
         reader.close();
 
-        List<Attribute> attributes = Stream.of(rawRows.get(0))
+        Table table = new Table(tableName);
+
+        table.attributes = Stream.of(rawRows.get(0))
             .skip(1) // skip position column
             .map(attr -> new Attribute(tableName, attr))
             .collect(Collectors.toList());
 
-        List<Integer> positions = rawRows.stream()
+        table.positions = rawRows.stream()
             .skip(1) // skip header row
             .map(rawRow -> Integer.parseInt(rawRow[0]))
             .collect(Collectors.toList());
-        List<Column> columns = Stream.generate(Column::new)
-            .limit(attributes.size())
+        table.columns = Stream.generate(Column::new)
+            .limit(table.attributes.size())
             .collect(Collectors.toList());
 
         for (int i = 1; i < rawRows.size(); i++) { // each row
-            for (int j = 1; j < attributes.size(); j++) { // each column
+            for (int j = 1; j < table.attributes.size(); j++) { // each column
                 Value value = Value.fromString(rawRows.get(i)[j]);
-                columns.get(j - 1).values.add(value);
+                table.columns.get(j - 1).values.add(value);
             }
         }
 
-        return new Table(tableName, attributes, columns, positions);
+        return table;
     }
 
     public IntStream streamPositions(){
@@ -95,5 +101,9 @@ public class Table {
     }
     public Stream<Value.WithPosition> streamColumnWithPositions(int colIndex){
         return this.streamColumnWithPositions(colIndex, 0, this.columns.get(colIndex).values.size());
+    }
+
+    public void insertValues(Attribute attribute, Stream<Value.WithPosition> values) {
+        
     }
 }

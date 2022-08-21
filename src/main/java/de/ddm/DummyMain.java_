@@ -1,5 +1,10 @@
 package de.ddm;
 
+// TODO
+// IND-Profiler (Functional)
+// IND-Profiler (Single-System)
+// IND-Profiler (Multi-System)
+
 import java.util.*;
 import java.util.stream.Collectors;
 

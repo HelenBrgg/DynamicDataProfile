@@ -6,26 +6,22 @@ import akka.actor.typed.javadsl.AbstractBehavior;
 import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
 import akka.actor.typed.javadsl.Receive;
-import akka.actor.typed.receptionist.Receptionist;
-import de.ddm.actors.Master;
 import de.ddm.actors.patterns.LargeMessageProxy;
 import de.ddm.actors.profiling.Planner.SubsetCheckResult;
-import de.ddm.serialization.AkkaSerializable;
 import de.ddm.structures.AttributeState;
 import de.ddm.structures.Candidate;
 import de.ddm.structures.CandidateStatus;
 import de.ddm.structures.ColumnArray;
 import de.ddm.structures.ColumnSet;
-import de.ddm.structures.Metadata;
 import de.ddm.structures.SetDiff;
 import de.ddm.structures.Table;
 import de.ddm.structures.Value;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class DataWorker extends AbstractBehavior<DataWorker.Message> {
 
@@ -45,10 +41,11 @@ public class DataWorker extends AbstractBehavior<DataWorker.Message> {
     }
 
     @AllArgsConstructor
+    @Getter
     public static class MergeRequest implements Message {
         private static final long serialVersionUID = 0xDADA_0002;
 
-        private ActorRef<Planner.MergeResultPart> resultRef;
+        private ActorRef<Planner.MergeResult> resultRef;
     }
 
     @AllArgsConstructor
@@ -59,6 +56,7 @@ public class DataWorker extends AbstractBehavior<DataWorker.Message> {
         private Table.Attribute attribute;
         private Optional<Value> fromValue;
 
+        private int requestorWorkerId;
         private ActorRef<SetQueryResult> resultRef;
     }
 
@@ -69,11 +67,13 @@ public class DataWorker extends AbstractBehavior<DataWorker.Message> {
 
         private Table.Attribute attribute;
         private List<Value> values; // TODO should this be Stream<Value>?
-        private boolean endOfSet;
+        private boolean endOfSet; // NOTE if this is true, .values contains the max-value
 
         private int workerId;
+        private ActorRef<DataWorker.SetQueryRequest> workerRef;
 
         public Optional<Value> lastValue() {
+            assert !this.endOfSet == !this.values.isEmpty();
             if (this.values.isEmpty()) return Optional.empty();
             return Optional.of(this.values.get(this.values.size() - 1));
         }
@@ -91,7 +91,6 @@ public class DataWorker extends AbstractBehavior<DataWorker.Message> {
         private ActorRef<Planner.SubsetCheckResult> resultRef;
     }
 
-
     /////////////////
     // Actor State //
     /////////////////
@@ -101,15 +100,20 @@ public class DataWorker extends AbstractBehavior<DataWorker.Message> {
     private final ColumnSet.Factory setFactory;
     private final Map<Table.Attribute, AttributeState> attributeStates = new HashMap<>();
 
-    // grouped by A of A c B (A is stored remotely)
-    private final Map<Table.Attribute, List<SubsetCheckRequest>> remoteSubsetChecks = new HashMap<>();
+    @RequiredArgsConstructor
+    static class PendingSubsetCheck {
+        final SubsetCheckRequest request;
+        int comparisonCount = 0;
+    }
 
+    // grouped by A of A c B (A is stored remotely)
+    private final Map<Table.Attribute, List<PendingSubsetCheck>> remoteSubsetChecks = new HashMap<>();
 
     ////////////////////////
     // Actor Construction //
     ////////////////////////
 
-    public static Behavior<Message> create(
+    public static Behavior<DataWorker.Message> create(
         int workerId,
         ColumnArray.Factory arrayFactory,
         ColumnSet.Factory setFactory
@@ -158,27 +162,28 @@ public class DataWorker extends AbstractBehavior<DataWorker.Message> {
     }
 
     private Behavior<Message> handle(MergeRequest request) {
-        this.getContext().getLog().info("received merge request, aborting all subset-checks");
-
+        this.getContext().getLog().info("received merge request, aborting all subset checks");
         this.remoteSubsetChecks.clear();
 
         // FIXME hack
-        int[] partsLeft = new int[]{ this.attributeStates.size() };
+        Planner.MergeResult result = new Planner.MergeResult(this.workerId);
         this.attributeStates.forEach((attr, state) -> {
             SetDiff diff = state.mergeSegments();
             boolean additions = !diff.getInserted().isEmpty();
             boolean removals = !diff.getRemoved().isEmpty();
-            partsLeft[0] -= 1;
-            Planner.MergeResultPart result = new Planner.MergeResultPart(attr, additions, removals, state.metadata, partsLeft[0] == 0, this.workerId);
-            request.resultRef.tell(result);
+            if (additions || removals) return;
+            result.addEntry(attr, new Planner.MergeResult.Entry(additions, removals, state.metadata));
         });
+        request.resultRef.tell(result);
 
         return this;
     }
 
     private Behavior<Message> handle(SetQueryRequest request) {
+        this.getContext().getLog().info("received set query request for {} from data worker {}", request.getAttribute(), request.getRequestorWorkerId());
+
         if (!this.attributeStates.containsKey(request.attribute)) {
-            SetQueryResult result = new SetQueryResult(request.attribute, List.of(), true, this.workerId);
+            SetQueryResult result = new SetQueryResult(request.attribute, List.of(), true, this.workerId, this.getContext().getSelf().narrow());
             request.resultRef.tell(result);
             return this;
         }
@@ -186,54 +191,70 @@ public class DataWorker extends AbstractBehavior<DataWorker.Message> {
         AttributeState state = this.attributeStates.get(request.attribute);
 
         List<Value> values = state.oldSegmentSet.queryChunk(request.fromValue).collect(Collectors.toList());
-        boolean hasMore = !values.isEmpty() && state.metadata.getMax().map((max) -> values.get(values.size() - 1).isLessThan(max)).orElse(false);
+        boolean endOfSet = values.isEmpty() || state.metadata.getMax().get().isLessThan(values.get(values.size() - 1));
         
-        SetQueryResult result = new SetQueryResult(request.attribute, values, hasMore, this.workerId);
+        SetQueryResult result = new SetQueryResult(request.attribute, values, endOfSet, this.workerId, this.getContext().getSelf().narrow());
         request.resultRef.tell(result);
 
         return this;
     }
 
-    private Behavior<Message> handle(SetQueryResult queryResult) {
-        if (!this.attributeStates.containsKey(queryResult.attribute)) {
-            return this;
-        }
+    private Behavior<Message> handle(SetQueryResult result) {
+        this.getContext().getLog().info("received set query result for {} (end={}) from data worker {}", result.getAttribute(), result.isEndOfSet(), result.getWorkerId());
 
-        List<SubsetCheckRequest> attrSubsetChecks = this.remoteSubsetChecks.get(queryResult.getAttribute());
+        List<PendingSubsetCheck> attrSubsetChecks = this.remoteSubsetChecks.getOrDefault(result.getAttribute(), List.of());
+
+        this.getContext().getLog().info("updating {} pending subset checks for attribute: {}", attrSubsetChecks.size(), attrSubsetChecks.stream().map(check -> check.request.getCandidate().toString()).collect(Collectors.joining(", ")));
 
         // update all running checks on this dependent attribute
-        attrSubsetChecks.removeIf(checkRequest -> {
-            AttributeState stateB = this.attributeStates.get(checkRequest.candidate.getAttributeB());
+        attrSubsetChecks.removeIf(check -> {
+            AttributeState stateB = this.attributeStates.get(check.request.candidate.getAttributeB());
 
-            if (!stateB.oldSegmentSet.containsAll(queryResult.values.stream())) {
-                CandidateStatus status = CandidateStatus.failedCheck();
-                SubsetCheckResult checkResult = new SubsetCheckResult(checkRequest.candidate, status, this.workerId);
-                checkRequest.resultRef.tell(checkResult);
+            check.comparisonCount += result.getValues().size();
+
+            if (!stateB.oldSegmentSet.containsAll(result.getValues().stream())) {
+                this.getContext().getLog().info("subset check {} failed: [{}...] ⊈ [{}]",
+                    check.request.getCandidate(),
+                    result.values.stream().limit(2).map(Object::toString).collect(Collectors.joining(",")),
+                    stateB.metadata.getMinMax().stream().map(Object::toString).collect(Collectors.joining(":")));
+
+                CandidateStatus status = CandidateStatus.failedCheck(check.comparisonCount);
+                SubsetCheckResult checkResult = new SubsetCheckResult(check.request.candidate, status, this.workerId);
+                check.request.resultRef.tell(checkResult);
                 return true;
             }
 
-            if (queryResult.isEndOfSet()) {
-                CandidateStatus status = CandidateStatus.succeededCheck();
-                SubsetCheckResult result = new SubsetCheckResult(checkRequest.candidate, status, this.workerId);
-                checkRequest.resultRef.tell(result);
+            // NOTE order here is important! subset check only succeeds iff A in B and end of set!
+            if (result.isEndOfSet()) {
+                this.getContext().getLog().info("subset check {} succeeded: [{}...] ⊆ [{}] {}", // TODO remove cardinality
+                    check.request.getCandidate(),
+                    result.values.stream().limit(2).map(Object::toString).collect(Collectors.joining(",")),
+                    stateB.metadata.getMinMax().stream().map(Object::toString).collect(Collectors.joining(":")), stateB.oldSegmentSet.getCardinality());
+
+                CandidateStatus status = CandidateStatus.succeededCheck(check.comparisonCount);
+                SubsetCheckResult checkResult = new SubsetCheckResult(check.request.candidate, status, this.workerId);
+                check.request.resultRef.tell(checkResult);
                 return true;
             }
+
+            this.getContext().getLog().info("subset check {} still running", check.request.getCandidate());
 
             return false;
         });
 
         // if there are remote values left and are any remote checks left, we need to query more
-        if (!queryResult.isEndOfSet() && !remoteSubsetChecks.isEmpty()) {
-            SetQueryRequest nextQuery = new SetQueryRequest(queryResult.getAttribute(), queryResult.lastValue(), this.getContext().getSelf().narrow());
+        if (!result.isEndOfSet() && !remoteSubsetChecks.isEmpty()) {
+            this.getContext().getLog().info("not end of set, need to query more for {} pending subset checks", attrSubsetChecks.size());
 
-            attrSubsetChecks.forEach(checkRequest -> checkRequest.remoteRef.get().tell(nextQuery));
+            SetQueryRequest nextRequest = new SetQueryRequest(result.getAttribute(), result.lastValue(), this.workerId, this.getContext().getSelf().narrow());
+            result.getWorkerRef().tell(nextRequest);
         }
 
         return this;
     }
 
     private Behavior<Message> handle(SubsetCheckRequest request) {
-        this.getContext().getLog().info("received subset-check request for {}, remote={}", request.getCandidate(), request.getRemoteRef().isPresent());
+        this.getContext().getLog().info("received subset check request for {}");
 
         Table.Attribute attrA = request.getCandidate().getAttributeA();
         Table.Attribute attrB = request.getCandidate().getAttributeB();
@@ -242,22 +263,22 @@ public class DataWorker extends AbstractBehavior<DataWorker.Message> {
         AttributeState stateB = this.attributeStates.computeIfAbsent(attrB, _attrB -> new AttributeState(arrayFactory, setFactory));
 
         if (request.getRemoteRef().isPresent()) {
+            this.getContext().getLog().info("querying remote data worker {} for subset check", request.getRemoteRef().get().toString());
             // TODO check if identical subset-check-req is already present
             this.remoteSubsetChecks
                 .computeIfAbsent(attrA, _attrA -> new ArrayList<>())
-                .add(request);
-            SetQueryRequest queryRequest = new SetQueryRequest(attrA, Optional.empty(), this.getContext().getSelf().narrow());
+                .add(new PendingSubsetCheck(request));
+            SetQueryRequest queryRequest = new SetQueryRequest(attrA, Optional.empty(), this.workerId, this.getContext().getSelf().narrow());
             request.remoteRef.get().tell(queryRequest);
             return this;
         }
 
-
         AttributeState stateA = this.attributeStates.computeIfAbsent(attrA, _attrA -> new AttributeState(arrayFactory, setFactory));
         CandidateStatus status;
         if (stateB.oldSegmentSet.containsAll(stateA.oldSegmentSet.queryAll())) {
-            status = CandidateStatus.succeededCheck();
+            status = CandidateStatus.succeededCheck(stateA.oldSegmentSet.getCardinality());
         } else {
-            status = CandidateStatus.failedCheck();
+            status = CandidateStatus.failedCheck(stateB.oldSegmentSet.getCardinality());
         }
         SubsetCheckResult result = new SubsetCheckResult(request.getCandidate(), status, this.workerId);
         request.getResultRef().tell(result);

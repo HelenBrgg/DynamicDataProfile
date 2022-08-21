@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import jnr.ffi.annotations.Meta;
+
 @Getter
 @NoArgsConstructor
 public class Metadata {
@@ -18,6 +20,11 @@ public class Metadata {
     public void update(ColumnSet set, SetDiff diff){
         this.cardinality = set.getCardinality();
         this.minMax = set.getMinMax();
+    }
+
+    public Metadata combineWith(Metadata other){
+        // TODO
+        return this;
     }
 
     public Optional<CandidateStatus> precheckPossibleSubset(Metadata other){
@@ -32,7 +39,7 @@ public class Metadata {
         Value maxB = (other.minMax.size() == 2) ? other.minMax.get(1) : minB;
 
         if (minA.compareTo(minB) < 0) return Optional.of(CandidateStatus.ruledOutByExtrema());
-        if (maxA.compareTo(maxB) > 0) return Optional.of(CandidateStatus.ruledOutByBloomfilter());
+        if (maxA.compareTo(maxB) > 0) return Optional.of(CandidateStatus.ruledOutByExtrema());
 
         return Optional.empty();
     }

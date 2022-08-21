@@ -1,6 +1,8 @@
 package de.ddm.structures;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import lombok.NoArgsConstructor;
 
@@ -60,26 +62,31 @@ public class CandidateGenerator {
         resetCandidates.forEach(resetCandidate -> this.updateCandidate(resetCandidate, Optional.empty()));
     }
 
-    public Set<Candidate> generateCandidates() {
-        Set<Candidate> newCandidates = new HashSet<>();
+    public Map<Candidate, Optional<CandidateStatus>> generateCandidates() {
+        Map<Candidate, Optional<CandidateStatus>> returnCandidates = new HashMap<>();
 
         this.attributes.forEach((attrA, metaA) -> {
             this.attributes.forEach((attrB, metaB) -> {
                 if (attrA == attrB) return;
 
                 Candidate candidate = new Candidate(attrA, attrB);
+
+                // we abort if the candidate has already been (successfully/unsuccessfully) validated
                 if (this.candidates.getOrDefault(candidate, Optional.empty()).isPresent()) return;
 
                 Optional<CandidateStatus> precheck = metaB.precheckPossibleSubset(metaA);
                 this.candidates.put(candidate, precheck);
-                if (precheck.isPresent()) return;
-
-                newCandidates.add(candidate);
+                returnCandidates.put(candidate, precheck);
             });
         });
 
-        return newCandidates;
+        return returnCandidates;
     }
 
-
+    public Set<Candidate> generateCandidatesUnpruned() {
+        return this.generateCandidates().entrySet().stream()
+            .filter(entry -> entry.getValue().isEmpty())
+            .map(entry -> entry.getKey())
+            .collect(Collectors.toSet());
+    }
 }

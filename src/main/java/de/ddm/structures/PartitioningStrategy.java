@@ -5,43 +5,39 @@ import lombok.Getter;
 import java.util.function.BiConsumer;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.IntSummaryStatistics;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public interface PartitioningStrategy {
-    @Getter
-    @AllArgsConstructor
-    static class Partition {
-        private Table.Attribute attribute;
-        private int rangeBegin;
-        private int rangeEndInclusive;
-        private int workerId;
-    }
+    Optional<Integer> getAttributeWorkerId(Table.Attribute attr);
 
-    /// Implementors MUST provide either partitonStream or partitionRange.
-    default List<Partition> partitionStream(Table.Attribute attr, IntStream positions) {
-        IntSummaryStatistics stats = positions.summaryStatistics();
-        return this.partitionRange(attr, stats.getMin(), stats.getMax());
-    }
+    void beforePartitionTable(Table table);
 
-    default List<Partition> partitionRange(Table.Attribute attr, int rangeBegin, int rangeEndInclusive) {
-        return this.partitionStream(attr, IntStream.range(rangeBegin, rangeEndInclusive));
-    }
+    default Map<Integer, Table> partitionTable(Table table){
+        this.beforePartitionTable(table);
 
-    default void partitionTable(Table table, BiConsumer<Partition, Stream<Value.WithPosition>> consumer) {
+        Map<Integer, Table> partitionTables = new HashMap<>();
+
         // go through all columns
         IntStream.range(0, table.attributes.size()).forEach(columnIndex -> {
             Table.Attribute attribute = table.attributes.get(columnIndex);
 
-            // go through all partitions for current column
-            this.partitionStream(attribute, table.streamPositions()).forEach(partition -> {
-                // retrieve values for partition
-                Stream<Value.WithPosition> partitionValues = table
-                    .streamColumnWithPositions(columnIndex, partition.rangeBegin, partition.rangeEndInclusive);
+            Integer workerId = this.getAttributeWorkerId(attribute).get();
 
-                // finally, pass partition and partition values to the consumer
-                consumer.accept(partition, partitionValues);
+            Table partitionTable = partitionTables.computeIfAbsent(workerId, _workerId -> {
+                Table newTable = new Table(table.name);
+                newTable.positions = new ArrayList<>(table.positions);
+                return newTable;
             });
+
+            partitionTable.attributes.add(attribute);
+            partitionTable.columns.add(new Table.Column(new ArrayList<>(table.columns.get(columnIndex).values)));
         });
+
+        return partitionTables;
     }
 }
