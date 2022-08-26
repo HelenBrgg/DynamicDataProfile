@@ -45,13 +45,15 @@ In der nächsten Phase sind wir dazu übergegangen uns in größeren Abständen 
 
 Erste Programmiereinheit: 04.04.2022 - 08.04.2022
 
-In einem einwöchigen Programmiersprint ist ein Großteil des Datengenerators entstanden
+In einem einwöchigen Programmiersprint ist das Konzept und ein Großteil des Datengenerators entstanden. Als Datenformat wurden CSV Tabellen festgelegt, wobei die erste Spalte immer eine explizite Zeilen-Position ist, mit der man alte Daten überschreiben kann.
+
+**_Meilenstein 2a: Definition des Datenformats_**
 
 Zweite Programmiereinheit: 21.05.2022
 
 Fertigstellung des Datengenerators
 
-**_Meilenstein 2a: Fertiger Datengenerator_**
+**_Meilenstein 3a: Fertiger Datengenerator_**
 
 **Ergebnis: g**
 
