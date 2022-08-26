@@ -1,5 +1,5 @@
 # Inclusion Dependencies
-Inclusion Dependencies beschreiben, ob alle Werte die ein Attribut $X$ annehmen kann auch von Attribut $Y$ angenommen werden können. $X$ und $Y$ können aus Instanzen des gleichen Schemas (= der gleichen Tabelle) stammen, oder auch aus Instanzen zwei verschiedenen Schematas (= verschiedener Tabellen).<br>
+Inclusion Dependencies beschreiben, ob alle Werte die ein Attribut $X$ annehmen kann auch von Attribut $Y$ angenommen werden können. $X$ und $Y$ können aus Instanzen des gleichen Schemas (= der gleichen Tabelle) stammen, oder auch aus Instanzen zwei verschiedenen Schematas (= verschiedener Tabellen).
 Falls das der Fall ist, ist $X$ abhängig von $Y$ und man schreibt $X ⊆ Y$.
 
 Formal bedeutet das: $∀ t_i[X] ∈ r_i, ∃ t_j[Y] ∈ r_j$ mit $t_i[X] = t_j[Y]$ wobei $t_i, t_j$ Schema-Instanzen sind und $X, Y$ Attribute der Schemata. 
@@ -9,7 +9,7 @@ Es wird von *unary* Inclusion Dependencies gesprochen wenn gilt $X ⊆ Y$ mit $|
 
 Für Inclusion Dependencies gelten immer folgende Eigenschaften:
 * **Reflexiv:** Es gilt immer $X ⊆ X$
-* **Transitiv:** Es gilt $X ⊆ Y /wedge Y ⊆ Z \implies X ⊆ Z$
+* **Transitiv:** Es gilt $X ⊆ Y \wedge Y ⊆ Z \implies X ⊆ Z$
 * **Permutationen:** Es gilt $(X_1, ... , X_n) ⊆ (Y_1, ... , Y_n)$, dann gilt auch $(X_1, ... , X_n) ⊆ (Y_1, ... , Y_n)$ für alle Permutationen σ1, ... , σn 
 <br><br>
 ## Beispiel:
