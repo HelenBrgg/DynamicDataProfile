@@ -16,7 +16,7 @@
 Der Datengenerator besteht aus den fünf Klassen CSVRowReader, RowRepeater, RowDeleter, Batcher und CSVReadIn. <br>
 
 <p align="center">
-  <img src="/imgs/Komponentenentwurf_Datagen_6.png" width="400">
+  <img src="/imgs/Komponentenentwurf_Datagen_6.png" width="1000">
   <p align="center">
   Beispielhafte Darstellung der einmaligen Ausführung des Datengenerators
   </p>
