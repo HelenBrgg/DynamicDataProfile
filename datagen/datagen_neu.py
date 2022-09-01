@@ -39,6 +39,7 @@ class CSVRowReader:
         """
         try:
             self.index += 1
+            return [str(self.index)] + next(self.reader)
         except StopIteration:
             return None
     
@@ -57,7 +58,7 @@ class RowRepeater:
         """Constructor method
 
         :param max_row: number of row to returned
-        :type max_row: int
+        :type max_row: _type_
         :param inner: RowRepeater is a inner-funtion of the CSVRowReader
         """
         self.max_row = max_row
@@ -218,7 +219,17 @@ class CSVReadIn:
             batch = batcher.nextBatch()
 
 
+a = ['hallo','b']
+print(a)
+b = ['$']+a
+print(b)
+c = ','.join(b)
+print(c)
 
+aa = open("new_1.csv")
+aa2 = next(aa)
+print(aa2)
+ 
 
 ######## HTTP Poster wird nicht mehr gebraucht
 

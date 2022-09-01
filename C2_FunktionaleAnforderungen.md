@@ -2,6 +2,11 @@
 
 Ragna
 
+- Überblick, z.B. mittels Use Case Diagramm
+- Dokumentation aller funktionaler Anforderungen gemäß des gewählten Prozesses (Use Cases, User Stories, etc.)
+- Prioritäten (zumindest Unterteilung in „notwendig“ / „optional“)
+
+
 ## Profiler
 
 ### Inkrementelle Entdeckung von Inclusion-Dependencies
