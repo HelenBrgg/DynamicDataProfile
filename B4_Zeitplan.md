@@ -2,24 +2,24 @@
 
 **Projektzeitraum: 24.10.2021 - 31.08.2022**
 
-**Ausgangsbedingungen**
-Aufgabe:
+**Aufgabe**:
 
-- Einen Algorithmus entwickeln der auf dynamischen Datensätzen Abhängigkeiten findet
-- Einen Datengenerator entwickeln der zufällige Daten generiert um die dynamischen Datensätze zu simulieren
+- Ein verteiltes System entwickeln welches auf dynamischen Datensätzen Inclusion Dependencies findet
+- Einen Datengenerator entwickeln der es erlaubt mit zufälligen Daten das verteilte System zu testen
 
-Wir haben das Projekt in folgende Phasen unterteilt
+**Projektphasen**:
 
-- Recherche
+1. Recherche
+2. Konzeptionierung und Umsetzung
+  1. Datengenerator
+  2. Dynamischer Algorithmus
+3. Ausarbeitung der Hausarbeit
 
-- Konzeptionierung und Umsetzung
+<div style="position:relative; z-index: 100; margin-left: -100px; margin-right: -100px; overflow: visible">
 
-  - Datengenerator
-  - Dynamischer Algorithmus
+![](imgs/Zeitplan.png){width=100%}
 
-- Hausarbeit
-
-![](imgs/Zeitplan.png)
+</div>
 
 ## Phase 1: Recherchephase
 

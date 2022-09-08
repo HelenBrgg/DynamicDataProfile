@@ -1,23 +1,18 @@
 # Team
 
-## Helen Brüggmann (Master Wirtschaftsinformatik) {-}
-
-Aufgaben:
+**Helen Brüggmann (M.Sc. Wirtschaftsinformatik)**:
 
 - Protokollführung
 - Projektdokumentation mit Jira
-- Konzeption und Entwicklung des dynamischen Algorithmus im Pairprogramming mit Felix Köpge.
+- Konzeption und Entwicklung des dynamischen Algorithmus (Pairprogramming mit Felix Köpge).
 
-## Felix Köpge (Master Wirtschaftsinformatik) {-}
+**Felix Köpge (M.Sc. Informatik)**:
 
 - Gesamt-Architekturkonzept
-- Entwicklung des dynamischen Algorithmus im Pairprogramming mit Helen Brüggmann
-- Entwicklung des Datengenerators im Pairprogramming mit Ragna Solterbeck
+- Entwicklung des dynamischen Algorithmus (Pairprogramming mit Helen Brüggmann)
+- Entwicklung des Datengenerators (Pairprogramming mit Ragna Solterbeck)
 
-## Ragna Solterbeck (Master Data Science) {-}
+**Ragna Solterbeck (M.Sc. Data Science)**:
 
-Aufgaben:
-- Konzeption und Entwicklung des Datengenerators im Pairprogramming mit Felix Köpge
-- Generierung der Auslastungsdiagramme
-
-Aufgabenfeld + Pairprogramming
+- Konzeption und Entwicklung des Datengenerators (Pairprogramming mit Felix Köpge)
+- Erstellung der Auslastungsdiagramme
