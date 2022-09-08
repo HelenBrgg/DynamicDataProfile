@@ -20,9 +20,7 @@ Im Rahmen dieser Arbeit soll ein dynamischer Data-Profiling Algorithmus entwicke
 
 ### Projektidee
 
-> TODO nochmal angucken!
-
-Als Ansatz soll ein verteilter Algorithmus entstehen, der alle Änderungen registriert und prüft welche Kandidaten für neue Inklusions Abhängigkeiten entstanden sind oder welche Inclusion Dependencies sich aufgelöst haben könnten. Pruningmethoden sollen vermeiden, dass auf der gesamten Datenmenge gesucht wird. Beispielsweise sollen durch Betrachten von Metadaten und durch logische Implikationen bereits viele Datenkombinationen ausgeschlossen werden. Somit soll der dynamische Algorithmus wesentlich schneller ablaufen als ein statischer Algorithmus.
+Als Ansatz soll ein verteilter Algorithmus entstehen, der alle Änderungen akzeptiert und prüft welche Kandidaten für neue Inklusions Abhängigkeiten entstanden sind oder welche Inclusion Dependencies sich aufgelöst haben könnten. Pruningmethoden sollen vermeiden, dass auf der gesamten Datenmenge gesucht wird. Beispielsweise sollen durch Betrachten von Metadaten und durch logische Implikationen bereits viele Datenkombinationen ausgeschlossen werden. Somit soll der dynamische Algorithmus wesentlich schneller ablaufen als ein statischer Algorithmus.
 
 ## Auftraggeber
 
@@ -30,11 +28,8 @@ Die Arbeit ist entstanden im Rahmen einer Projektarbeit in der AG Big Data Analy
 
 ## Qualitätsanforderungen
 
-Felix
+* __Exaktheit__: Der Algorithmus soll _alle_ Inclusion Dependencies eines Datensets finden und _keine_ falschen Resultate liefern.
+* __Skalierbarkeit__: Der Algorithmus soll auf Datensets von mehreren GBs praktisch anwendbar sein und auf eine beliebige Anzahl an Host-Rechnern auslagerbar sein
+* __Live Feedback__: Der Algorithmus soll alle X Sekunden Ergebnisse liefern. Er muss allerdings nicht für jeden einzelnen Poll (unter Poll-Architektur) seine Ergebnisse liefern.
 
-> TODO
 
-* Exaktheit (kein approximative Algorithmus)
-* Vollständigkeit (alle INDs sollen gefunden werden)
-* Skalierbarkeit (mehrere GBs, mehrere Rechner)
-* Observability (für Benchmarking)
