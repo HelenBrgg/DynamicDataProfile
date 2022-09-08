@@ -15,7 +15,7 @@ Für Inclusion Dependencies gelten immer folgende Eigenschaften:
 ## Beispiel:
 ***unary* Inclusion Dependencies:**
 <p align="center">
-  <img src="/imgs/unary_IND_Example.jpg" width="400">
+  <img src="imgs/unary_IND_Example.jpg" width="400">
   <p align="center">
   X := Attribut "Name" aus Tabelle "Lending"<br>
   Y := Attribut "Titel" aus Tabelle "Book"<br>
@@ -28,7 +28,7 @@ Es ist auch leicht zu sehen, dass $Y ⊆ X$ nicht gilt, da $Y$ den Wert "3D Comp
 
 ***n-ary* Inclusion Dependencies:**
 <p align="center">
-  <img src="/imgs/n-ary_IND_Example.jpg" width="400">
+  <img src="imgs/n-ary_IND_Example.jpg" width="400">
   <p align="center">
   X := Attribute "Student" und "Course" aus Tabelle "Lending"<br>
   Y := Attribute "Name" und "Lecture" aus Tabelle "Student"<br>
