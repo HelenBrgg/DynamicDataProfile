@@ -30,6 +30,6 @@ Die Arbeit ist entstanden im Rahmen einer Projektarbeit in der AG Big Data Analy
 
 * __Exaktheit__: Der Algorithmus soll _alle_ Inclusion Dependencies eines Datensets finden und _keine_ falschen Resultate liefern.
 * __Skalierbarkeit__: Der Algorithmus soll auf Datensets von mehreren GBs praktisch anwendbar sein und auf eine beliebige Anzahl an Host-Rechnern auslagerbar sein
-* __Live Feedback__: Der Algorithmus soll alle X Sekunden Ergebnisse liefern. Er muss allerdings nicht für jeden einzelnen Poll (unter Poll-Architektur) seine Ergebnisse liefern.
+* __Live Results__: Der Algorithmus soll alle X Sekunden Ergebnisse liefern. Er muss allerdings nicht für jeden einzelnen Poll (unter Poll-Architektur) seine Ergebnisse liefern.
 
 

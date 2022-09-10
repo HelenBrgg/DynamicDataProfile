@@ -8,14 +8,15 @@ Allgemein werden $X$ und $Y$ als Listen von Attributen gesehen, wobei stehts gel
 Es wird von *unary* Inclusion Dependencies gesprochen wenn gilt $X ⊆ Y$ mit $|X| = |Y| = 1$. Falls $|X| = |Y| = n$ gilt, handelt es sich um eine *n-ary* Inclusion Dependency.
 
 Für Inclusion Dependencies gelten immer folgende Eigenschaften:
-* **Reflexiv:** Es gilt immer $X ⊆ X$
-* **Transitiv:** Es gilt $X ⊆ Y \wedge Y ⊆ Z \implies X ⊆ Z$
-* **Permutationen:** Es gilt $(X_1, ... , X_n) ⊆ (Y_1, ... , Y_n)$, dann gilt auch $(X_1, ... , X_n) ⊆ (Y_1, ... , Y_n)$ für alle Permutationen σ1, ... , σn 
-<br><br>
-## Beispiel:
-***unary* Inclusion Dependencies:**
+
+* *Reflexiv:* Es gilt immer $X ⊆ X$
+* *Transitiv:* Es gilt $X ⊆ Y \wedge Y ⊆ Z \implies X ⊆ Z$
+* *Permutationen:* Es gilt $(X_1, ... , X_n) ⊆ (Y_1, ... , Y_n)$, dann gilt auch $(X_1, ... , X_n) ⊆ (Y_1, ... , Y_n)$ für alle Permutationen σ1, ... , σn 
+
+##### Beispiel für unary Inclusion Dependencies
+
 <p align="center">
-  <img src="imgs/unary_IND_Example.jpg" width="400">
+  <img src="imgs/unary_IND_Example.jpg" width="600">
   <p align="center">
   X := Attribut "Name" aus Tabelle "Lending"<br>
   Y := Attribut "Titel" aus Tabelle "Book"<br>
@@ -26,9 +27,10 @@ Für Inclusion Dependencies gelten immer folgende Eigenschaften:
 Es ist leicht zu sehen, dass alle Werte die "Name" annehmen kann auch in Attribut "Titel" vertreten sind, daher folgt $X ⊆ Y$. <br>
 Es ist auch leicht zu sehen, dass $Y ⊆ X$ nicht gilt, da $Y$ den Wert "3D Computer Graphics" annehmen kann, dieser jedoch nicht in $X$ auftaucht.
 
-***n-ary* Inclusion Dependencies:**
+##### Beispiel für n-ary Inclusion Dependencies
+
 <p align="center">
-  <img src="imgs/n-ary_IND_Example.jpg" width="400">
+  <img src="imgs/n-ary_IND_Example.jpg" width="600">
   <p align="center">
   X := Attribute "Student" und "Course" aus Tabelle "Lending"<br>
   Y := Attribute "Name" und "Lecture" aus Tabelle "Student"<br>
