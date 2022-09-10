@@ -15,11 +15,11 @@
   2. Dynamischer Algorithmus
 3. Ausarbeitung der Hausarbeit
 
-<div style="position:relative; z-index: 100; margin-left: -100px; margin-right: -100px; overflow: visible">
+<!--<div style="position:relative; z-index: 100; margin-left: -100px; margin-right: -100px; overflow: visible">
 
 ![](imgs/Zeitplan.png){width=100%}
 
-</div>
+</div>-->
 
 ## Phase 1: Recherchephase
 
