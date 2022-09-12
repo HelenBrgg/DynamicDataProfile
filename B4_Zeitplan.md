@@ -15,17 +15,17 @@
   2. Dynamischer Algorithmus
 3. Ausarbeitung der Hausarbeit
 
-<!--<div style="position:relative; z-index: 100; margin-left: -100px; margin-right: -100px; overflow: visible">
+<!--<div style="position:relative; z-index: 100; margin-left: -100px; margin-right: -100px; overflow: visible">-->
 
 ![](imgs/Zeitplan.png){width=100%}
 
-</div>-->
+<!-- </div>-->
 
-## Phase 1: Recherchephase
+## Phase 1: Recherchephase {-}
 
-24.10.2021 - 18.01.2021
+Zeitraum: 24.10.2021 - 18.01.2021
 
-In der Zeit haben wir uns in der Gruppe im Wochentakt getroffen und besprochen. Dazwischen hat jeder für sich recherchiert. Es ging darum zunächst das Thema zu durchdringen und Inspirationen zu sammeln, wie wir das Ganze umsetzen können. Die Kontakttermine mit Herrn Papenbrock hatten wir im 2 oder 4 Wochentakt. Dort haben wir unsere Ideen vorgestellt und besprochen. Parallel haben wir für das Modul Verteilte Systeme an einer Programmieraufgabe gearbeitet, in der wir mit einem verteilten Algorithmus auf statischen Daten Inclusion Dependencies finden sollten. Dadurch haben wir viel für unsere spätere Aufgabe gelernt.
+In der Zeit haben wir uns in der Gruppe im Wochentakt getroffen und besprochen. Dazwischen hat jeder für sich recherchiert. Es ging darum zunächst das Thema zu durchdringen und Ideen zu sammeln, wie wir das Ganze umsetzen können. Die Kontakttermine mit Prof. Papenbrock hatten wir im 2 bis 4 Wochentakt. Dort haben wir unsere Ideen vorgestellt und besprochen. Parallel haben wir für das Modul Verteilte Systeme an einer Programmieraufgabe gearbeitet, in der wir mit einem verteilten Algorithmus auf statischen Daten Inclusion Dependencies finden sollten. Dadurch haben wir viel für unsere spätere Aufgabe gelernt.
 
 **_Meilenstein 1: Abschluss Recherchearbeit_**
 
@@ -37,11 +37,11 @@ Nach der Recherchephase haben wir uns auf folgende Aufgaben festgelegt
 - Ein verteiltes System mit Akka in Java bauen, in dem die Inclusion Dependencies gesucht werden
 - Eine Pipeline an Pruningschritten zu bauen um möglichst zeit- und datensparend Kombinationen für Inclusion Dependencies auszuschließen
 
-## Phase 2: Konzeptionierung und Umsetzung
+## Phase 2: Konzeptionierung und Umsetzung {-}
 
 In der nächsten Phase sind wir dazu übergegangen uns in größeren Abständen zu Blockwochen oder Sprintwochenenden zu treffen um am Stück runterprogrammieren zu können.
 
-### Datengenerator
+### Datengenerator {-}
 
 Erste Programmiereinheit: 04.04.2022 - 08.04.2022
 
@@ -57,7 +57,7 @@ Fertigstellung des Datengenerators
 
 **Ergebnis: g**
 
-### Dynamischer Algorithmus
+### Dynamischer Algorithmus {-}
 
 Erste Programmiereinheit: 04.04.2022 - 08.04.2022
 
@@ -75,8 +75,10 @@ Nachdem die Architektur für den Algorithmus noch einmal überarbeitet wurde, wu
 
 **_Meilenstein 3b: Fertigstellung Algorithmus_**
 
-## Phase 3: Hausarbeit
+## Phase 3: Hausarbeit {-}
 
 Parallel zur Fertigstellung des dynamischen Algorithmus wurde die Hausarbeit zu der Projektarbeit erstellt.
 
-Protokolle für Kontakttermine im Anhang
+<!--
+Protokolle für Kontakttermine befinden sich im Anhang.
+-->
