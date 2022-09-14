@@ -1,29 +1,24 @@
+
 # Funktionale Anforderungen
-
-Ragna
-
-## Profiler
-
-### Inkrementelle Entdeckung von Inclusion-Dependencies
-* Unary und N-Nary
-* Behandeln von Inserts und Deletes
-* Behandeln von Updates (Insert + Delete)
-* Zwischenspeichern von dynamischen Datensätzen
-
-### Korrektheit
-
-* Nachvollziehbare Beziehungen zwischen Inputs und Outputs (Batch-ID und Timestamps)
 
 ## Datengenerator
 
-### Generierung von unendlichen Datensätzen aus einem natürlichen Datenkorpus
-* Unendlich viele Zeilen durch Cycling
-* Spaltenanzahl ist konfigurierbar
-* Anzahl an Tabellen ist konfiguerierbar
-* Korpus: CSV Dateien werden aus einem Ordner geladen
-* Simulation von Löschung mit unterschiedlichen Häufigkeiten
+Der Datengenerator soll einen beliebig großen Batch einer beliebigen CSV Dateien generieren. In diesem Batch sollen anschließend mittels des dynamischen Algorithmus Inclusion Dependencys gefunden und ausgegeben werden.
 
-### Batchgenerierung
-* Batches werden generiert und per HTTP an den Profiler geschickt?
+Der Datengenerator soll...
 
+- eine beliebige CSV-Datei einlesen.
+- mehrere Batches im CSV-Format auf der Kommandozeile.
+- jede Zeile mit einem eindeutigen Index versehen.
+- eine bestimmte Anzahl an Zeilen generieren können.
+- unendlich viele Zeilen durch Cycling generieren können (wieder von Vorne beginnen, sollte das Ende der CSV-Datei erreicht sein aber noch nicht die gewünschte Anzahl Zeilen).
+- eine Zeile mit Wahrscheinlichkeit x löschen.
 
+## Dynamischer Algorithmus
+
+Der dynamische Algorithmus soll...
+
+- für Hinzufügungen neue Einträge anlegen und Inclusion Dependencies finden.
+- für Modifikationen und Löschungen alte Einträge und dazugehörige Inclusion Dependencies updaten.
+- alle X Sekunden gültige und nicht-mehr gültige Inclusion Dependencies ausgeben.
+- auch mit großen Datensätzen zurecht kommen können.

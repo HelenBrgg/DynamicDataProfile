@@ -116,15 +116,13 @@ Sollte vor einem subset-test A ⊆ B A einen Datentyp haben, dessen Werte per De
 
 `datatype`(A) ⊄ `datatype`(B) ⇒ A ⊄ B
 
-#### Bloom Filter
+#### Bloom Filter <sup id="1">[1](#f1)</sup>
 
 Ein weiterer Ausschluss findet durch Nutzung von Bloom Filtern statt. Genutzt wird ein Counting-Bloomfilter mit einer Größe von 128 und zwei Hash-Funktionen.
 
 Bloomfilter sind eine probabilistische Datenstruktur, die Daten repräsentieren. Ein Bloom Filter ist ein Array aus `m` Bits, die ein Set aus `n` Elementen repräsentiert. Zu Beginn sind alle Bits auf `0`. Für jedes Element im Set werden nun `k` Hashfunktionen ausgeführt, in unserem Fall zwei, die ein Element auf eine Nummer zwischen `1` bis `m` mappen. Jede dieser Positionen im Array werden dann auf `1` gesetzt. Will man nun prüfen ob ein Element in einer Datenmenge enthalten ist, kann man die Werte berechnen und prüfen ob die Positionen auf `1` sind. Wegen Kollisionen kann das Verfahren zu False Positives führen, allerdings nicht zu False Negatives. Wenn ein Element im Array `0` ist, so wurde der Wert definitiv noch nicht gesehen.
 
 Counting Bloomfilter ergänzen Bloomfilter dahingehend, dass nun mitgezählt wie oft ein Bit im Array auf `1` gesetzt wird. Das ermöglicht auch Elemente zu löschen. Jedes der `m` Elemente besitzt einen counter. Wir ein Element hinzugefügt, so werden die zugehörigen counter hochgezählt, wird ein Element entfernt, so werd der counter heruntergezählt.
-
-https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.457.4228&rep=rep1&type=pdf
 
 ### Kandidaten üperprüfen
 
@@ -135,3 +133,5 @@ Hierbei betreiben wir ebenfalls eine Optimierung. Wenn eine gewisse Anzahl an We
 Beispiel:
 
 > A hat 100 einzigarte Werte, B hat 80 einzigartige Werte: Wenn in den ersten 21 Werten von A kein einziger Wert von B auftaucht, so kann B nicht mehr vollständig in A enthalten sein. Hier kann bereits abgebrochen werden.
+
+<b id="1">1</b> https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.457.4228&rep=rep1&type=pdf (Stand 14.09.2022) [↩](#a1)
