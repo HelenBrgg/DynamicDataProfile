@@ -72,13 +72,13 @@ Mögliche Datentypen:
 
 - `Timestamp`: z.B. 2012-12-01 10:00:30
 
-- `String`: the above and anything else, including this sentence
+- `String`: Alle oberen und auch sonst alles, inklusive diesen Satzes.
 
 Datentypen können andere Datentypen enthalten:
 
 `UnsignedInteger ⊂ Integer ⊂ Real ⊂ String`
 `Timestamp ⊂ String`
-(diese Datentypen sind nur ein Vorschlag - cool wäre es, wenn wir eine Auswahl hätten, die wir auch anhand von Papers/Statistiken begründen können! Wir könnten auch Charakterklassen betrachten, z.B. Numeric, Alphabetic, ASCII, Unicode…)
+Welche sind es denn geworden? TODO Felix?
 
 #### Kardinalitäten
 
@@ -101,23 +101,28 @@ Wenn A keine Inclusion Dependency von B: A erhält ein neues Input und B bleibt 
 
 Für die Extremwerte in einem Attribut kann man überprüfen ob eine Inclusion Dependency besteht.
 
-Wenn der Maxwert von A größer ist als der Maxwert von B, so enthält A Werte die es nicht in B gibt, also kann A nicht in B enthalten sein, B aber in A.
+Weiter kann man mittels `highest_number` und `lowest_number` für Zahlen und `max_string_length` und `min_string_length` für alle Datentypen Inklusionen ausschließen.
 
-Wenn der Minwert in A kleiner ist als in B, kann A nicht in B enthalten sein, B aber in A.
+`datatype`(A), `datatype`(B) ⊆ Real
+∧ (`highest_number`(A) > `highest_number`(B) ∨ `lowest_number`(A) < `lowest_number`(B))
+⇒ A ⊄ B
 
-Somit können bei allen Kombinationen von Inclusion Dependencies die Min- und Maxwerte überprüft werden.
+(`max_string_length`(A) > `max_string_length`(B) ∨ `min_string_length`(A) < `min_string_length`(B))
+⇒ A ⊄ B
 
 #### Datentyp
 
-### Pruning durch Sketches
+Sollte vor einem subset-test A ⊆ B A einen Datentyp haben, dessen Werte per Definition nicht in B enthalten sein können, so kann A nicht in B enthalten sein.
+
+`datatype`(A) ⊄ `datatype`(B) ⇒ A ⊄ B
 
 #### Bloom Filter
 
 Ein weiterer Ausschluss findet durch Nutzung von Bloom Filtern statt. Genutzt wird ein Counting-Bloomfilter mit einer Größe von 128 und zwei Hash-Funktionen.
 
-Bloomfilter sind eine probabilistische Datenstruktur, die Daten repräsentieren. Ein Bloom Filter ist ein Array aus `m` Bits, die ein Set aus `n` Elementen repräsentiert. ZU Beginn sind alle Bits auf `0`. Für jedes Element im Set werden nun `k` Hashfunktionen ausgeführt, die ein Element auf eine Nummer zwischen `1` bis `m` mappen. Jede dieser Positionen im Array werden dann auf `1` gesetzt. Will man nun prüfen ob ein Element in einer Datenmenge enthalten ist, kann man die Werte berechnen und prüfen ob die Positionen auf `1` sind. Wegen Kollisionen kann das Verfahren zu False Positives führen, allerdings nicht zu False Negatives. Wenn ein Element im Array `0` ist, so wurde der Wert definitiv noch nicht gesehen.
+Bloomfilter sind eine probabilistische Datenstruktur, die Daten repräsentieren. Ein Bloom Filter ist ein Array aus `m` Bits, die ein Set aus `n` Elementen repräsentiert. Zu Beginn sind alle Bits auf `0`. Für jedes Element im Set werden nun `k` Hashfunktionen ausgeführt, in unserem Fall zwei, die ein Element auf eine Nummer zwischen `1` bis `m` mappen. Jede dieser Positionen im Array werden dann auf `1` gesetzt. Will man nun prüfen ob ein Element in einer Datenmenge enthalten ist, kann man die Werte berechnen und prüfen ob die Positionen auf `1` sind. Wegen Kollisionen kann das Verfahren zu False Positives führen, allerdings nicht zu False Negatives. Wenn ein Element im Array `0` ist, so wurde der Wert definitiv noch nicht gesehen.
 
-Counting Bloomfilter ergänzen Bloomfilter dahingehend, dass nun mitgezählt wie oft ein Bit im Array auf `1` gesetzt wird. Das ermöglicht auch Elemente zu löschen.
+Counting Bloomfilter ergänzen Bloomfilter dahingehend, dass nun mitgezählt wie oft ein Bit im Array auf `1` gesetzt wird. Das ermöglicht auch Elemente zu löschen. Jedes der `m` Elemente besitzt einen counter. Wir ein Element hinzugefügt, so werden die zugehörigen counter hochgezählt, wird ein Element entfernt, so werd der counter heruntergezählt.
 
 https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.457.4228&rep=rep1&type=pdf
 
