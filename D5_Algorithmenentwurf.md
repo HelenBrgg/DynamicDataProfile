@@ -17,7 +17,8 @@ In einer Pipeline werden nacheinander durch verschiedene Prüfungen Permutatione
 Durch logische Implikationen können Permutationen ausgeschlossen werden. Dafür werden zum Teil in vorherigen Iterationen Metadaten zu Permutationen gespeichert.
 Die Logischen Implikationen sind zum Beispiel:
 
-Wenn A keine Inclusion Dependency von B ist: A erhält ein neues Input und B bleibt gleich, dann kann A immer noch kein Inclusion Dependency sein.
+Wenn A ⊄ B: A erhält ein neues Input und B bleibt gleich => A ⊄ B.
+Wenn B ⊂ A: A erhält ein neues Input und B bleibt gleich => B ⊂ A.
 
 ### Pruning durch Metadata
 
@@ -66,9 +67,9 @@ Wenn A mehr einzigartige Werte als B hat, dann kann A nicht vollständig in B en
 
 Für die Extremwerte in einem Attribut kann man überprüfen ob eine Inclusion Dependency besteht.
 
-Weiter kann man mittels `highest_number` und `lowest_number` für Zahlen und `max_string_length` und `min_string_length` für alle Datentypen Inklusionen ausschließen.
+Es kann man mittels `highest_number` und `lowest_number` für Zahlen und `max_string_length` und `min_string_length` für alle Datentypen Inklusionen ausgeschlossen werden.
 
-`datatype`(A), `datatype`(B) ⊆ Real
+Z.B. `datatype`(A), `datatype`(B) ⊆ Real
 ∧ (`highest_number`(A) > `highest_number`(B) ∨ `lowest_number`(A) < `lowest_number`(B))
 ⇒ A ⊄ B
 
