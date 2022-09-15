@@ -17,9 +17,11 @@ In einer Pipeline werden nacheinander durch verschiedene Prüfungen Permutatione
 Durch logische Implikationen können Permutationen ausgeschlossen werden. Dafür werden zum Teil in vorherigen Iterationen Metadaten zu Permutationen gespeichert.
 Die Logischen Implikationen sind zum Beispiel:
 
+Wenn A keine Inclusion Dependency von B ist: A erhält ein neues Input und B bleibt gleich, dann kann A immer noch kein Inclusion Dependency sein.
+
 ### Pruning durch Metadata
 
-Aus den Metadaten der Attribute kann man auch Permutationen ausschließen. Durch eine Single Column Analysis erhalten wir verschieden Metadaten.
+Aus den Metadaten der Attribute kann man Permutationen ausschließen. Durch eine Single Column Analysis erhalten wir verschieden Metadaten.
 
 <table>
 <tr><th>Tabelle 1  </th><th>Tabelle 2 </th></tr>
@@ -42,25 +44,44 @@ Aus den Metadaten der Attribute kann man auch Permutationen ausschließen. Durch
 
 </td></tr> </table>
 
-|              Metadata | Charakterisierung                                                        | Beispiel                                                 |
-| --------------------: | :----------------------------------------------------------------------- | :------------------------------------------------------- |
-|            `num_rows` | Anzahl der Zeilen in einer Spalte                                        | num_rows(A) = 4<br>num_rows(X) = 3                       |
-| `num_distinct_values` | Anzahl aller unterschiedlichen Werte, die in einer Spalte vorkommen      | num_distinct_values(B) = 3<br>num_distinct_values(Y) = 2 |
-|          `uniqueness` | Anzahl der Zeilen dividiert durch die Anzahl der unterschiedlichen Werte | uniqueness(B) = 0.75<br>uniqueness(Y) = 0.6666           |
+#### Kardinalitäten
 
-Innerhalb einer Tabelle ist num_rows für jede Spalte gleich. Über Tabellen hinweg darf es verschieden sein.
+Eine Art der Metadaten sind die Kardinalitäten. Über die Anzahl von unterschiedlichen Werten kann man Inclusion Dependencies erkennen.
 
-Eine `uniqueness` von `1.0` bedeutet, alle Werte einer Spalte sind unterschiedlich.
+|     A     |   B   |
+| :-------: | :---: |
+| chihuahua |  dog  |
+| chihuahua |  dog  |
+| dropbear  | horse |
+| elephant  |  cat  |
+|  dugong   |  cat  |
 
-Eine `uniqueness` von `0.0` bedeutet, alle Werte einer Spalte sind gleich.
+`num_distinct_values`(A)=5
+`num_distinct_values`(B)=3
+=> A ⊄ B
 
-Data Patterns
+Wenn A mehr einzigartige Werte als B hat, dann kann A nicht vollständig in B enthalten sein. Somit muss eine Inclusion Dependency von A in B nur überprüft werden, wenn `num_distinct_values`(A)<`num_distinct_values`(B) oder `num_distinct_values`(A)=`num_distinct_values`(B). Nicht aber wenn `num_distinct_values`(A)>`num_distinct_values`(B).
 
-|                                     Metadata | Charakterisierung                                                                                       | Beispiel                                                                                                         |
-| -------------------------------------------: | :------------------------------------------------------------------------------------------------------ | :--------------------------------------------------------------------------------------------------------------- |
-|                                   `datatype` | Gemeinsamer Datentyp für alle Werte einer Spalte                                                        | datatype(A) = UnsignedInteger <br>datatype(B) = String                                                           |
-|         `highest_number` <br>`lowest_number` | Höchster Zahlenwert einer Spalte <br> Niedrigster Zahlenwert einer Spalte                               | highest_number(X) = 30 <br> lowest_number(X) = 10                                                                |
-| `max_string_length` <br> `min_string_length` | Maximale Länge eines Werts betrachtet als String <br> Minimale Länge eines Werts betrachtet als String. | max_string_length(A) = 1 <br> min_string_length(A) = 1 <br>max_string_length(B) = 7<br> min_string_length(B) = 4 |
+#### Min-/Max-Werte
+
+Für die Extremwerte in einem Attribut kann man überprüfen ob eine Inclusion Dependency besteht.
+
+Weiter kann man mittels `highest_number` und `lowest_number` für Zahlen und `max_string_length` und `min_string_length` für alle Datentypen Inklusionen ausschließen.
+
+`datatype`(A), `datatype`(B) ⊆ Real
+∧ (`highest_number`(A) > `highest_number`(B) ∨ `lowest_number`(A) < `lowest_number`(B))
+⇒ A ⊄ B
+
+(`max_string_length`(A) > `max_string_length`(B) ∨ `min_string_length`(A) < `min_string_length`(B))
+⇒ A ⊄ B
+
+#### Datentyp
+
+Weiterhin prüfen wir die Datentypen, die in einer Spalte vorkommen.
+
+|   Metadata | Charakterisierung                                | Beispiel                                               |
+| ---------: | :----------------------------------------------- | :----------------------------------------------------- |
+| `datatype` | Gemeinsamer Datentyp für alle Werte einer Spalte | datatype(A) = UnsignedInteger <br>datatype(B) = String |
 
 Mögliche Datentypen:
 
@@ -78,39 +99,6 @@ Datentypen können andere Datentypen enthalten:
 
 `UnsignedInteger ⊂ Integer ⊂ Real ⊂ String`
 `Timestamp ⊂ String`
-Welche sind es denn geworden? TODO Felix?
-
-#### Kardinalitäten
-
-|     A     |   B   |
-| :-------: | :---: |
-| chihuahua |  dog  |
-| chihuahua |  dog  |
-| dropbear  | horse |
-| elephant  |  cat  |
-|  dugong   |  cat  |
-
-`num_distinct_values`(A)=5
-`num_distinct_values`(B)=3
-=> A ⊄ B
-
-Wenn A mehr einzigartige Werte als B hat, dann kann A nicht in B enthalten sein. Somit muss eine Inclusion Dependency von A in B nur überprüft werden, wenn `num_distinct_values`(A)<`num_distinct_values`(B) oder `num_distinct_values`(A)=`num_distinct_values`(B). Nicht aber wenn `num_distinct_values`(A)>`num_distinct_values`(B).
-Wenn A keine Inclusion Dependency von B: A erhält ein neues Input und B bleibt gleich, dann kann A immer noch kein Inclusion Dependency sein.
-
-#### Min-/Max-Werte
-
-Für die Extremwerte in einem Attribut kann man überprüfen ob eine Inclusion Dependency besteht.
-
-Weiter kann man mittels `highest_number` und `lowest_number` für Zahlen und `max_string_length` und `min_string_length` für alle Datentypen Inklusionen ausschließen.
-
-`datatype`(A), `datatype`(B) ⊆ Real
-∧ (`highest_number`(A) > `highest_number`(B) ∨ `lowest_number`(A) < `lowest_number`(B))
-⇒ A ⊄ B
-
-(`max_string_length`(A) > `max_string_length`(B) ∨ `min_string_length`(A) < `min_string_length`(B))
-⇒ A ⊄ B
-
-#### Datentyp
 
 Sollte vor einem subset-test A ⊆ B A einen Datentyp haben, dessen Werte per Definition nicht in B enthalten sein können, so kann A nicht in B enthalten sein.
 
