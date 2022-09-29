@@ -1,3 +1,0 @@
-# Risikomanagement
-
-weg damit!

@@ -22,6 +22,10 @@ target/
 output/
 data/TPCH/
 src/main/java/de/ddm/tutorial/
+src/
+
+# Hidden files
+.*
 
 # IDE files
 .project
