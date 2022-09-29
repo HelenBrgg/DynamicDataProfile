@@ -1,26 +1,86 @@
 # System-Entwurf
 
-Felix
+## Akka System (Datenfluss)
 
-## Überblick
+Bevor wir das System mit Akka Aktoren beschreiben, definieren wir den grundlegenden Datenfluss den wir umsetzen möchten.
+Dieser Datenfluss muss wiederholt-ausführbar sein und mit inkrementellen Updates (Batches) arbeiten.
 
-![](imgs/system-basic.drawio.svg)
+Wir möchten pro eingelesenes Batch möglichst wenig Operationen durchführen. Die wohl teuerste Operation ist der _Subset-Check_ für Validieren eines IND-Kandidaten. Hierbei werden alle Werte zweier Attribute abgefragt und verglichen.
+ 
+Unser Ziel ist es also einen Datenfluss zu definieren, der es uns erlaubt möglichst wenige Subset-Checks (oder andere teure Operationen) durchzuführen.
 
----
+![Datenfluss für inkrementelle Updates und dazugehörige Speicher](imgs/system-flow.drawio.svg)
 
-![](imgs/datagen-datanode.drawio.svg)
+\ 
 
----
+##### _1. Read Input_ {-}
 
-![](imgs/masternode-datanode.drawio.svg)
+Es wird ein Batches von einer Quelle eingelesen. Das Format von Batches ist in der Sektion [Datenformat](#datenformat) beschrieben.
 
----
+##### _2. Write Array-wise_ {-}
 
-![](imgs/datanode-merge.drawio.svg)
+Ein Batch wird nach seinen Attributen aufgespalten und für jedes Attribut werden die Werte in ein eigenes _Column-Array_ geschrieben. Ein Column-Array ist ein Array welches alle Werte eines Attributes an ihrer jeweiligen Positionen beinhaltet.
 
----
+Anschließend werden die _Delta-Counts_ berechnet. Diese beschreiben, wie häufig ein Wert eines Attributes hinzugefügt oder entfernt wurde.
 
-![](imgs/masternode-cycle.drawio.svg)
+Sollten alle Delta-Counts $0$ sein, so haben die Änderungen des Batches definitiv keinen Einfluss auf Inclusion Dependencies und der Datenfluss kann vorzeitig enden.
+
+##### _3. Write Set-wise_ {-}
+
+Die Delta-Counts eines Attributs werden in das dem Attribut zugehörigen _Column-Set_ geschrieben. Ein Column-Set ist ein zählendes Set, welches mitzählt wie häufig eine Ausprägung eines Wertes in einem Column-Array auftaucht.
+
+Beim Schreiben der Delta-Counts wird ein _Set-Diff_ erstellt. Dieses beschreibt, ähnlich dem Diff-Format des populären `diff` UNIX Tools, welche neuen Ausprägungen hinzugefügt oder entfernt wurden. 
+
+Fällt der Zähler von $>0$ auf $0$, so können wir feststellen, dass eine Ausprägung nicht mehr vorkommt (_entfernt wurde_). Gab es vorher keinen Zähler oder steigt der Zähler von $0$ auf $>0$, so so können wir feststellen, dass eine neue Ausprägung hinzugefügt wurde.
+
+Sollten alle Set-Diffs leer sein - also keine Ausprägungen hinzugefügt oder verändert worden sein - so haben die Änderungen keinen Einfluss auf die INDs und der Datenfluss kann vorzeitig enden.
+
+##### _4. Update Metadata_ {-}
+
+Die Set-Diffs werden benutzt, um _Metadata_ der dazugehörigen Attribute zu erstellen und zu aktualisieren.
+
+<!--
+Pro Attribut gibt es verschiedene Arten von Metadata:
+
+* Die _Cardinality_ beschreibt die Anzahl der Ausprägungen (also die Größe des Column-Sets).
+* Die _Extrema_ beschrieben die Minimum- und Maximum-Werte eines Attributes, nach lexikographischer Ordnung.
+* Der _Bloomfilter_ ein probabilistischer Sketch der Ausprägungen.
+-->
+
+Mehr zu den verschiedenen Arten von Metadata im Kapitel (TODO verlinkte).
+
+##### _5. Generate Candidates_ {-}
+
+Die Set-Diffs werden benutzt, um die _Candidate-Data_ aller involvierten Attribute zu erstellen und zu aktualisieren.
+
+Für alle neuen Attribute, die bisher nicht vorkamen, werden alle möglichen neuen (unären) Kandidaten generiert.  Bereits-existierende Inclusion Dependencies, die sich geändert haben könnten, werden zurückgesetzt und neue Kandidaten generiert. 
+
+##### _6. Purge Candidates_ {-}
+
+Die generierten Kandidaten werden anhand von _Subset-Prechecks_ gefiltert. Ein Kandidat $A ⊂ B$ wird nur weiter verwendet, wenn die Metadata von A und B diese Subset-Relation erlaubt. 
+
+Mehr zu den verschiedenen Arten von Metadata im Kapitel (TODO verlinkte).
+
+##### _7. Validate Candidates_ {-}
+
+Die verbliebenen Kandidaten werden anhand von _Subset-Checks_ validiert. Dabei müssen die Werte aus mehreren Column-Sets verglichen werden.
+
+Die Ergebnisse werden anschließend in der Candidate-Data gespeichert und für subsequente Candidate-Generation benutzt.
+
+## Akka System (1-Host)
+
+![Kommunikationsdiagramm für die versimpelte 1-Host Architektur](imgs/system-simple.svg)
+
+
+TODO akka hierarchie beschreiben
+
+## Akka System (n-Hosts)
+
+![Kommunikationsdiagramm für die verteilte n-Hosts Architektur](imgs/system-complex.svg)
+
+TODO akka hierarchie beschreiben
+
+<!--
 
 ## Value Representation
 
@@ -101,3 +161,4 @@ Basierend auf den Distinct Value Counts kann die Iteration eines Subset-Check fr
 
 Wenn `A c B` geprüft wird, können wir bei bedarf auch direkt `B c A` in einer Iteration prüfen.
 
+-->

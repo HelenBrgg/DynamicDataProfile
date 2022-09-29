@@ -6,6 +6,6 @@ toc: true
 colorlinks: true
 numbersections: true
 subparagraph: yes
-fontsize: 20pt
+fontsize: 24pt
 ...
 

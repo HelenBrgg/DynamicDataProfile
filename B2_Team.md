@@ -4,7 +4,7 @@
 
 - Protokollführung
 - Projektdokumentation mit Jira
-- Konzeption und Entwicklung des dynamischen Algorithmus (Pairprogramming mit Felix Köpge).
+- Konzeption und Entwicklung des dynamischen Algorithmus (Pairprogramming mit Felix Köpge)
 
 **Felix Köpge (M.Sc. Informatik)**:
 
