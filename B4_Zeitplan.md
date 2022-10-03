@@ -41,42 +41,43 @@ In der nächsten Phase sind wir dazu übergegangen uns in größeren Abständen 
 
 ### Datengenerator {-}
 
-Erste Programmiereinheit: 04.04.2022 - 08.04.2022
+#### Erste Programmiereinheit: 04.04.2022 - 08.08.2022
 
 In einem einwöchigen Programmiersprint ist das Konzept und ein Großteil des Datengenerators entstanden. Als Datenformat wurden CSV Tabellen festgelegt, wobei die erste Spalte immer eine explizite Zeilen-Position ist, mit der man alte Daten überschreiben kann.
 
-**_Meilenstein 2a: Definition des Datenformats_**
+> **_Meilenstein 2a: Definition des Datenformats_**
 
-Zweite Programmiereinheit: 21.05.2022
+#### Zweite Programmiereinheit: 21.05.2022
 
 Fertigstellung des Datengenerators
 
-**_Meilenstein 3a: Fertiger Datengenerator_**
+> **_Meilenstein 3a: Fertiger Datengenerator_**
 
-**Ergebnis: g**
+>> **Ergebnis der Konzeption und Umsetzung des Datengenerators** Fertiger Datengenerator
 
 ### Dynamischer Algorithmus {-}
 
-Erste Programmiereinheit: 04.04.2022 - 08.04.2022
+#### Erste Programmiereinheit: 04.04.2022 - 08.04.2022
 
-In einem einwöchigen Programmiersprint sind erste Klassenentwürfe für den Algorithmus entstanden und ein erstes MVP in Form einer Dummy Main.
+In einem einwöchigen Programmiersprint sind erste Klassenentwürfe für den Algorithmus entstanden und ein erstes MVP des dynamischen Algorithmus in Form einer Dummy Main.
 
-**_Meilenstein 2b: MVP Dynamischer Algorithmus_**
+> **_Meilenstein 2b: MVP Dynamischer Algorithmus_**
 
-Zweite Programmiereinheit: 21.05.2022
+#### Zweite Programmiereinheit: 21.05.2022
 
-Ausgehend vom MVP wurden nun die Klassenentwürfe und der Algorithmus iterativ und inkrementell immer wieder angepasst
+Ausgehend vom MVP wurden nun die Klassenentwürfe und der Algorithmus iterativ und inkrementell immer wieder angepasst.
 
-Programmiereinheit: 01.08.2022 - 08.08.2022
+#### Programmiereinheit: 01.08.2022 - 08.08.2022
 
 Nachdem die Architektur für den Algorithmus noch einmal überarbeitet wurde, wurde der Algorithmus mitsamt seiner Pipeline final implementiert.
 
-**_Meilenstein 3b: Fertigstellung Algorithmus_**
+> **_Meilenstein 3b: Fertigstellung Algorithmus_**
 
-## Phase 3: Hausarbeit {-}
+>> **Ergebnis der Konzeption und Umsetzung des Dynamischen Algorithmus** Fertiger Dynamischer Algorithmus
 
-Parallel zur Fertigstellung des dynamischen Algorithmus wurde die Hausarbeit zu der Projektarbeit erstellt.
+## Phase 3: Hausarbeit und Festhalten der Ergebnisse 01.08.2022-31.09.2022 {-}
 
-<!--
-Protokolle für Kontakttermine befinden sich im Anhang.
--->
+Parallel zur Fertigstellung des dynamischen Algorithmus wurde die Hausarbeit zu der Projektarbeit erstellt. Neben der Dokumentation wurden außerdem graphische Plots der Ergebnisse erstellt.
+
+>> **Ergebnis** Hausarbeit
+
