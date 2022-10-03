@@ -2,11 +2,6 @@
 
 **Projektzeitraum: 24.10.2021 - 31.09.2022**
 
-**Aufgabe**:
-
-- Ein verteiltes System entwickeln welches auf dynamischen Datensätzen Inclusion Dependencies findet
-- Einen Datengenerator entwickeln der es erlaubt mit zufälligen Daten das verteilte System zu testen
-
 **Projektphasen**:
 
 1. Recherche
