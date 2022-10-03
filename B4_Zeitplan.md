@@ -27,19 +27,17 @@ In der Zeit haben wir uns in der Gruppe im Wochentakt getroffen und besprochen. 
 
 > **_Meilenstein 1: Abschluss Recherchearbeit_**
 
->>**Ergebnisse der ersten Phase**
-
+>>**Ergebnisse der Phase 1**
 >>Nach der Recherchephase haben wir uns auf folgende Aufgaben festgelegt
-
->>- Auffinden von unären Inclusion Dependencies in dynamischen Datensätzen
->>- Ein verteiltes System mit Akka in Java bauen, in dem die Inclusion Dependencies gesucht werden
->>- Eine Pipeline an Pruningschritten zu bauen um möglichst zeit- und datensparend Kombinationen für Inclusion Dependencies auszuschließen
+  >>- Auffinden von unären Inclusion Dependencies in dynamischen Datensätzen
+  >>- Ein verteiltes System mit Akka in Java bauen, in dem die Inclusion Dependencies gesucht werden
+  >>- Eine Pipeline an Pruningschritten zu bauen um möglichst zeit- und datensparend Kombinationen für Inclusion Dependencies auszuschließen
 
 ## Phase 2: Konzeptionierung und Umsetzung 04.04.2022 - 08.08.2022 {-}
 
 In der nächsten Phase sind wir dazu übergegangen uns in größeren Abständen zu Blockwochen oder Sprintwochenenden zu treffen um am Stück runterprogrammieren zu können.
 
-### Datengenerator {-}
+### a) Datengenerator {-}
 
 #### Erste Programmiereinheit: 04.04.2022 - 08.08.2022
 
@@ -53,9 +51,10 @@ Fertigstellung des Datengenerators
 
 > **_Meilenstein 3a: Fertiger Datengenerator_**
 
->> **Ergebnis der Konzeption und Umsetzung des Datengenerators** Fertiger Datengenerator
+>> **Ergebnis der Phase 2a** 
+>> Fertiger Datengenerator
 
-### Dynamischer Algorithmus {-}
+### b) Dynamischer Algorithmus {-}
 
 #### Erste Programmiereinheit: 04.04.2022 - 08.04.2022
 
@@ -73,11 +72,12 @@ Nachdem die Architektur für den Algorithmus noch einmal überarbeitet wurde, wu
 
 > **_Meilenstein 3b: Fertigstellung Algorithmus_**
 
->> **Ergebnis der Konzeption und Umsetzung des Dynamischen Algorithmus** Fertiger Dynamischer Algorithmus
+>> **Ergebnis der Phase 2b** 
+>> Fertiger Dynamischer Algorithmus
 
 ## Phase 3: Hausarbeit und Festhalten der Ergebnisse 01.08.2022-31.09.2022 {-}
 
 Parallel zur Fertigstellung des dynamischen Algorithmus wurde die Hausarbeit zu der Projektarbeit erstellt. Neben der Dokumentation wurden außerdem graphische Plots der Ergebnisse erstellt.
 
->> **Ergebnis** Hausarbeit
+>> **Ergebnis der Phase 3** Ausarbeitung und Darstellung der Ergebnisse
 
