@@ -9,7 +9,12 @@ Wir möchten pro eingelesenes Batch möglichst wenig Operationen durchführen. D
  
 Unser Ziel ist es also einen Datenfluss zu definieren, der es uns erlaubt möglichst wenige Subset-Checks (oder andere teure Operationen) durchzuführen.
 
-![Datenfluss für inkrementelle Updates und dazugehörige Speicher](imgs/system-flow.svg)
+<p align="center">
+  <img src="imgs/system-flow.svg" width="400">
+  <p align="center">
+   Datenfluss für inkrementelle Updates und dazugehörige Speicher
+  </p>
+</p>
 
 ##### 1. Read Input {-}
 
