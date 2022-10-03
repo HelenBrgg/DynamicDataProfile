@@ -18,7 +18,7 @@ Unser Ziel ist es also einen Datenfluss zu definieren, der es uns erlaubt mögli
 
 ##### 1. Read Input {-}
 
-Es wird ein Batches von einer Quelle eingelesen. Das Format von Batches ist in der Sektion [Datenformat](#datenformat) beschrieben.
+Es wird ein Batch von einer Quelle eingelesen. Das Format von Batches ist in der Sektion [Datenformat](#datenformat) beschrieben.
 
 ##### 2. Write Array-wise {-}
 
@@ -26,7 +26,7 @@ Ein Batch wird nach seinen Attributen aufgespalten und für jedes Attribut werde
 
 Anschließend werden die _Delta-Counts_ berechnet. Diese beschreiben, wie häufig ein Wert eines Attributes hinzugefügt oder entfernt wurde.
 
-Sollten alle Delta-Counts $0$ sein, so haben die Änderungen des Batches definitiv keinen Einfluss auf Inclusion Dependencies und der Datenfluss kann vorzeitig enden.
+Sollten alle Delta-Counts $0$ sein, so haben die Änderungen des Batches definitiv keinen Einfluss auf IND's und der Datenfluss kann vorzeitig enden.
 
 ##### 3. Write Set-wise {-}
 
@@ -66,7 +66,7 @@ Mehr zu den verschiedenen Arten von Metadata im Kapitel [Pruning Pipeline](#prun
 
 ##### 7. Validate Candidates {-}
 
-Nachdem wir in der Vorarbeit die Anzahl an Attributen, die wir auf Inclusion Dependencies überprüfen so weit wie möglich reduziert haben, werden nun die übrig gebliebenen Kandidaten mittels _Subset-Checking_ validiert. Erst jetzt werden die Werte der Column-Sets abgerufen um die relevanten Spalten miteinander zu vergleichen.
+Nachdem wir in der Vorarbeit die Anzahl an Attributen, die wir auf IND's überprüfen so weit wie möglich reduziert haben, werden nun die übrig gebliebenen Kandidaten mittels _Subset-Checking_ validiert. Erst jetzt werden die Werte der Column-Sets abgerufen um die relevanten Spalten miteinander zu vergleichen.
 
 Hierbei betreiben wir ebenfalls eine Optimierung. Wenn eine gewisse Anzahl an Werten in beiden Attributen untersucht wurde, und die Anzahl verbliebener Werte nicht mehr ausreicht um noch eine Inclusion Dependency zu ergeben, brechen wir ab.
 
