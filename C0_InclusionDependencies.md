@@ -18,15 +18,15 @@ Für IND's gelten immer folgende Eigenschaften:
 ##### Beispiel für unary IND's {-}
 
 <p align="center">
-  <img src="imgs/unary_IND_Example.jpg" width="400">
+  <img src="imgs/unary_IND_Example.jpg" width="400" title="unary IND-Beispiel"[^papenbrock]>
   <p align="center">
-  unary IND-Beispiel[^papenbrock] <br>
+   <br>
   X := Attribut "Name" aus Tabelle "Lending"<br>
   Y := Attribut "Titel" aus Tabelle "Book"<br>
   </p>
 </p>
 
-Es ist leicht zu sehen[^papenbrock], dass alle Werte die "Name" annehmen kann auch in Attribut "Titel" vertreten sind, daher folgt $X ⊆ Y$. <br>
+Es ist leicht zu sehen, dass alle Werte die "Name" annehmen kann auch in Attribut "Titel" vertreten sind, daher folgt $X ⊆ Y$. <br>
 Es ist auch leicht zu sehen, dass $Y ⊆ X$ nicht gilt, da $Y$ den Wert "3D Computer Graphics" annehmen kann, dieser jedoch nicht in $X$ auftaucht.
 
 ##### Beispiel für n-ary IND's {-}
