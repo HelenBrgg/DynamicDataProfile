@@ -7,7 +7,7 @@
   <p align="center">Darstellung des Systems und seines Kontexts</p>
 </p>
 
-Das System spaltet sich in den\  __Data-Generator__ und in das __Akka System__.
+Das System spaltet sich in den  __Data-Generator__ und in das __Akka System__.
 
 Die Aufgabe des __Data-Generators__ ist, ein synthetisches dynamisches Dataset von beliebiger Länge zu generieren. Dazu liest er Korpus von bestehenden Datasets aus. Die Einträge dieser Datensätze werden wiederholt, umgeordnet, gelöscht und modifiziert als Batches aus Änderungen verpackt.
 
