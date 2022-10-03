@@ -26,7 +26,7 @@ Für IND's gelten immer folgende Eigenschaften:
   </p>
 </p>
 
-Es ist leicht zu sehen, dass alle Werte die "Name" annehmen kann auch in Attribut "Titel" vertreten sind, daher folgt $X ⊆ Y$. <br>
+Es ist leicht zu sehen[^papenbrock], dass alle Werte die "Name" annehmen kann auch in Attribut "Titel" vertreten sind, daher folgt $X ⊆ Y$. <br>
 Es ist auch leicht zu sehen, dass $Y ⊆ X$ nicht gilt, da $Y$ den Wert "3D Computer Graphics" annehmen kann, dieser jedoch nicht in $X$ auftaucht.
 
 ##### Beispiel für n-ary IND's {-}
