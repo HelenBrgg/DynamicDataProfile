@@ -28,6 +28,7 @@ In der Zeit haben wir uns in der Gruppe im Wochentakt getroffen und besprochen. 
 > **_Meilenstein 1: Abschluss Recherchearbeit_**
 
 >>**Ergebnisse der Phase 1**
+
 >>Nach der Recherchephase haben wir uns auf folgende Aufgaben festgelegt
   >>- Auffinden von unären Inclusion Dependencies in dynamischen Datensätzen
   >>- Ein verteiltes System mit Akka in Java bauen, in dem die Inclusion Dependencies gesucht werden
@@ -52,6 +53,7 @@ Fertigstellung des Datengenerators
 > **_Meilenstein 3a: Fertiger Datengenerator_**
 
 >> **Ergebnis der Phase 2a** 
+
 >> Fertiger Datengenerator
 
 ### b) Dynamischer Algorithmus {-}
@@ -73,11 +75,14 @@ Nachdem die Architektur für den Algorithmus noch einmal überarbeitet wurde, wu
 > **_Meilenstein 3b: Fertigstellung Algorithmus_**
 
 >> **Ergebnis der Phase 2b** 
+
 >> Fertiger Dynamischer Algorithmus
 
 ## Phase 3: Hausarbeit und Festhalten der Ergebnisse 01.08.2022-31.09.2022 {-}
 
 Parallel zur Fertigstellung des dynamischen Algorithmus wurde die Hausarbeit zu der Projektarbeit erstellt. Neben der Dokumentation wurden außerdem graphische Plots der Ergebnisse erstellt.
 
->> **Ergebnis der Phase 3** Ausarbeitung und Darstellung der Ergebnisse
+>> **Ergebnis der Phase 3** 
+
+>> Ausarbeitung und Darstellung der Ergebnisse
 
