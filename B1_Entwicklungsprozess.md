@@ -2,11 +2,11 @@
 
 ## Dynamischer Algorithmus
 
-Wir begannen die Arbeit mit einer vorhandenen Akka Architektur von Prof. Papenbrock, die uns vorher als Hausaufgabenprojekt für das Modul Distributed Data Management diente. 
+Wir haben die Arbeit mit einer vorhandenen Akka Architektur von Prof. Papenbrock begonnen, die uns vorher als Hausaufgabenprojekt für das Modul Distributed Data Management diente. 
 
-Die vorhandene Architektur war bereits verteilt und konnte Inclusion Dependencies in statischen Datensets entdecken. Sie war allerdings nicht auf dynamische Datensets ausgelegt und stark begrenzt darin, dass ein einzelner Master-Node alle Werte eines Datensets im Hauptspeicher zwischenspeichern musste.
+Die vorhandene Architektur war bereits verteilt und konnte IND's in statischen Datensets entdecken. Sie war allerdings nicht auf dynamische Datensets ausgelegt und stark begrenzt darin, dass ein einzelner Master-Node alle Werte eines Datensets im Hauptspeicher zwischenspeichern musste.
 
-Über die erste Blockwoche hinweg haben wir unsere neue Lösung konzipierten und schrittweise Komponente entworfen. Der Einbau in dieser neuen Komponente in die vorhandene Architektur hat sich als eine schwerere Aufgabe erwiesen und zog sich bis zur zweiten Blockwoche und darüber hinweg. Die finale Lösung erinnert nur wenig an das ursprüngliche Hausaufgabenprojekt.
+Über die erste Blockwoche hinweg haben wir unsere neue Lösung konzipiert und schrittweise Komponente entworfen. Der Einbau in dieser neuen Komponente in die vorhandene Architektur hat sich als eine schwerere Aufgabe erwiesen und zog sich bis zur zweiten Blockwoche und darüber hinweg. Die finale Lösung erinnert nur wenig an das ursprüngliche Hausaufgabenprojekt.
 
 ## Datengenerator
 
