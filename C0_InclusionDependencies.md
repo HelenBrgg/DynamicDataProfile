@@ -18,9 +18,9 @@ Für IND's gelten immer folgende Eigenschaften:
 ##### Beispiel für unary IND's {-}
 
 <p align="center">
-  <img src="imgs/unary_IND_Example.jpg" width="400" title="unary IND-Beispiel"[^papenbrock]>
+  <img src="imgs/unary_IND_Example.jpg" width="400"
   <p align="center">
-   <br>
+    unary IND-Beispiel<a href="papenbrock">[1]</a>> <br>
   X := Attribut "Name" aus Tabelle "Lending"<br>
   Y := Attribut "Titel" aus Tabelle "Book"<br>
   </p>
@@ -34,13 +34,13 @@ Es ist auch leicht zu sehen, dass $Y ⊆ X$ nicht gilt, da $Y$ den Wert "3D Comp
 <p align="center">
   <img src="imgs/n-ary_IND_Example.jpg" width="400">
   <p align="center">
-  n-ary IND Beispiel[^papenbrock] <br>
+  n-ary IND Beispiell<a href="papenbrock">[1]</a>> <br>
   X := Attribute "Student" und "Course" aus Tabelle "Lending"<br>
   Y := Attribute "Name" und "Lecture" aus Tabelle "Student"<br>
   </p>
 </p>
 
-[^papenbrock]: Papenbrock, Thorsten 2021: DDM Hands-on Akka Actor Programming, Distributed Data Management, WS 21/22 . Foliensatz. Marburg: Philipps-Universität Marburg
+<p id="papenbrock">[1] Here is my first footnote.</p> Papenbrock, Thorsten 2021: DDM Hands-on Akka Actor Programming, Distributed Data Management, WS 21/22 . Foliensatz. Marburg: Philipps-Universität Marburg
 
 Bei n-ary IND's ist es nicht nur wichtig das alle Werte der einzelnen Attribute aus $X$ in $Y$ auftauchen, sondern das sie vor allem in der Kombination in Y auftauchen, in der sie auch in X auftauchen.<br>
 Auch hier ist wieder einfach zu sehen, dass $X ⊆ Y$ gilt, denn die drei unterschiedlichen Kombinationen aus "Student" und "Course" die in $X$ auftauchen sind auch alle in $Y$ vertreten. Das bedeutet also das hier ebenfalls $Y ⊆ X$ gelten würde.
