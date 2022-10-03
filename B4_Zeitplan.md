@@ -12,7 +12,7 @@
 1. Recherche
 2. Konzeptionierung und Umsetzung
   1. Datengenerator
-  2. Dynamischer Algorithmus
+  2. Akka System
 3. Ausarbeitung der Hausarbeit
 
 <!--<div style="position:relative; z-index: 100; margin-left: -100px; margin-right: -100px; overflow: visible">-->
@@ -38,25 +38,25 @@ In der Zeit haben wir uns in der Gruppe im Wochentakt getroffen und besprochen. 
 
 In der nächsten Phase sind wir dazu übergegangen uns in größeren Abständen zu Blockwochen oder Sprintwochenenden zu treffen um am Stück runterprogrammieren zu können.
 
-### a) Datengenerator {-}
+### a) Data-Generator {-}
 
 #### Erste Programmiereinheit: 04.04.2022 - 08.08.2022
 
-In einem einwöchigen Programmiersprint ist das Konzept und ein Großteil des Datengenerators entstanden. Als Datenformat wurden CSV Tabellen festgelegt, wobei die erste Spalte immer eine explizite Zeilen-Position ist, mit der man alte Daten überschreiben kann.
+In einem einwöchigen Programmiersprint ist das Konzept und ein Großteil des Data-Generators entstanden. Als Datenformat wurden CSV Tabellen festgelegt, wobei die erste Spalte immer eine explizite Zeilen-Position ist, mit der man alte Daten überschreiben kann.
 
 > **_Meilenstein 2a: Definition des Datenformats_**
 
 #### Zweite Programmiereinheit: 21.05.2022
 
-Fertigstellung des Datengenerators
+In der zweiten Programmiereinheit wurde der Data-Generator fertiggestellt.
 
-> **_Meilenstein 3a: Fertiger Datengenerator_**
+> **_Meilenstein 3a: Fertiger Data-Generator_**
 
 >> **Ergebnis der Phase 2a** 
 
->> Fertiger Datengenerator
+>> Fertiger Data-Generator
 
-### b) Dynamischer Algorithmus {-}
+### b) Akka-System {-}
 
 #### Erste Programmiereinheit: 04.04.2022 - 08.04.2022
 
@@ -70,17 +70,17 @@ Ausgehend vom MVP wurden nun die Klassenentwürfe und der Algorithmus iterativ u
 
 #### Programmiereinheit: 01.08.2022 - 08.08.2022
 
-Nachdem die Architektur für den Algorithmus noch einmal überarbeitet wurde, wurde der Algorithmus mitsamt seiner Pipeline final implementiert.
+Nachdem die Architektur für den Algorithmus noch einmal überarbeitet wurde, wurde das Akka-System mitsamt seiner Pipeline final implementiert.
 
-> **_Meilenstein 3b: Fertigstellung Algorithmus_**
+> **_Meilenstein 3b: Fertigstellung Akka-System_**
 
 >> **Ergebnis der Phase 2b** 
 
->> Fertiger Dynamischer Algorithmus
+>> Fertiges Akka-System
 
 ## Phase 3: Hausarbeit und Festhalten der Ergebnisse 01.08.2022-31.09.2022 {-}
 
-Parallel zur Fertigstellung des dynamischen Algorithmus wurde die Hausarbeit zu der Projektarbeit erstellt. Neben der Dokumentation wurden außerdem graphische Plots der Ergebnisse erstellt.
+Parallel zur Fertigstellung des Akka-Systems wurde die Hausarbeit zu der Projektarbeit erstellt. Neben der Dokumentation wurden außerdem graphische Plots der Ergebnisse erstellt.
 
 >> **Ergebnis der Phase 3** 
 
