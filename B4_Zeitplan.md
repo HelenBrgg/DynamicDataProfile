@@ -12,7 +12,7 @@
 1. Recherche
 2. Konzeptionierung und Umsetzung
   1. Datengenerator
-  2. Akka System
+  2. Dynamischer Algorithmus
 3. Ausarbeitung der Hausarbeit
 
 <!--<div style="position:relative; z-index: 100; margin-left: -100px; margin-right: -100px; overflow: visible">-->
@@ -56,7 +56,7 @@ In der zweiten Programmiereinheit wurde der Data-Generator fertiggestellt.
 
 >> Fertiger Data-Generator
 
-### b) Akka-System {-}
+### b) Dynamischer Algorithmus {-}
 
 #### Erste Programmiereinheit: 04.04.2022 - 08.04.2022
 
@@ -72,7 +72,7 @@ Ausgehend vom MVP wurden nun die Klassenentwürfe und der Algorithmus iterativ u
 
 Nachdem die Architektur für den Algorithmus noch einmal überarbeitet wurde, wurde das Akka-System mitsamt seiner Pipeline final implementiert.
 
-> **_Meilenstein 3b: Fertigstellung Akka-System_**
+> **_Meilenstein 3b: Fertigstellung Dynamischer Algorithmus_**
 
 >> **Ergebnis der Phase 2b** 
 
