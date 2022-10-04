@@ -1,5 +1,0 @@
-<!--
-# Testprotokoll
-
-(weg damit)
--->
