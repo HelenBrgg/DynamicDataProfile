@@ -15,7 +15,24 @@ Weil das Generieren dieser Batches sehr viel günstiger als ihre Analyse sein wi
 
 Die Aufgabe des __Akka Systems__ ist es, Batches aus Änderungen anzunehmen und das synthethische Dataset zu rekonstruieren und zu updaten. Dabei soll es fortwährend auf INDs überprüfen. Es pullt Batches vom Data-Generator so schnell, wie es sie analysieren kann.
 
-Die gefundenen INDs werden im laufenden Betrieb in eine `live-results.csv` Datei ausgegeben. Sobald der Data-Generator keine Data-Batches mehr liefert, wird der finale Zustand der synthethischen Datensets analysiert und alle verbliebenen INDs werden nochmal in eine `final-results.txt` Datei ausgeben.
+![Auszug einer live-results.csv](imgs/live-results.png)
+
+Die gefundenen INDs werden im laufenden Betrieb in eine `live-results.csv` Datei ausgegeben. Dabei werden folgende Informationen über IND-Kandidaten festgehalten:
+
+* `timestamp`: Der relative Zeitstempel seit Start des Programms
+* `attribute_a`: Der Name des abhängige Attributs
+* `attribute_b`: Der Name des referenzierten Attributs
+* `is_valid`: `true` wenn der Kandidat valide ist, `false` wenn der Kandidat invalide ist
+* `reason`: Der Grund warum der Kandidat als valide/invalide befunden wurde
+  - `cardinality`: Purged anhand der Kardinalität (= `false`)
+  - `extrema`: Purged anhand der Extremwerte (= `false`)
+  - `datatype`: Purged anhand des Bloomfilters (= `false`) 
+  - `bloomfilter`: Purged anhand des Bloomfilters (= `false`)
+  
+
+![Auszug einer final-results.txt](imgs/live-results.png)
+
+Sobald der Data-Generator keine Data-Batches mehr liefert, wird der finale Zustand der synthethischen Datensets analysiert und alle am Ende validen INDs werden nochmal in eine `final-results.txt` Datei ausgeben.
 
 ## Datenformat (Batches)
 
