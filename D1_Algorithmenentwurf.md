@@ -95,8 +95,7 @@ Im Status Quo suchen wir lediglich nach unären IND's. Als Fortführung könnte 
 Durch logische Implikationen können Kandidaten ausgeschlossen werden. Dafür werden zum Teil in vorherigen Iterationen Metadaten zu Kandidaten gespeichert.
 Die logischen Implikationen sind zum Beispiel:
 
-> TODO hier fehlen noch ein paar Implikationen
-
+Bei Hinzufügen oder Löschen von Werte
 Wenn A ⊄ B: A erhält ein neues Element und B bleibt gleich => A ⊄ B.<br>
 Wenn B ⊂ A: A erhält ein neues Element und B bleibt gleich => B ⊂ A.
 
