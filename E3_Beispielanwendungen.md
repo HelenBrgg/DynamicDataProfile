@@ -1,5 +1,0 @@
-<!--
-# Beispielanwendungen
-
-(Felix Vorschlag, gemeinsam)
--->
