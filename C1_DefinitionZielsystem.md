@@ -30,7 +30,7 @@ Die gefundenen INDs werden im laufenden Betrieb in eine `live-results.csv` Datei
   - `bloomfilter`: Purged anhand des Bloomfilters (= `false`)
   
 
-![Auszug einer final-results.txt](imgs/live-results.png)
+![Auszug einer final-results.txt](imgs/final-results.png)
 
 Sobald der Data-Generator keine Data-Batches mehr liefert, wird der finale Zustand der synthethischen Datensets analysiert und alle am Ende validen INDs werden nochmal in eine `final-results.txt` Datei ausgeben.
 
