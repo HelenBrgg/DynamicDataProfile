@@ -18,7 +18,7 @@ class CSVRowReader:
         :param filepath: location of a CSV file
         :type filepath: CSV file
         """
-        self.reader = csv.reader(open(filepath, encoding='utf-8'),delimiter=CSV_SEPARATOR)
+        self.reader = csv.reader(open(filepath, encoding='utf-8'), delimiter=CSV_SEPARATOR)
         self._attributes = next(self.reader)
         self.filepath = filepath
         self.index = -1
@@ -55,16 +55,17 @@ class CSVRowReader:
 class RowRepeater:
     """takes the reader (inner) and repeats the rows until a specified number of maximum rows is reached
     """
-    def __init__(self, max_rows: int, inner):
+    def __init__(self, max_bytes: int, inner):
         """Constructor method
 
         :param max_rows: number of row to returned
         :type max_rows: _type_
         :param inner: RowRepeater is a inner-funtion of the CSVRowReader
         """
-        self.max_rows = max_rows
+        self.max_bytes = max_bytes
         self.inner = inner
-        self.remaining_rows = max_rows
+        self.remaining_bytes = max_bytes
+        self.nth_row = 0
     
     def attributes(self):
         """returns the attribute of the passed reader
@@ -85,13 +86,14 @@ class RowRepeater:
         :return: None or Index + row of reader
         :rtype: None or Array[String]
         """
-        if self.remaining_rows != 0:
+        if self.remaining_bytes > 0:
             next_row = self.inner.nextRow()
-            self.remaining_rows -= 1
             if next_row is None:
                 self.inner.reset()
                 next_row = self.inner.nextRow()
-            next_row[0] = str(self.max_rows - self.remaining_rows -1)
+            self.remaining_bytes -= sum([len(c) for c in next_row])
+            next_row[0] = str(self.nth_row)
+            self.nth_row += 1
             return next_row
         else: 
             return None
@@ -100,7 +102,8 @@ class RowRepeater:
         """resets the RowRepeater by calling for the reset def of the given reader 
         and resets the remeining_rows to the max_rows again
         """
-        self.remaining_rows = self.max_rows
+        self.remaining_bytes = self.max_bytes
+        self.nth_row = 0
         self.inner.reset()
 
 
@@ -139,7 +142,7 @@ class RowDeleter:
         else:
             row = self.row_generator.nextRow()
             if row is not None:
-                self.max_index = max(self.max_index,int(row[0]))
+                self.max_index = max(self.max_index, int(row[0]))
             return row
     
     def reset(self):
@@ -177,10 +180,10 @@ class Batcher:
             row = self.row_generator.nextRow()
             if row is None:
                 break
-            batch += '\n' + ','.join(row)
+            batch += '\n' + CSV_SEPARATOR.join(row)
         if batch == '':
             return None
-        return ','.join(self.row_generator.attributes()) + batch
+        return CSV_SEPARATOR.join(self.row_generator.attributes()) + batch
 
 
 class CSVReadIn:
@@ -188,29 +191,30 @@ class CSVReadIn:
     creates a reader, then a repeater, then a deleter and than give it to the Batcher 
     creates a batch that can be submitted to the system
     """
-    def __init__(self, filepath: str, total_rows: int, max_batch_size: int, delete_chance: float):
+    def __init__(self, filepath: str, total_bytes: int, max_batch_size: int, delete_chance: float):
         """Constructor method
         
         :param filepath: path to the csv file
-        :param total_rows: total number of rows to generate
+        :param total_rows: total number of byts to generate
         :param batch_rows: desired size of a batch in bytes
         :param delete_change: change of generation deleting a row instead of creating one
         """
         self.filepath = filepath
-        self.total_rows = total_rows
+        self.total_bytes = total_bytes
         self.max_batch_size = max_batch_size
         self.delete_chance = delete_chance
     
     def openRowGenerator(self):
-        """creates a instanc of RowDeleter (deleter) by creating a reader (instanc of CSVRowReader) and than a 
+        """creates a instance of RowDeleter (deleter) by creating a reader (instance of CSVRowReader) and than a 
         repeater (instance of RowRepeater).
 
         :return: a deleter with the given deleat_chance and a repeater
         """
         reader = CSVRowReader(self.filepath)
-        repeater = RowRepeater(self.total_rows, reader)
-        deleter = RowDeleter(self.delete_chance, repeater)
-        return repeater
+        # reader = RowRepeater(self.total_bytes, reader)
+        # reader = RowDeleter(self.delete_chance, reader)
+        
+        return reader
     
     def run(self):
         """Calls the Batcher class with a configurable max_batch_size
@@ -227,7 +231,7 @@ class CSVReadIn:
 if __name__ == '__main__':
     if len(sys.argv) != 5:
         print(
-            f"Usage: {sys.argv[0]} FILEPATH TOTAL-ROWS MAX-BATCH-SIZE DELETE-CHANCE \n" +
+            f"Usage: {sys.argv[0]} FILEPATH TOTAL_BYTES MAX_BATCH_SIZE DELETE_CHANCE \n" +
             "\n" +
             "Environment: \n" +
             "\n" +
