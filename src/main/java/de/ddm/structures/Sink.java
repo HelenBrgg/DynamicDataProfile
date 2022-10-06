@@ -1,6 +1,9 @@
 package de.ddm.structures;
 
+import java.util.Map;
+
 public interface Sink {
-    void putResult(Candidate candidate, CandidateStatus status);
+    void putLiveResult(Candidate candidate, CandidateStatus status);
+    void putFinalResults(Map<Candidate, CandidateStatus> results);
     void finish();
 }

@@ -162,16 +162,14 @@ public class DataWorker extends AbstractBehavior<DataWorker.Message> {
     }
 
     private Behavior<Message> handle(MergeRequest request) {
-        this.getContext().getLog().info("received merge request, aborting all subset checks");
+        this.getContext().getLog().info("received merge request ({} attributes), aborting all subset checks", this.attributeStates.size());
         this.remoteSubsetChecks.clear();
 
-        // FIXME hack
         Planner.MergeResult result = new Planner.MergeResult(this.workerId);
         this.attributeStates.forEach((attr, state) -> {
             SetDiff diff = state.mergeSegments();
             boolean additions = !diff.getInserted().isEmpty();
             boolean removals = !diff.getRemoved().isEmpty();
-            if (additions || removals) return;
             result.addEntry(attr, new Planner.MergeResult.Entry(additions, removals, state.metadata));
         });
         request.resultRef.tell(result);
@@ -191,7 +189,7 @@ public class DataWorker extends AbstractBehavior<DataWorker.Message> {
         AttributeState state = this.attributeStates.get(request.attribute);
 
         List<Value> values = state.oldSegmentSet.queryChunk(request.fromValue).collect(Collectors.toList());
-        boolean endOfSet = values.isEmpty() || state.metadata.getMax().get().isLessThan(values.get(values.size() - 1));
+        boolean endOfSet = values.isEmpty() || state.metadata.getMax().get().compareTo(values.get(values.size() - 1)) == 0;
         
         SetQueryResult result = new SetQueryResult(request.attribute, values, endOfSet, this.workerId, this.getContext().getSelf().narrow());
         request.resultRef.tell(result);
@@ -218,7 +216,7 @@ public class DataWorker extends AbstractBehavior<DataWorker.Message> {
                     result.values.stream().limit(2).map(Object::toString).collect(Collectors.joining(",")),
                     stateB.metadata.getMinMax().stream().map(Object::toString).collect(Collectors.joining(":")));
 
-                CandidateStatus status = CandidateStatus.failedCheck(check.comparisonCount);
+                CandidateStatus status = CandidateStatus.failedCheck();
                 SubsetCheckResult checkResult = new SubsetCheckResult(check.request.candidate, status, this.workerId);
                 check.request.resultRef.tell(checkResult);
                 return true;
@@ -231,7 +229,7 @@ public class DataWorker extends AbstractBehavior<DataWorker.Message> {
                     result.values.stream().limit(2).map(Object::toString).collect(Collectors.joining(",")),
                     stateB.metadata.getMinMax().stream().map(Object::toString).collect(Collectors.joining(":")), stateB.oldSegmentSet.getCardinality());
 
-                CandidateStatus status = CandidateStatus.succeededCheck(check.comparisonCount);
+                CandidateStatus status = CandidateStatus.succeededCheck();
                 SubsetCheckResult checkResult = new SubsetCheckResult(check.request.candidate, status, this.workerId);
                 check.request.resultRef.tell(checkResult);
                 return true;
@@ -243,7 +241,7 @@ public class DataWorker extends AbstractBehavior<DataWorker.Message> {
         });
 
         // if there are remote values left and are any remote checks left, we need to query more
-        if (!result.isEndOfSet() && !remoteSubsetChecks.isEmpty()) {
+        if (!result.isEndOfSet() && !attrSubsetChecks.isEmpty()) {
             this.getContext().getLog().info("not end of set, need to query more for {} pending subset checks", attrSubsetChecks.size());
 
             SetQueryRequest nextRequest = new SetQueryRequest(result.getAttribute(), result.lastValue(), this.workerId, this.getContext().getSelf().narrow());
@@ -254,7 +252,7 @@ public class DataWorker extends AbstractBehavior<DataWorker.Message> {
     }
 
     private Behavior<Message> handle(SubsetCheckRequest request) {
-        this.getContext().getLog().info("received subset check request for {}");
+        this.getContext().getLog().info("received subset check request for {}", request.getCandidate());
 
         Table.Attribute attrA = request.getCandidate().getAttributeA();
         Table.Attribute attrB = request.getCandidate().getAttributeB();
@@ -262,7 +260,7 @@ public class DataWorker extends AbstractBehavior<DataWorker.Message> {
         // if we don't have any data yet, it's fine to start out with an empty AttributeState
         AttributeState stateB = this.attributeStates.computeIfAbsent(attrB, _attrB -> new AttributeState(arrayFactory, setFactory));
 
-        if (request.getRemoteRef().isPresent()) {
+        if (request.getRemoteRef().isPresent() && !request.getRemoteRef().equals(this.getContext().getSelf())) {
             this.getContext().getLog().info("querying remote data worker {} for subset check", request.getRemoteRef().get().toString());
             // TODO check if identical subset-check-req is already present
             this.remoteSubsetChecks
@@ -276,9 +274,17 @@ public class DataWorker extends AbstractBehavior<DataWorker.Message> {
         AttributeState stateA = this.attributeStates.computeIfAbsent(attrA, _attrA -> new AttributeState(arrayFactory, setFactory));
         CandidateStatus status;
         if (stateB.oldSegmentSet.containsAll(stateA.oldSegmentSet.queryAll())) {
-            status = CandidateStatus.succeededCheck(stateA.oldSegmentSet.getCardinality());
+                this.getContext().getLog().info("subset check {} succeeded: [{}] c [{}]",
+                    request.getCandidate(),
+                    stateA.metadata.getMinMax().stream().map(Object::toString).collect(Collectors.joining("..")),
+                    stateB.metadata.getMinMax().stream().map(Object::toString).collect(Collectors.joining("..")));
+            status = CandidateStatus.succeededCheck();
         } else {
-            status = CandidateStatus.failedCheck(stateB.oldSegmentSet.getCardinality());
+                this.getContext().getLog().info("subset check {} failed: [{}] ⊈ [{}]",
+                    request.getCandidate(),
+                    stateA.metadata.getMinMax().stream().map(Object::toString).collect(Collectors.joining("..")),
+                    stateB.metadata.getMinMax().stream().map(Object::toString).collect(Collectors.joining("..")));
+            status = CandidateStatus.failedCheck();
         }
         SubsetCheckResult result = new SubsetCheckResult(request.getCandidate(), status, this.workerId);
         request.getResultRef().tell(result);

@@ -1,18 +1,24 @@
 package de.ddm.structures;
 
-import com.opencsv.CSVReader;
-import com.opencsv.exceptions.CsvException;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import org.apache.commons.lang3.builder.HashCodeExclude;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+
+import com.opencsv.CSVParser;
+import com.opencsv.CSVParserBuilder;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
+import com.opencsv.ICSVParser;
+import com.opencsv.exceptions.CsvException;
+
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 /**
  * Contains:
@@ -60,7 +66,16 @@ public class Table {
     }
 
     public static Table parseCSV(String csvString, String tableName) throws IOException, CsvException {
-        CSVReader reader = new CSVReader(new StringReader(csvString));
+        // FIXME better way to supply separator?
+        // CSVReader reader = new CSVReader(new StringReader(csvString));
+
+        CSVReader reader =
+            new CSVReaderBuilder(new StringReader(csvString))
+                .withCSVParser(new CSVParserBuilder()
+                    .withSeparator(';')
+                    .build())
+                .build();
+                
         List<String[]> rawRows = reader.readAll();
         reader.close();
 
@@ -70,15 +85,20 @@ public class Table {
             .skip(1) // skip position column
             .map(attr -> new Attribute(tableName, attr))
             .collect(Collectors.toList());
-        table.positions = rawRows.stream()
-            .skip(1) // skip header row
-            .map(rawRow -> Integer.parseInt(rawRow[0]))
-            .collect(Collectors.toList());
+        try {
+            table.positions = rawRows.stream()
+                .skip(1) // skip header row
+                .map(rawRow -> Integer.parseInt(rawRow[0]))
+                .collect(Collectors.toList());
+        } catch (NumberFormatException ex) {
+            throw new IOException("Expected position cells of " + tableName + " to be integers: " + ex.getMessage() + "; TABLE\n" + csvString);
+        }
         table.columns = Stream.generate(Column::new)
             .limit(table.attributes.size())
             .collect(Collectors.toList());
 
-        for (String[] rawRow : rawRows) { // each row
+        for (int i = 1; i < rawRows.size(); ++i) { // each row
+            String[] rawRow = rawRows.get(i);
             for (int j = 0; j < table.attributes.size(); j++) { // each column
                 if (rawRow.length <= j + 1) {
                     assert false : "table " + tableName + ", attributes: " + table.attributes + ", row: " + String.join("|", rawRow);
@@ -95,17 +115,9 @@ public class Table {
         return this.positions.stream().mapToInt(i -> i);
     }
 
-    public Stream<Value.WithPosition> streamColumnWithPositions(int colIndex, int rangeBegin, int rangeEndInclusive) {
+    public Stream<Value.WithPosition> streamColumnWithPositions(int colIndex){
         Column column = this.columns.get(colIndex);
         return IntStream.range(0, this.positions.size())
-                .filter(i -> this.positions.get(i) > rangeBegin && this.positions.get(i) <= rangeEndInclusive)
                 .mapToObj(i -> new Value.WithPosition(column.values.get(i), this.positions.get(i)));
-    }
-    public Stream<Value.WithPosition> streamColumnWithPositions(int colIndex){
-        return this.streamColumnWithPositions(colIndex, 0, this.columns.get(colIndex).values.size());
-    }
-
-    public void insertValues(Attribute attribute, Stream<Value.WithPosition> values) {
-        
     }
 }

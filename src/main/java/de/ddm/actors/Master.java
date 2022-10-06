@@ -64,11 +64,12 @@ public class Master extends AbstractBehavior<Master.Message> {
         super(context);
         // Reaper.watchWithDefaultReaper(this.getContext().getSelf());
 
-        // this.dataWorker = context.spawn(DataWorker.create(1, HeapColumnArray::new, HeapColumnSet::new), "data-worker");
-        this.dataWorker = context.spawn(DataDistributor.create(HeapColumnArray::new, HeapColumnSet::new, new ModuloPartitioningStrategy(5), 5), "data-distributor");
+        this.dataWorker = context.spawn(DataWorker.create(1, HeapColumnArray::new, HeapColumnSet::new), "data-worker");
+        // this.dataWorker = context.spawn(DataDistributor.create(HeapColumnArray::new, HeapColumnSet::new, new ModuloPartitioningStrategy(5), 5), "data-distributor");
         this.inputWorker = context.spawn(InputWorker.create(this.dataWorker.narrow()), "input-worker");
-        Reaper.watchWithDefaultReaper(inputWorker);
+        
 
+        // TODO move this into constructor
         Sink sink = null;
         try {
              sink = new CsvLogSink();
@@ -77,6 +78,12 @@ public class Master extends AbstractBehavior<Master.Message> {
             System.exit(1);
         }
         this.planner = context.spawn(Planner.create(sink, this.inputWorker.narrow(), this.dataWorker.narrow()), "planner");
+
+        // NOTE planner terminates once inputWorker terminates and all work is done
+        this.getContext().watchWith(this.planner, new ShutdownMessage());
+
+        // FIXME this is rather dirty hack so we dont have to implement shutdown everywhere
+        Reaper.watchWithDefaultReaper(this.getContext().getSelf());
     }
 
     ////////////////////
@@ -92,8 +99,9 @@ public class Master extends AbstractBehavior<Master.Message> {
     }
 
     private Behavior<Message> handle(StartMessage message) {
-       this.inputWorker.tell(new InputWorker.IdleMessage());
-       return this;
+        this.inputWorker.tell(new InputWorker.PollingMessage());
+        // this.getContext().scheduleOnce(Duration.ofMillis((int) this.pollDelayMillis), this.getContext().getSelf(), new PollingMessage());
+        return this;
     }
 
     private Behavior<Message> handle(ShutdownMessage message) {

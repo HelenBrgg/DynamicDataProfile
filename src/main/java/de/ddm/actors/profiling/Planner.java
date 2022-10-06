@@ -6,16 +6,14 @@ import akka.actor.typed.javadsl.AbstractBehavior;
 import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
 import akka.actor.typed.javadsl.Receive;
-import akka.stream.javadsl.Merge;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 import de.ddm.actors.profiling.DataWorker.SubsetCheckRequest;
 import de.ddm.serialization.AkkaSerializable;
 import de.ddm.structures.*;
 import java.time.Duration;
 import java.util.*;
-import java.util.stream.Collectors;
 
 // TODO naming: CandidateGeneratorWorker?
 public class Planner extends AbstractBehavior<Planner.Message> {
@@ -37,12 +35,13 @@ public class Planner extends AbstractBehavior<Planner.Message> {
             private boolean removals;
             private Metadata metadata;
 
-            public Entry combineWith(Entry other){
-                return new Entry(
-                    this.isAdditions() || other.isAdditions(),
-                    this.isRemovals() || other.isRemovals(),
-                    this.getMetadata().combineWith(other.getMetadata()));
-            }
+            // NOTE used for vertical partitioning
+            // public Entry combineWith(Entry other){
+            //     return new Entry(
+            //         this.isAdditions() || other.isAdditions(),
+            //         this.isRemovals() || other.isRemovals(),
+            //         this.getMetadata().combineWith(other.getMetadata()));
+            // }
 
         }
 
@@ -66,6 +65,11 @@ public class Planner extends AbstractBehavior<Planner.Message> {
         private int workerId;
     }
 
+    @NoArgsConstructor
+    public static class ShutdownMessage implements Message {
+        private static final long serialVersionUID = 0x97A2_9999;
+    }
+
     /////////////////
     // Actor State //
     /////////////////
@@ -75,6 +79,7 @@ public class Planner extends AbstractBehavior<Planner.Message> {
     private final ActorRef<InputWorker.Message> inputWorker;
     private final ActorRef<DataWorker.Message> dataWorker;
     private int pendingSubsetChecks = 0; // TODO remove this? theoretically, you can interrupt them with a MergeRequest
+    private boolean lastMerge = false;
 
     ////////////////////////
     // Actor Construction //
@@ -100,8 +105,11 @@ public class Planner extends AbstractBehavior<Planner.Message> {
         this.inputWorker = inputWorker;
         this.dataWorker = dataWorker;
 
+        this.getContext().watchWith(this.inputWorker, new ShutdownMessage());
+
+        // kickoff merging events
         DataWorker.MergeRequest initialMerge = new DataWorker.MergeRequest(this.getContext().getSelf().narrow());
-        this.getContext().scheduleOnce(Duration.ofMillis(1000), this.dataWorker, initialMerge);
+        this.getContext().scheduleOnce(Duration.ofMillis(1500), this.dataWorker, initialMerge);
     }
 
     ////////////////////
@@ -113,11 +121,17 @@ public class Planner extends AbstractBehavior<Planner.Message> {
         return newReceiveBuilder()
                 .onMessage(MergeResult.class, this::handle)
                 .onMessage(SubsetCheckResult.class, this::handle)
+                .onMessage(ShutdownMessage.class, this::handle)
                 .build();
     }
 
+    private void scheduleNextMerge() {
+        DataWorker.MergeRequest nextMerge = new DataWorker.MergeRequest(this.getContext().getSelf().narrow());
+        this.getContext().scheduleOnce(Duration.ofMillis(500), this.dataWorker, nextMerge);
+    }
+
     private Behavior<Message> handle(MergeResult result) {
-        this.getContext().getLog().info("received merge-result from worker {}", result.getWorkerId());
+        this.getContext().getLog().info("received merge-result from worker {} for {} attributes", result.getWorkerId(), result.getEntries().size());
 
         result.getEntries().forEach((attribute, entry) -> {
             this.candidateGenerator.updateAttribute(attribute, entry.isAdditions(), entry.isRemovals(), entry.getMetadata());
@@ -130,7 +144,7 @@ public class Planner extends AbstractBehavior<Planner.Message> {
 
         generated.forEach((candidate, status) -> {
             if (status.isPresent()) {
-                this.sink.putResult(candidate, status.get());
+                this.sink.putLiveResult(candidate, status.get());
             } else {
                 /* send subset-check requests */
                 DataWorker.SubsetCheckRequest request = new SubsetCheckRequest(candidate, Optional.empty(), this.getContext().getSelf().narrow());
@@ -139,36 +153,50 @@ public class Planner extends AbstractBehavior<Planner.Message> {
             }
         });
 
-        /* no new candidates: inform input-worker we want more data  */
-        if (generated.values().stream().filter(status -> status.isEmpty()).count() == 0) {
-            this.inputWorker.tell(new InputWorker.IdleMessage());
-
-            // TODO move this into a function
-            /* schedule next merge */
-            DataWorker.MergeRequest nextMerge = new DataWorker.MergeRequest(this.getContext().getSelf().narrow());
-            this.getContext().scheduleOnce(Duration.ofMillis(1000), this.dataWorker, nextMerge);
+        /* no new candidates */
+        if (this.pendingSubsetChecks == 0) {
+            if (this.lastMerge) {
+                this.getContext().getSelf().tell(new ShutdownMessage());
+                return this;
+            }
+            this.scheduleNextMerge();
         }
 
         return this;
     }
 
     private Behavior<Message> handle(SubsetCheckResult result) {
-        this.sink.putResult(result.getCandidate(), result.getStatus());
+        this.getContext().getLog().info("received subset-check-result from worker {} for {}", result.getWorkerId(), result.getCandidate());
+
+        this.sink.putLiveResult(result.getCandidate(), result.getStatus());
         this.candidateGenerator.updateCandidate(result.getCandidate(), Optional.of(result.getStatus()));
 
         this.pendingSubsetChecks -= 1;
         if (this.pendingSubsetChecks <= 0) {
             this.pendingSubsetChecks = 0;
 
-            InputWorker.IdleMessage idle = new InputWorker.IdleMessage();
-            this.inputWorker.tell(idle);
-            
-            // TODO move this into a function
-            /* schedule next merge */
-            DataWorker.MergeRequest nextMerge = new DataWorker.MergeRequest(this.getContext().getSelf().narrow());
-            this.getContext().scheduleOnce(Duration.ofMillis(2000), this.dataWorker, nextMerge);
+            /* all candidates handled */
+            if (this.lastMerge) {
+                this.getContext().getSelf().tell(new ShutdownMessage());
+                return this;
+            }
+            this.scheduleNextMerge();
         }
 
         return this;
+    }
+
+    private Behavior<Message> handle(ShutdownMessage result) {
+        // TODO run last merge
+        if (!this.lastMerge) {
+            this.getContext().getLog().info("waiting for last merge before shutdown");
+            this.lastMerge = true;
+            return this;
+        }
+
+        this.getContext().getLog().info("last merge done, shutting down");
+        this.sink.putFinalResults(this.candidateGenerator.getCandidates());
+
+        return Behaviors.stopped();
     }
 }

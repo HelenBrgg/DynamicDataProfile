@@ -1,9 +1,6 @@
 package de.ddm.structures;
 
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
@@ -12,7 +9,7 @@ public class CandidateGenerator {
     private Map<Candidate, Optional<CandidateStatus>> candidates = new HashMap<>();
 
     public void updateCandidate(Candidate candidate, Optional<CandidateStatus> status) {
-        this.candidates.put(candidate, status); // don't return because it may be used by others
+        this.candidates.put(candidate, status);
 
         List<Candidate> resetCandidates = new ArrayList<>();
 
@@ -62,6 +59,18 @@ public class CandidateGenerator {
         resetCandidates.forEach(resetCandidate -> this.updateCandidate(resetCandidate, Optional.empty()));
     }
 
+    public Map<Candidate, CandidateStatus> getCandidates() {
+        Map<Candidate, CandidateStatus> returnCandidates = new HashMap<>();
+
+        this.candidates.forEach((cand, statusOpt) -> {
+            if (statusOpt.isPresent()) {
+                returnCandidates.put(cand, statusOpt.get());
+            }
+        });
+
+        return returnCandidates;
+    }
+
     public Map<Candidate, Optional<CandidateStatus>> generateCandidates() {
         Map<Candidate, Optional<CandidateStatus>> returnCandidates = new HashMap<>();
 
@@ -81,12 +90,5 @@ public class CandidateGenerator {
         });
 
         return returnCandidates;
-    }
-
-    public Set<Candidate> generateCandidatesUnpruned() {
-        return this.generateCandidates().entrySet().stream()
-            .filter(entry -> entry.getValue().isEmpty())
-            .map(entry -> entry.getKey())
-            .collect(Collectors.toSet());
     }
 }

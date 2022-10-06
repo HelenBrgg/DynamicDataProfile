@@ -1,6 +1,6 @@
 package de.ddm.profiler;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertArrayEquals;
 
 import java.util.*;
 
@@ -17,9 +17,9 @@ public class HeapColumnArrayTest {
         List<Value.WithPosition> testList = Arrays.asList(new Value.WithPosition(Value.fromInt(1), 0),
                 new Value.WithPosition(Value.fromInt(2), 1));
         List<Value> expectedArray = Arrays.asList((Value) Value.EMPTY, Value.EMPTY);
-        assertEquals(expectedArray, testArray.setValues(testList.stream()));
+        assertArrayEquals(expectedArray.toArray(), testArray.setValues(testList.stream()).toArray());
         List<Value> secondExpectedArray = Arrays.asList(Value.fromInt(1), Value.fromInt(2));
         ;
-        assertEquals(secondExpectedArray, testArray.setValues(testList.stream()));
+        assertArrayEquals(secondExpectedArray.toArray(), testArray.setValues(testList.stream()).toArray());
     }
 }

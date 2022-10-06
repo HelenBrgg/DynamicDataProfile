@@ -144,8 +144,11 @@ public class DataDistributor extends AbstractBehavior<Message> {
                 if (!combinedEntries.containsKey(attribute)) {
                    combinedEntries.put(attribute, workerEntry);
                 } else {
-                   combinedEntries.get(attribute).combineWith(workerEntry);
+                    throw new RuntimeException("vertical partitioning unimplemented!");
                 }
+                // } else {
+                //    combinedEntries.get(attribute).combineWith(workerEntry);
+                //}
             });
         });
 
@@ -188,11 +191,11 @@ public class DataDistributor extends AbstractBehavior<Message> {
         if (workerIdA.isEmpty()) {
             // case: worker A has no data, worker B has data
             // case: worker A and B have no data
-            SubsetCheckResult result = new SubsetCheckResult(request.getCandidate(), CandidateStatus.succeededCheck(0), -1);
+            SubsetCheckResult result = new SubsetCheckResult(request.getCandidate(), CandidateStatus.succeededCheck(), -1);
             request.getResultRef().tell(result);
         } else if (workerIdB.isEmpty()) {
             // case: worker A has data, worker B has no data
-            SubsetCheckResult result = new SubsetCheckResult(request.getCandidate(), CandidateStatus.failedCheck(0), -1);
+            SubsetCheckResult result = new SubsetCheckResult(request.getCandidate(), CandidateStatus.failedCheck(), -1);
             request.getResultRef().tell(result);
         } else if (workerIdA.get() == workerIdB.get()) {
             // case: worker A and B have data, but are the same

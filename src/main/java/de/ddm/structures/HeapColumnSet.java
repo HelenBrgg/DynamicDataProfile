@@ -23,7 +23,7 @@ public class HeapColumnSet implements ColumnSet {
      */
     @Override
     public int getCardinality() {
-        return countMap.size();
+        return this.countMap.size();
     }
 
     @Override
@@ -60,7 +60,7 @@ public class HeapColumnSet implements ColumnSet {
      */
     @Override
     public Map<Value, Long> applyCountDeltas(Map<Value, Long> countDeltas) {
-        Map<Value, Long> totalCounts = new TreeMap<>();
+        Map<Value, Long> totalCounts = new HashMap<>();
         countDeltas.forEach((k, v) -> {
             Long old = countMap.get(k);
             if (old == null)

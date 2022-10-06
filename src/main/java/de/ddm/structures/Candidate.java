@@ -13,6 +13,7 @@ public class Candidate {
 
     @Override
     public String toString() {
-        return this.attributeA + " c " + this.attributeB;
+        return this.attributeA.tableName + ".csv → " + this.attributeB.tableName + ".csv: " 
+            + this.attributeA.attribute + " ⊆ " + this.attributeB.attribute;
     }
 }

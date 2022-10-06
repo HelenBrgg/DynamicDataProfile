@@ -43,7 +43,6 @@ public interface Datatype {
             return new Integer();
         }
         if (val.toString().matches("\\d+[.]\\d*") || val.toString().matches("\\d*[.]\\d+")) {
-            // TODO allow exponent-expressions
             return new Number();
         }
         // TODO infer timestamps

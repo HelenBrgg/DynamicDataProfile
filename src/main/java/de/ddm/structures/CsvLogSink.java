@@ -1,47 +1,60 @@
 package de.ddm.structures;
 
+import com.opencsv.CSVWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Date;
-
-import com.opencsv.CSVWriter;
-
-import akka.actor.Status;
+import java.util.Map;
+import java.util.stream.Stream;
 
 public class CsvLogSink implements Sink {
+    private final String beginTimestamp;
     private final Instant begin;
     private final CSVWriter writer;
 
-    private static String getTimestamp() {
-        SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
-        return date.format(new Date());
-    }
-
-    public CsvLogSink(String csvFile) throws IOException {
-        this.begin = Instant.now();
-        this.writer = new CSVWriter(new FileWriter(new File(csvFile)));
-        // header row
-        this.writer.writeNext(new String[]{"timestamp", "attribute_a", "attribute_b", "is_valid", "reason", "comparision_count"});
-    }
-
     public CsvLogSink() throws IOException {
-        this("results-" + getTimestamp() + ".csv");
+        SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+        this.beginTimestamp = date.format(new Date());
+
+        this.begin = Instant.now();
+        this.writer = new CSVWriter(new FileWriter(new File("live-results-" + this.beginTimestamp + ".csv")));
+        // header row
+        this.writer.writeNext(new String[]{"timestamp", "attribute_a", "attribute_b", "is_valid", "reason", "info"});
     }
 
     @Override
-    public void putResult(Candidate candidate, CandidateStatus status) {
+    public void putLiveResult(Candidate candidate, CandidateStatus status) {
         this.writer.writeNext(new String[]{
             "" + (Instant.now().getEpochSecond() - this.begin.getEpochSecond()),
             candidate.getAttributeA().toString(),
             candidate.getAttributeB().toString(),
             "" + status.isValid(),
             status.getReason().toString(),
-            "" + status.getComparsionCount()
+            status.getReason().additionalInfo(),
         });
-        this.writer.flushQuietly(); // dont do this on every write...
+        this.writer.flushQuietly();
+    }
+
+    @Override
+    public void putFinalResults(Map<Candidate, CandidateStatus> results){
+        try {
+            PrintWriter finalWriter = new PrintWriter(new FileWriter(new File("final-results-" + this.beginTimestamp + ".txt")));
+            
+            results.entrySet().stream()
+                .filter(entry -> entry.getValue().isValid())
+                .map(entry -> entry.getKey().toString())
+                .sorted()
+                .forEachOrdered(str -> finalWriter.println(str));
+
+            finalWriter.flush();
+            finalWriter.close();
+        } catch (IOException err) {
+            System.out.println("failed to write to csv log sink: " + err.toString());
+        }
     }
 
     @Override

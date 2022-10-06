@@ -2,24 +2,28 @@ package de.ddm.structures;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-
 import java.util.List;
-import java.util.Map;
 
 @AllArgsConstructor
 @Getter
 public class CandidateStatus {
     public static interface Reason {
+        default String additionalInfo(){ return ""; }
     }
 
     private boolean isValid;
     private Reason reason;
-    private int comparsionCount;
 
     @AllArgsConstructor
     public static class Cardinality implements Reason {
+        private int attrA;
+        private int attrB;
+
         @Override
         public String toString(){ return "cardinality"; }
+
+        @Override
+        public String additionalInfo(){ return this.attrA + " > " + this.attrB; }
     }
 
     @AllArgsConstructor
@@ -30,8 +34,16 @@ public class CandidateStatus {
 
     @AllArgsConstructor
     public static class Extrema implements Reason {
+        private Value minA;
+        private Value maxA;
+        private Value minB;
+        private Value maxB;
+
         @Override
         public String toString(){ return "extrema"; }
+
+        @Override
+        public String additionalInfo(){ return minA + ".." + maxA + " X " + minB + ".." + maxB; }
     }
 
     @AllArgsConstructor
@@ -60,31 +72,31 @@ public class CandidateStatus {
         public String toString(){ return "logical_implication"; }
     }
 
-    public static CandidateStatus ruledOutByCardinality() {
-        return new CandidateStatus(false, new Cardinality(), 0);
+    public static CandidateStatus ruledOutByCardinality(int attrA, int attrB) {
+        return new CandidateStatus(false, new Cardinality(attrA, attrB));
     }
 
     public static CandidateStatus ruledOutByDatatype() {
-        return new CandidateStatus(false, new Datatype(), 0);
+        return new CandidateStatus(false, new Datatype());
     }
 
-    public static CandidateStatus ruledOutByExtrema() {
-        return new CandidateStatus(false, new Extrema(), 0);
+    public static CandidateStatus ruledOutByExtrema(Value minA, Value maxA, Value minB, Value maxB) {
+        return new CandidateStatus(false, new Extrema(minA, maxA, minB, maxB));
     }
 
     public static CandidateStatus ruledOutByBloomfilter() {
-        return new CandidateStatus(false, new Bloomfilter(), 0);
+        return new CandidateStatus(false, new Bloomfilter());
     }
 
-    public static CandidateStatus failedCheck(int comparisonCount) {
-        return new CandidateStatus(false, new FailedCheck(), comparisonCount);
+    public static CandidateStatus failedCheck() {
+        return new CandidateStatus(false, new FailedCheck());
     }
 
-    public static CandidateStatus succeededCheck(int comparisonCount) {
-        return new CandidateStatus(true, new SucceededCheck(), comparisonCount);
+    public static CandidateStatus succeededCheck() {
+        return new CandidateStatus(true, new SucceededCheck());
     }
 
     public static CandidateStatus logicalImplication(boolean isValid, List<Candidate> involvedCandidates) {
-        return new CandidateStatus(isValid, new LogicalImplication(involvedCandidates), 0);
+        return new CandidateStatus(isValid, new LogicalImplication(involvedCandidates));
     }
 }

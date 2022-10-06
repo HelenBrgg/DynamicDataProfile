@@ -7,39 +7,49 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import jnr.ffi.annotations.Meta;
-
 @Getter
 @NoArgsConstructor
 public class Metadata {
     private int cardinality = 0;
     private List<Value> minMax = List.of();
-    // public Map<Datatype, Integer> datatypeCounts = new HashMap<>();
+    public Optional<Datatype> datatype = Optional.empty();
     // public Bloomfilter bloomfilter; TODO
 
     public void update(ColumnSet set, SetDiff diff){
         this.cardinality = set.getCardinality();
-        this.minMax = set.getMinMax();
-    }
 
-    public Metadata combineWith(Metadata other){
-        // TODO
-        return this;
+        this.minMax = set.getMinMax();
+
+        // find lowest datatype
+        diff.getInserted().forEach(elem -> {
+            Datatype elemType = Datatype.inferType(elem);
+            if (this.datatype.isEmpty()
+            || elemType.isSubtype(this.datatype.get())) {
+                this.datatype = Optional.of(elemType);
+            }
+        });
     }
 
     public Optional<CandidateStatus> precheckPossibleSubset(Metadata other){
-        if (this.cardinality > other.cardinality) return Optional.of(CandidateStatus.ruledOutByCardinality());
+        if (other.cardinality > this.cardinality)
+            return Optional.of(CandidateStatus.ruledOutByCardinality(other.cardinality, this.cardinality));
 
-        if (this.minMax.size() == 0) return Optional.empty();
+        if (this.datatype.isPresent() && other.datatype.isPresent()) {
+            if (!other.datatype.get().isSubtype(this.datatype.get())) {
+                return Optional.of(CandidateStatus.ruledOutByDatatype());
+            }
+        }
 
-        Value minA = this.minMax.get(0);
-        Value maxA = (this.minMax.size() == 2) ? this.minMax.get(1) : minA;
+        // TODO check cardinality == 0 instead?
+        if (this.getMin().isPresent() && other.getMin().isPresent()) {
+            Value minA = other.getMin().get();
+            Value maxA = other.getMax().get();
+            Value minB = this.getMin().get();
+            Value maxB = this.getMax().get();
 
-        Value minB = other.minMax.get(0);
-        Value maxB = (other.minMax.size() == 2) ? other.minMax.get(1) : minB;
-
-        if (minA.compareTo(minB) < 0) return Optional.of(CandidateStatus.ruledOutByExtrema());
-        if (maxA.compareTo(maxB) > 0) return Optional.of(CandidateStatus.ruledOutByExtrema());
+            if (minA.compareTo(minB) < 0) return Optional.of(CandidateStatus.ruledOutByExtrema(minA, maxA, minB, maxB));
+            if (maxA.compareTo(maxB) > 0) return Optional.of(CandidateStatus.ruledOutByExtrema(minA, maxA, minB, maxB));
+        }
 
         return Optional.empty();
     }

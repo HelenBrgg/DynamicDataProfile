@@ -42,7 +42,10 @@ public class Value implements Comparable<Value> {
 
     @Override
     public int compareTo(Value b) {
-        return this.shortstr.compareTo(b.shortstr); // TODO compare object refs?
+        // we compare by length, then by alphabetic order
+        if (this.shortstr.length() < b.shortstr.length()) return -1;
+        if (this.shortstr.length() > b.shortstr.length()) return 1;
+        return this.shortstr.compareTo(b.shortstr);
     };
 
     public boolean isLessThan(Value b){
@@ -50,6 +53,19 @@ public class Value implements Comparable<Value> {
     }
     public boolean isGreaterThan(Value b){
         return this.compareTo(b) > 0;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) return true;
+        if (!(o instanceof Value)) return false;
+        return this.shortstr.equals(((Value) o).shortstr);
+    }
+
+    @Override
+    public int hashCode() {
+        return this.shortstr.hashCode();
     }
 
     public String toString() {
