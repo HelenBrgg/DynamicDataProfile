@@ -131,7 +131,7 @@ public class Planner extends AbstractBehavior<Planner.Message> {
     }
 
     private Behavior<Message> handle(MergeResult result) {
-        this.getContext().getLog().info("received merge-result from worker {} for {} attributes", result.getWorkerId(), result.getEntries().size());
+        this.getContext().getLog().debug("received merge-result from worker {} for {} attributes", result.getWorkerId(), result.getEntries().size());
 
         result.getEntries().forEach((attribute, entry) -> {
             this.candidateGenerator.updateAttribute(attribute, entry.isAdditions(), entry.isRemovals(), entry.getMetadata());
@@ -140,7 +140,7 @@ public class Planner extends AbstractBehavior<Planner.Message> {
         /* generate new candidates to check */
         Map<Candidate, Optional<CandidateStatus>> generated = this.candidateGenerator.generateCandidates();
 
-        this.getContext().getLog().info("generated candidates: {}", generated.toString());
+        this.getContext().getLog().debug("generated candidates: {}", generated.toString());
 
         generated.forEach((candidate, status) -> {
             if (status.isPresent()) {
@@ -166,7 +166,7 @@ public class Planner extends AbstractBehavior<Planner.Message> {
     }
 
     private Behavior<Message> handle(SubsetCheckResult result) {
-        this.getContext().getLog().info("received subset-check-result from worker {} for {}", result.getWorkerId(), result.getCandidate());
+        this.getContext().getLog().debug("received subset-check-result from worker {} for {}", result.getWorkerId(), result.getCandidate());
 
         this.sink.putLiveResult(result.getCandidate(), result.getStatus());
         this.candidateGenerator.updateCandidate(result.getCandidate(), Optional.of(result.getStatus()));

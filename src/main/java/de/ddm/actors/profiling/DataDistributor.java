@@ -128,7 +128,7 @@ public class DataDistributor extends AbstractBehavior<Message> {
     }
 
     private Behavior<Message> handle(WrappedMergeResult part){
-        this.getContext().getLog().info("received merge result part from data worker {}", part.getMessage().getWorkerId());
+        this.getContext().getLog().debug("received merge result part from data worker {}", part.getMessage().getWorkerId());
 
         this.pendingMergeResults.add(part.getMessage());
 
@@ -136,7 +136,7 @@ public class DataDistributor extends AbstractBehavior<Message> {
             return this; // still waiting for some data workers
         }
 
-        this.getContext().getLog().info("received all merge result parts");
+        this.getContext().getLog().debug("received all merge result parts");
 
         Map<Table.Attribute, MergeResult.Entry> combinedEntries = new HashMap<>();
         this.pendingMergeResults.forEach(workerResult -> {

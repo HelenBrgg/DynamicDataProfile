@@ -17,4 +17,11 @@ public class SetDiff {
         this.removed = new HashSet<>(removed);
         this.removed.removeAll(inserted);
     }
+
+    public String toString() {
+        StringBuilder b = new StringBuilder();
+        this.inserted.forEach(s -> { b.append('+'); b.append(s); b.append('\n'); });
+        this.removed.forEach(s -> { b.append('-'); b.append(s); b.append('\n'); });
+        return b.toString();
+    }
 }

@@ -65,7 +65,7 @@ public class DataGeneratorSource implements Source {
                 return Optional.empty(); // not a full batch
             }
 
-            this.logger.info("read batch from {}", this.tableName);
+            this.logger.debug("read batch from {}", this.tableName);
 
             String csv = String.join("\n", lines);
             return Optional.of(Table.parseCSV(csv, this.tableName));

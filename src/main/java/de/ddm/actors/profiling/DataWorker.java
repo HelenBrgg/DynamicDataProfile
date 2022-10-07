@@ -150,7 +150,7 @@ public class DataWorker extends AbstractBehavior<DataWorker.Message> {
 
     private Behavior<Message> handle(NewBatchMessage message) {
         // TODO add Table.getRowCount() ?
-        this.getContext().getLog().info("received new batch of {} containing {} rows", message.getBatchTable().name, message.getBatchTable().positions.size());
+        this.getContext().getLog().debug("received new batch of {} containing {} rows", message.getBatchTable().name, message.getBatchTable().positions.size());
 
         for (int i = 0; i < message.batchTable.attributes.size(); ++i){
             Table.Attribute attr = message.batchTable.attributes.get(i);
@@ -162,7 +162,7 @@ public class DataWorker extends AbstractBehavior<DataWorker.Message> {
     }
 
     private Behavior<Message> handle(MergeRequest request) {
-        this.getContext().getLog().info("received merge request ({} attributes), aborting all subset checks", this.attributeStates.size());
+        this.getContext().getLog().debug("received merge request ({} attributes), aborting all subset checks", this.attributeStates.size());
         this.remoteSubsetChecks.clear();
 
         Planner.MergeResult result = new Planner.MergeResult(this.workerId);
@@ -178,7 +178,7 @@ public class DataWorker extends AbstractBehavior<DataWorker.Message> {
     }
 
     private Behavior<Message> handle(SetQueryRequest request) {
-        this.getContext().getLog().info("received set query request for {} from data worker {}", request.getAttribute(), request.getRequestorWorkerId());
+        this.getContext().getLog().debug("received set query request for {} from data worker {}", request.getAttribute(), request.getRequestorWorkerId());
 
         if (!this.attributeStates.containsKey(request.attribute)) {
             SetQueryResult result = new SetQueryResult(request.attribute, List.of(), true, this.workerId, this.getContext().getSelf().narrow());
@@ -198,11 +198,11 @@ public class DataWorker extends AbstractBehavior<DataWorker.Message> {
     }
 
     private Behavior<Message> handle(SetQueryResult result) {
-        this.getContext().getLog().info("received set query result for {} (end={}) from data worker {}", result.getAttribute(), result.isEndOfSet(), result.getWorkerId());
+        this.getContext().getLog().debug("received set query result for {} (end={}) from data worker {}", result.getAttribute(), result.isEndOfSet(), result.getWorkerId());
 
         List<PendingSubsetCheck> attrSubsetChecks = this.remoteSubsetChecks.getOrDefault(result.getAttribute(), List.of());
 
-        this.getContext().getLog().info("updating {} pending subset checks for attribute: {}", attrSubsetChecks.size(), attrSubsetChecks.stream().map(check -> check.request.getCandidate().toString()).collect(Collectors.joining(", ")));
+        this.getContext().getLog().debug("updating {} pending subset checks for attribute: {}", attrSubsetChecks.size(), attrSubsetChecks.stream().map(check -> check.request.getCandidate().toString()).collect(Collectors.joining(", ")));
 
         // update all running checks on this dependent attribute
         attrSubsetChecks.removeIf(check -> {
@@ -235,14 +235,14 @@ public class DataWorker extends AbstractBehavior<DataWorker.Message> {
                 return true;
             }
 
-            this.getContext().getLog().info("subset check {} still running", check.request.getCandidate());
+            this.getContext().getLog().debug("subset check {} still running", check.request.getCandidate());
 
             return false;
         });
 
         // if there are remote values left and are any remote checks left, we need to query more
         if (!result.isEndOfSet() && !attrSubsetChecks.isEmpty()) {
-            this.getContext().getLog().info("not end of set, need to query more for {} pending subset checks", attrSubsetChecks.size());
+            this.getContext().getLog().debug("not end of set, need to query more for {} pending subset checks", attrSubsetChecks.size());
 
             SetQueryRequest nextRequest = new SetQueryRequest(result.getAttribute(), result.lastValue(), this.workerId, this.getContext().getSelf().narrow());
             result.getWorkerRef().tell(nextRequest);

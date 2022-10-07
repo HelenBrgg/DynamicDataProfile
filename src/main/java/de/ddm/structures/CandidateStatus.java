@@ -23,13 +23,19 @@ public class CandidateStatus {
         public String toString(){ return "cardinality"; }
 
         @Override
-        public String additionalInfo(){ return this.attrA + " > " + this.attrB; }
+        public String additionalInfo(){ return this.attrA + " ≮ " + this.attrB; }
     }
 
     @AllArgsConstructor
     public static class Datatype implements Reason {
+        private de.ddm.structures.Datatype typeA;
+        private de.ddm.structures.Datatype typeB;
+
         @Override
         public String toString(){ return "datatype"; }
+
+        @Override
+        public String additionalInfo(){ return this.typeA + " ⊄ " + this.typeB; }
     }
 
     @AllArgsConstructor
@@ -43,13 +49,20 @@ public class CandidateStatus {
         public String toString(){ return "extrema"; }
 
         @Override
-        public String additionalInfo(){ return minA + ".." + maxA + " X " + minB + ".." + maxB; }
+        public String additionalInfo(){ return "extremaA=[" + minA + "," + maxA + "],extremaB=[" + minB + "," + maxB + "]"; }
     }
 
     @AllArgsConstructor
     public static class Bloomfilter implements Reason {
+        private int sizeA;
+        private int sizeB;
+        private int outliersA;
+
         @Override
         public String toString(){ return "bloomfilter"; }
+
+        @Override
+        public String additionalInfo(){ return "sizeA=" + sizeA + ",sizeB=" + sizeB + ",outliersA=" + outliersA; }
     }
 
     @AllArgsConstructor
@@ -76,16 +89,16 @@ public class CandidateStatus {
         return new CandidateStatus(false, new Cardinality(attrA, attrB));
     }
 
-    public static CandidateStatus ruledOutByDatatype() {
-        return new CandidateStatus(false, new Datatype());
+    public static CandidateStatus ruledOutByDatatype(de.ddm.structures.Datatype typeA, de.ddm.structures.Datatype typeB) {
+        return new CandidateStatus(false, new Datatype(typeA, typeB));
     }
 
     public static CandidateStatus ruledOutByExtrema(Value minA, Value maxA, Value minB, Value maxB) {
         return new CandidateStatus(false, new Extrema(minA, maxA, minB, maxB));
     }
 
-    public static CandidateStatus ruledOutByBloomfilter() {
-        return new CandidateStatus(false, new Bloomfilter());
+    public static CandidateStatus ruledOutByBloomfilter(int sizeA, int sizeB, int outliersA) {
+        return new CandidateStatus(false, new Bloomfilter(sizeA, sizeB, outliersA));
     }
 
     public static CandidateStatus failedCheck() {

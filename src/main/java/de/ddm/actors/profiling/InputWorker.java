@@ -89,7 +89,7 @@ public class InputWorker extends AbstractBehavior<InputWorker.Message> {
     }
 
     private Behavior<Message> handle(PollingMessage _message) {
-        this.getContext().getLog().info("polling next batches (delay {}ms)", (int) this.pollDelayMillis);
+        this.getContext().getLog().debug("polling next batches (delay {}ms)", (int) this.pollDelayMillis);
 
         // even if all sources are finished, we still may have gotten new batches
         boolean hasNewBatches = false;

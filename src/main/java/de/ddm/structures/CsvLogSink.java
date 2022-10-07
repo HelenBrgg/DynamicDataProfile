@@ -9,7 +9,6 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Date;
 import java.util.Map;
-import java.util.stream.Stream;
 
 public class CsvLogSink implements Sink {
     private final String beginTimestamp;
@@ -21,7 +20,10 @@ public class CsvLogSink implements Sink {
         this.beginTimestamp = date.format(new Date());
 
         this.begin = Instant.now();
-        this.writer = new CSVWriter(new FileWriter(new File("live-results-" + this.beginTimestamp + ".csv")));
+        // File file = new File("live-results-" + this.beginTimestamp + ".csv";
+        File file = new File("live-results.csv");
+        file.createNewFile();
+        this.writer = new CSVWriter(new FileWriter(file));
         // header row
         this.writer.writeNext(new String[]{"timestamp", "attribute_a", "attribute_b", "is_valid", "reason", "info"});
     }
@@ -42,7 +44,10 @@ public class CsvLogSink implements Sink {
     @Override
     public void putFinalResults(Map<Candidate, CandidateStatus> results){
         try {
-            PrintWriter finalWriter = new PrintWriter(new FileWriter(new File("final-results-" + this.beginTimestamp + ".txt")));
+            // File file = new File("final-results-" + this.beginTimestamp + ".txt");
+            File file = new File("final-results.csv");
+            file.createNewFile();
+            PrintWriter finalWriter = new PrintWriter(new FileWriter(file));
             
             results.entrySet().stream()
                 .filter(entry -> entry.getValue().isValid())

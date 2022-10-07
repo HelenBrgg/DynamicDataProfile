@@ -2,6 +2,7 @@ package de.ddm.structures;
 
 import java.util.*;
 import java.util.stream.Stream;
+import orestes.bloomfilter.BloomFilter;
 
 public interface ColumnSet {
     @FunctionalInterface
@@ -14,10 +15,11 @@ public interface ColumnSet {
     int getCardinality();
     List<Value> getMinMax();
 
+    // BloomFilter<Value> generateBloomFilter();
+    BitSet generateBloomFilter();
+
     Stream<Value> queryChunk(Optional<Value> from);
 
-    //TODO
-    // List<Value> queryChunk
     Stream<Value> queryAll();
 
     Map<Value, Long> applyCountDeltas(Map<Value, Long> countDeltas);

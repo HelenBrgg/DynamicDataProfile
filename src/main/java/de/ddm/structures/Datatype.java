@@ -9,6 +9,10 @@ public interface Datatype {
     @NoArgsConstructor
     static class String implements Datatype {
         @Override
+        public java.lang.String toString() {
+            return "string";
+        }
+        @Override
         public boolean isSubtype(Datatype other) {
             return true;
         }
@@ -16,6 +20,10 @@ public interface Datatype {
 
     @NoArgsConstructor
     static class Number extends String {
+        @Override
+        public java.lang.String toString() {
+            return "number";
+        }
         @Override
         public boolean isSubtype(Datatype other) {
             return other instanceof Number;
@@ -25,6 +33,10 @@ public interface Datatype {
     @NoArgsConstructor
     static class Integer extends Number {
         @Override
+        public java.lang.String toString() {
+            return "integer";
+        }
+        @Override
         public boolean isSubtype(Datatype other) {
             return other instanceof Integer;
         }
@@ -32,6 +44,10 @@ public interface Datatype {
 
     @NoArgsConstructor
     static class Timestamp extends String {
+        @Override
+        public java.lang.String toString() {
+            return "timestamp";
+        }
         @Override
         public boolean isSubtype(Datatype other) {
             return other instanceof Timestamp;
@@ -45,7 +61,9 @@ public interface Datatype {
         if (val.toString().matches("\\d+[.]\\d*") || val.toString().matches("\\d*[.]\\d+")) {
             return new Number();
         }
-        // TODO infer timestamps
+        if (val.toString().matches("\\d{4}-\\d{2}-\\d{2}((-|\\s)\\d{2}:\\d{2}(:\\d{2})?)?")) {
+            return new Timestamp();
+        }
         return new String();
     }
 }
