@@ -25,15 +25,11 @@ public class DataGeneratorSource implements Source {
     public DataGeneratorSource(String[] env, String[] command) throws IOException {
         this.logger = LoggerFactory.getLogger("data-generator");
 
-        // String[] command = InputConfigurationSingleton.get().getDataGeneratorCommands().get(0);
-        // String[] env = InputConfigurationSingleton.get().getDataGeneratorEnv();
-
         this.logger.info("spawning data-generator process with: {} {}", Strings.join(" ", env), Strings.join(" ", command));
 
         this.tableName = Paths.get(command[1]).getFileName().toString().replaceFirst("[.][^.]+$", "");
 
         ProcessBuilder builder = new ProcessBuilder(List.of(command));
-        builder.environment().put("CSV_SEPARATOR", ";"); // TODO
         builder.redirectErrorStream(true);
 
         Process proc = builder.start();

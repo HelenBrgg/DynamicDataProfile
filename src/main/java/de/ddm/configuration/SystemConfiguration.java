@@ -26,11 +26,11 @@ public class SystemConfiguration {
 
 	private String actorSystemName = "ddm";            // The name of this application
 
-	private int numWorkers = 4;
+	private int numWorkers = 8;
 
 	private boolean startPaused = false;               // Wait for some console input to start; useful, if we want to wait manually until all ActorSystems in the cluster are started (e.g. to avoid work stealing effects in performance evaluations)
 
-	private boolean hardMode = false;					// Solve the hard version of the task
+	// private boolean hardMode = false;					// Solve the hard version of the task
 
 	private static String getDefaultHost() {
 		try {
@@ -48,7 +48,7 @@ public class SystemConfiguration {
 		this.masterPort = commandMaster.port;
 		this.numWorkers = commandMaster.numWorkers;
 		this.startPaused = commandMaster.startPaused;
-		this.hardMode = commandMaster.hardMode;
+		// this.hardMode = commandMaster.hardMode;
 	}
 
 	public void update(CommandWorker commandWorker) {

@@ -64,8 +64,8 @@ public class InputWorker extends AbstractBehavior<InputWorker.Message> {
     ){
         super(context);
 
+        String[] env = new String[0]; // unused for now
         List<String[]> commands = InputConfigurationSingleton.get().getDataGeneratorCommands();
-        String[] env = InputConfigurationSingleton.get().getDataGeneratorEnv();
         try {
             for (String[] command : commands){
                 this.sources.add(new DataGeneratorSource(env, command));
@@ -89,8 +89,6 @@ public class InputWorker extends AbstractBehavior<InputWorker.Message> {
     }
 
     private Behavior<Message> handle(PollingMessage _message) {
-        this.getContext().getLog().debug("polling next batches (delay {}ms)", (int) this.pollDelayMillis);
-
         // even if all sources are finished, we still may have gotten new batches
         boolean hasNewBatches = false;
         for (Source source: sources) {

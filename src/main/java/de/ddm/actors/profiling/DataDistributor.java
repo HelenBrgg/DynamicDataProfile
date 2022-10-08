@@ -152,7 +152,7 @@ public class DataDistributor extends AbstractBehavior<Message> {
             });
         });
 
-        MergeResult result = new MergeResult(0); // TODO document data worker id 0 somewhere
+        MergeResult result = new MergeResult(-1);
         combinedEntries.forEach(result::addEntry);
 
         this.pendingMergeRequest.get().getResultRef().tell(result);
@@ -191,11 +191,11 @@ public class DataDistributor extends AbstractBehavior<Message> {
         if (workerIdA.isEmpty()) {
             // case: worker A has no data, worker B has data
             // case: worker A and B have no data
-            SubsetCheckResult result = new SubsetCheckResult(request.getCandidate(), CandidateStatus.succeededCheck(), -1);
+            SubsetCheckResult result = new SubsetCheckResult(request.getCandidate(), CandidateStatus.succeededCheck(-1), -1);
             request.getResultRef().tell(result);
         } else if (workerIdB.isEmpty()) {
             // case: worker A has data, worker B has no data
-            SubsetCheckResult result = new SubsetCheckResult(request.getCandidate(), CandidateStatus.failedCheck(), -1);
+            SubsetCheckResult result = new SubsetCheckResult(request.getCandidate(), CandidateStatus.failedCheck(-1), -1);
             request.getResultRef().tell(result);
         } else if (workerIdA.get() == workerIdB.get()) {
             // case: worker A and B have data, but are the same

@@ -67,14 +67,24 @@ public class CandidateStatus {
 
     @AllArgsConstructor
     public static class FailedCheck implements Reason {
+        private int workerId;
+
         @Override
         public String toString(){ return "failed_check"; }
+
+        @Override
+        public String additionalInfo(){ return "workerId=" + workerId; }
     }
 
     @AllArgsConstructor
     public static class SucceededCheck implements Reason {
+        private int workerId;
+
         @Override
         public String toString(){ return "succeeded_check"; }
+
+        @Override
+        public String additionalInfo(){ return "workerId=" + workerId; }
     }
 
     @AllArgsConstructor
@@ -101,12 +111,12 @@ public class CandidateStatus {
         return new CandidateStatus(false, new Bloomfilter(sizeA, sizeB, outliersA));
     }
 
-    public static CandidateStatus failedCheck() {
-        return new CandidateStatus(false, new FailedCheck());
+    public static CandidateStatus failedCheck(int workerId) {
+        return new CandidateStatus(false, new FailedCheck(workerId));
     }
 
-    public static CandidateStatus succeededCheck() {
-        return new CandidateStatus(true, new SucceededCheck());
+    public static CandidateStatus succeededCheck(int workerId) {
+        return new CandidateStatus(true, new SucceededCheck(workerId));
     }
 
     public static CandidateStatus logicalImplication(boolean isValid, List<Candidate> involvedCandidates) {

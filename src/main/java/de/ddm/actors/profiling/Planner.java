@@ -1,19 +1,27 @@
 package de.ddm.actors.profiling;
 
+import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
 import akka.actor.typed.ActorRef;
 import akka.actor.typed.Behavior;
 import akka.actor.typed.javadsl.AbstractBehavior;
 import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
 import akka.actor.typed.javadsl.Receive;
+import de.ddm.actors.profiling.DataWorker.SubsetCheckRequest;
+import de.ddm.serialization.AkkaSerializable;
+import de.ddm.structures.Candidate;
+import de.ddm.structures.CandidateGenerator;
+import de.ddm.structures.CandidateStatus;
+import de.ddm.structures.Metadata;
+import de.ddm.structures.Sink;
+import de.ddm.structures.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import de.ddm.actors.profiling.DataWorker.SubsetCheckRequest;
-import de.ddm.serialization.AkkaSerializable;
-import de.ddm.structures.*;
-import java.time.Duration;
-import java.util.*;
 
 // TODO naming: CandidateGeneratorWorker?
 public class Planner extends AbstractBehavior<Planner.Message> {
@@ -78,7 +86,6 @@ public class Planner extends AbstractBehavior<Planner.Message> {
     private final CandidateGenerator candidateGenerator;
     private final ActorRef<InputWorker.Message> inputWorker;
     private final ActorRef<DataWorker.Message> dataWorker;
-    private int pendingSubsetChecks = 0; // TODO remove this? theoretically, you can interrupt them with a MergeRequest
     private boolean lastMerge = false;
 
     ////////////////////////
@@ -109,7 +116,7 @@ public class Planner extends AbstractBehavior<Planner.Message> {
 
         // kickoff merging events
         DataWorker.MergeRequest initialMerge = new DataWorker.MergeRequest(this.getContext().getSelf().narrow());
-        this.getContext().scheduleOnce(Duration.ofMillis(1500), this.dataWorker, initialMerge);
+        this.getContext().scheduleOnce(Duration.ofMillis(1000), this.dataWorker, initialMerge);
     }
 
     ////////////////////
@@ -127,7 +134,7 @@ public class Planner extends AbstractBehavior<Planner.Message> {
 
     private void scheduleNextMerge() {
         DataWorker.MergeRequest nextMerge = new DataWorker.MergeRequest(this.getContext().getSelf().narrow());
-        this.getContext().scheduleOnce(Duration.ofMillis(500), this.dataWorker, nextMerge);
+        this.getContext().scheduleOnce(Duration.ofMillis(1000), this.dataWorker, nextMerge);
     }
 
     private Behavior<Message> handle(MergeResult result) {
@@ -149,19 +156,15 @@ public class Planner extends AbstractBehavior<Planner.Message> {
                 /* send subset-check requests */
                 DataWorker.SubsetCheckRequest request = new SubsetCheckRequest(candidate, Optional.empty(), this.getContext().getSelf().narrow());
                 this.dataWorker.tell(request);
-                this.pendingSubsetChecks += 1;
             }
         });
 
-        /* no new candidates */
-        if (this.pendingSubsetChecks == 0) {
-            if (this.lastMerge) {
-                this.getContext().getSelf().tell(new ShutdownMessage());
-                return this;
-            }
-            this.scheduleNextMerge();
+        if (this.lastMerge) {
+            this.getContext().scheduleOnce(Duration.ofMillis(1000), this.getContext().getSelf(), new ShutdownMessage());
+            return this;
         }
 
+        this.scheduleNextMerge();
         return this;
     }
 
@@ -170,18 +173,6 @@ public class Planner extends AbstractBehavior<Planner.Message> {
 
         this.sink.putLiveResult(result.getCandidate(), result.getStatus());
         this.candidateGenerator.updateCandidate(result.getCandidate(), Optional.of(result.getStatus()));
-
-        this.pendingSubsetChecks -= 1;
-        if (this.pendingSubsetChecks <= 0) {
-            this.pendingSubsetChecks = 0;
-
-            /* all candidates handled */
-            if (this.lastMerge) {
-                this.getContext().getSelf().tell(new ShutdownMessage());
-                return this;
-            }
-            this.scheduleNextMerge();
-        }
 
         return this;
     }

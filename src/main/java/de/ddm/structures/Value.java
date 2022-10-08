@@ -55,19 +55,6 @@ public class Value implements Comparable<Value> {
         return this.compareTo(b) > 0;
     }
 
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == this) return true;
-        if (!(o instanceof Value)) return false;
-        return this.shortstr.equals(((Value) o).shortstr);
-    }
-
-    @Override
-    public int hashCode() {
-        return this.shortstr.hashCode();
-    }
-
     public String toString() {
         return this.shortstr;
     }

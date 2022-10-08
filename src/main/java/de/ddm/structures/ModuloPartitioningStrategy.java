@@ -24,7 +24,8 @@ public class ModuloPartitioningStrategy implements PartitioningStrategy {
     public void beforePartitionTable(Table table) {
         table.attributes.forEach(attribute -> {
             if (!this.workerIdByAttribute.containsKey(attribute)) {
-                int workerId = this.numAttributes % this.numWorkers;
+                // int workerId = this.numAttributes % this.numWorkers;
+                int workerId = (int) (Math.abs((long) attribute.hashCode()) % this.numWorkers);
                 this.workerIdByAttribute.put(attribute, workerId);
                 this.numAttributes += 1;
             }

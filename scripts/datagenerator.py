@@ -7,13 +7,13 @@ import sys
 import random
 
 parser = argparse.ArgumentParser(description="Generate batches from a CSV file")
-parser.add_argument('filepath', metavar='FILEP-ATH', type=str, help='csv-file to generate batches from')
+parser.add_argument('filepath', metavar='FILE-PATH', type=str, help='csv-file to generate batches from')
 parser.add_argument('--input-sep', metavar='SEP-CHAR', type=str, default=";", help='separator ("," or ";") which will be used for parsing the csv-file (default: ";")')
 parser.add_argument('--max-output', metavar='SIZE-MB', type=int, default=10000, help='limits the maximum amount of megabytes the program may generate (default: 10000)')
 parser.add_argument('--repeat', action='store_true', help='repeat rows once the file is fully read'),
 parser.add_argument('--mutate-on-repeat', action='store_true', help='mutate cell values on row repetitions'),
 parser.add_argument('--delete-chance', metavar='DELETE-CHANCE', type=float, default=0.0, help='chance (0.0 to 1.0) a previous row will be deleted instead of a new one generated (default: 0_')
-parser.add_argument('--batch-size', metavar='SIZE-KB', type=float, default=2, help='chance (0.0 to 1.0) a previous row will be deleted instead of a new one generated (default: 2)')
+parser.add_argument('--batch-size', metavar='SIZE-KB', type=float, default=64, help='chance (0.0 to 1.0) a previous row will be deleted instead of a new one generated (default: 64)')
 parser.add_argument('--output-sep', metavar='SEP-CHAR', type=str, default=";", help='separator ("," or ";") which will be used for generating the batch (default: ";")')
 
 class CSVRowReader:

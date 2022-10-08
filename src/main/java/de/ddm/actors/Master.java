@@ -13,12 +13,14 @@ import de.ddm.actors.profiling.DataWorker;
 import de.ddm.actors.profiling.InputWorker;
 import de.ddm.actors.profiling.Planner;
 import de.ddm.serialization.AkkaSerializable;
+import de.ddm.singletons.SystemConfigurationSingleton;
 import de.ddm.structures.CandidateGenerator;
 import de.ddm.structures.CsvLogSink;
 import de.ddm.structures.DataGeneratorSource;
 import de.ddm.structures.HeapColumnArray;
 import de.ddm.structures.HeapColumnSet;
 import de.ddm.structures.ModuloPartitioningStrategy;
+import de.ddm.structures.PartitioningStrategy;
 import de.ddm.structures.Sink;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -64,8 +66,10 @@ public class Master extends AbstractBehavior<Master.Message> {
         super(context);
         // Reaper.watchWithDefaultReaper(this.getContext().getSelf());
 
-        this.dataWorker = context.spawn(DataWorker.create(1, HeapColumnArray::new, HeapColumnSet::new), "data-worker");
-        // this.dataWorker = context.spawn(DataDistributor.create(HeapColumnArray::new, HeapColumnSet::new, new ModuloPartitioningStrategy(5), 5), "data-distributor");
+        // this.dataWorker = context.spawn(DataWorker.create(1, HeapColumnArray::new, HeapColumnSet::new), "data-worker");
+        int numWorkers = SystemConfigurationSingleton.get().getNumWorkers();
+        PartitioningStrategy partitioning = new ModuloPartitioningStrategy(numWorkers);
+        this.dataWorker = context.spawn(DataDistributor.create(HeapColumnArray::new, HeapColumnSet::new, partitioning, numWorkers), "data-distributor");
         this.inputWorker = context.spawn(InputWorker.create(this.dataWorker.narrow()), "input-worker");
         
 
@@ -99,7 +103,6 @@ public class Master extends AbstractBehavior<Master.Message> {
     }
 
     private Behavior<Message> handle(StartMessage message) {
-        this.inputWorker.tell(new InputWorker.PollingMessage());
         // this.getContext().scheduleOnce(Duration.ofMillis((int) this.pollDelayMillis), this.getContext().getSelf(), new PollingMessage());
         return this;
     }
