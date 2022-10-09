@@ -6,13 +6,13 @@ NAME DES PROJEKTS: Dynamische Detektion von Inclusion Dependencies
 
 STARTTERMIN: 24.10.2021
 
-ENDTERMIN: 30.09.2022
+ENDTERMIN: 07.10.2022
 
 Projektteilnehmende: Felix Köpge, Ragna Solterbeck, Helen Brüggmann
 
 ### Die Ausgangslage
 
-Im Status quo sind die meisten Data-Profiling Algorithmen statisch. Sie untersuchen eine statische Datenmenge auf Abhängigkeiten, wie __Functional Dependencies  (FD's)__ oder __Inclusion Dependencies (IND's)__. Wenn die Daten sich aber ändern, so muss der Algorithmus auf der gesamten Datenmenge neu ausgeführt werden. Für dynamische Datenmengen (bei denen Einträge hinzugefügt, gelöscht oder modifiziert werden) ist dieser Ansatz zu zeitaufwendig.
+Im Status quo sind die meisten Data-Profiling Algorithmen statisch. Sie untersuchen eine statische Datenmenge auf Abhängigkeiten, wie __Functional Dependencies  (FD's)__ oder __Inclusion Dependencies (IND's)__. Wenn die Daten sich aber ändern, so muss der Algorithmus auf der gesamten Datenmenge neu ausgeführt werden. Für dynamische Datenmengen (bei denen Einträge hinzugefügt, gelöscht oder modifiziert werden) ist dieser Ansatz zu zeit- und arbeitsaufwendig.
 
 ### Projektvorhaben
 

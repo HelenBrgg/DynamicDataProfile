@@ -90,7 +90,7 @@ In der Pruningphase sollen durch Vorarbeit viele mögliche Kandidaten für IND's
 
 Im Status Quo suchen wir lediglich nach unären IND's. Als Fortführung könnte man nach n-ären IND's suchen.
 
-###### Pruning durch logische Implikation {-}
+### 1. Pruning durch logische Implikation {-}
 
 Durch logische Implikationen können Kandidaten ausgeschlossen werden. Dafür werden zum Teil in vorherigen Iterationen Metadaten zu Kandidaten gespeichert.
 Die logischen Implikationen sind zum Beispiel:
@@ -99,32 +99,11 @@ Bei Hinzufügen oder Löschen von Werte
 Wenn A ⊄ B: A erhält ein neues Element und B bleibt gleich => A ⊄ B.<br>
 Wenn B ⊂ A: A erhält ein neues Element und B bleibt gleich => B ⊂ A.
 
-##### Pruning durch Metadata {-}
+### 2. Pruning durch Metadata {-}
 
-Aus den Metadaten der Attribute kann man Landidaten ausschließen. Durch Single-Column-Analysis erhalten wir verschieden Metadaten.
+Aus den Metadaten der Attribute kann man Kandidaten ausschließen. Durch Single-Column-Analysis erhalten wir verschieden Metadaten.
 
-<table>
-<tr><th>Tabelle 1  </th><th>Tabelle 2 </th></tr>
-<tr><td>
-
-|   A | B       | C            |
-| --: | :------ | :----------- |
-|   1 | Mars    | Luxemburg    |
-|   2 | Jupiter | Singapur     |
-|   3 | Jupiter | Lichtenstein |
-|   4 | Luna    | Singapur     |
-
-</td><td>
-
-|   X | Y    | Z      |
-| --: | :--- | :----- |
-|  10 | Mars | Berlin |
-|  20 | Mars | Berlin |
-|  30 | Luna | Berlin |
-
-</td></tr> </table>
-
-##### Kardinalitäten {-}
+##### 2a. Kardinalitäten {-}
 
 Eine Art der Metadaten sind die Kardinalitäten. Über die Anzahl von unterschiedlichen Werten kann man IND's ausschließen.
 
@@ -144,42 +123,35 @@ cardinality(B)=3
 
 Wenn A mehr einzigartige Werte als B hat, dann kann A nicht vollständig in B enthalten sein. Somit muss eine IND von A in B nur überprüft werden, wenn $cardinality(A) \leq cardinality(B)$. Nicht aber wenn $cardinality(A) > cardinality(B)$.
 
-##### Extremwerte {-}
+##### 2b. Min/Max {-}
 
 Mittels der Extremwerte eines Attribut kann man auschließen, ob eine IND besteht. Unter Extremwerte verstehen wir die Min-Werte und Max-Werte nach lexikographischer Ordnung der Werte-Strings.
 
 Ist ein Extremwert des Attributes A in $A ⊂ B$ kleiner oder größer als die Extremwerte des Attributs B, so können wir ausschließen dass A vollständig in B enthalten ist.
 
-##### Datentyp {-}
+##### 2c. Datentyp {-}
 
 Weiterhin prüfen wir die Datentypen, die in einer Spalte vorkommen.
 
-|   Metadata | Charakterisierung                                | Beispiel                                               |
-| ---------: | :----------------------------------------------- | :----------------------------------------------------- |
-| `datatype` | Gemeinsamer Datentyp für alle Werte einer Spalte | datatype(A) = UnsignedInteger <br>datatype(B) = String |
-
 Mögliche Datentypen:
 
-- `UnsignedInteger`: 1, 2, 42, 35666
 - `Integer`: -10, 0, 10, 20000
 - `Real`: 1, 2.0, -1.0e-7
-- `Timestamp`: z.B. 2012-12-01 10:00:30
-- `String`: Alle oberen und auch sonst alles, inklusive diesen Satzes.
+- `Timestamp`: 2012-12-01 10:00:30
+- `String`: Alle oberen Beispiele und auch sonst alles Zeichenfolgen, inklusive dieses Satzes.
 
 Datentypen können andere Datentypen enthalten:
 
-`UnsignedInteger ⊂ Integer ⊂ Real ⊂ String`
+`Integer ⊂ Real ⊂ String`
 `Timestamp ⊂ String`
 
 Sollte vor einem Subset-Check A ⊆ B A einen Datentyp haben, dessen Werte per Definition nicht in B enthalten sein können, so kann A nicht in B enthalten sein.
 
 `datatype`(A) ⊄ `datatype`(B) ⇒ A ⊄ B
 
-##### Bloom Filter {-}
+##### 3. Bloomfilter {-}
 
-Ein weiterer Ausschluss findet durch Nutzung von Bloomfiltern<a href="bloomfilter">[1]</a> statt. Genutzt wird ein Counting-Bloomfilter mit einer Größe von 128 und zwei Hash-Funktionen.
-
-
+Ein weiterer Ausschluss findet durch Nutzung von Bloomfiltern<a href="#bloomfilter">[1]</a> statt. Genutzt wird ein Counting-Bloomfilter mit einer Größe von 128 und zwei Hash-Funktionen.
 
 Bloomfilter sind eine probabilistische Datenstruktur, die Daten repräsentieren. Ein Bloom Filter ist ein Array aus `m` Bits, die ein Set aus `n` Elementen repräsentiert. Zu Beginn sind alle Bits auf `0`. Für jedes Element im Set werden nun `k` Hashfunktionen ausgeführt, in unserem Fall zwei, die ein Element auf eine Nummer zwischen `1` bis `m` mappen. Jede dieser Positionen im Array werden dann auf `1` gesetzt. Will man nun prüfen ob ein Element in einer Datenmenge enthalten ist, kann man die Werte berechnen und prüfen ob die Positionen auf `1` sind. Wegen Kollisionen kann das Verfahren zu False Positives führen, allerdings nicht zu False Negatives. Wenn ein Element im Array `0` ist, so wurde der Wert definitiv noch nicht gesehen.
 

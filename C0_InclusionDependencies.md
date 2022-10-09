@@ -20,7 +20,7 @@ Für IND's gelten immer folgende Eigenschaften:
 <p align="center">
   <img src="imgs/unary_IND_Example.jpg" width="400">
   <p align="center">
-    unary IND-Beispiel<a href="papenbrock">[1]</a> <br>
+    unary IND-Beispiel<a href="#papenbrock">[1]</a> <br>
   X := Attribut "Name" aus Tabelle "Lending"<br>
   Y := Attribut "Titel" aus Tabelle "Book"<br>
   </p>
@@ -34,7 +34,7 @@ Es ist auch leicht zu sehen, dass $Y ⊆ X$ nicht gilt, da $Y$ den Wert "3D Comp
 <p align="center">
   <img src="imgs/n-ary_IND_Example.jpg" width="400">
   <p align="center">
-  n-ary IND Beispiell<a href="papenbrock">[1]</a> <br>
+  n-ary IND Beispiell<a href="#papenbrock">[1]</a> <br>
   X := Attribute "Student" und "Course" aus Tabelle "Lending"<br>
   Y := Attribute "Name" und "Lecture" aus Tabelle "Student"<br>
   </p>

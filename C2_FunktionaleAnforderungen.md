@@ -21,4 +21,4 @@ Der dynamische Algorithmus soll...
 - für Hinzufügungen neue Einträge anlegen und Inclusion Dependencies finden.
 - für Modifikationen und Löschungen alte Einträge und dazugehörige Inclusion Dependencies updaten.
 - alle X Sekunden gültige und nicht-mehr gültige Inclusion Dependencies ausgeben.
-- auch mit großen Datensätzen zurecht kommen können.
+- auch mit großen Datensätzen von bis zu mehreren Gigabyte zurecht kommen können.

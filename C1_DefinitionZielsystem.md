@@ -28,7 +28,8 @@ Die gefundenen INDs werden im laufenden Betrieb in eine `live-results.csv` Datei
   - `extrema`: Purged anhand der Extremwerte (= `false`)
   - `datatype`: Purged anhand des Bloomfilters (= `false`) 
   - `bloomfilter`: Purged anhand des Bloomfilters (= `false`)
-  
+  - `check_failed`: Gescheiterter Subset-Check (= `false`)
+  - `check_succeeded`: Erfolgreicher Subset-Check (= `true`)
 
 ![Auszug einer final-results.txt](imgs/final-results.png)
 
@@ -36,7 +37,7 @@ Sobald der Data-Generator keine Data-Batches mehr liefert, wird der finale Zusta
 
 ## Datenformat (Batches)
 
-Ein Datenset besteht aus mehreren __Tabellen__, die unterschiedliche Schematas haben können. Diese Tabellen werden als Stream eingelesen und einzelne Einträge eines Streams (= Zeilen einer Tabelle) können ältere Einträge überschreiben.
+Ein Datenset besteht aus mehreren __Tabellen__, die unterschiedliche Schemata haben können. Diese Tabellen werden als Stream eingelesen und einzelne Einträge eines Streams (= Zeilen einer Tabelle) können ältere Einträge überschreiben.
 
 <!--
 Eine Anforderung an den Algorithmus ist, dass er _Tabellen aus ihren Batches rekonstruiert und updatet_. Dazu muss er eine Repräsentation der Tabellen über die gesamte Ausführung hinweg zwischenspeichern. 
