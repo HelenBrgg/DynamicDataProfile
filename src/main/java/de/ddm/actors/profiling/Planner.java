@@ -74,6 +74,11 @@ public class Planner extends AbstractBehavior<Planner.Message> {
     }
 
     @NoArgsConstructor
+    public static class StartMessage implements Message {
+        private static final long serialVersionUID = 0x97A2_9998;
+    }
+
+    @NoArgsConstructor
     public static class ShutdownMessage implements Message {
         private static final long serialVersionUID = 0x97A2_9999;
     }
@@ -113,10 +118,6 @@ public class Planner extends AbstractBehavior<Planner.Message> {
         this.dataWorker = dataWorker;
 
         this.getContext().watchWith(this.inputWorker, new ShutdownMessage());
-
-        // kickoff merging events
-        DataWorker.MergeRequest initialMerge = new DataWorker.MergeRequest(this.getContext().getSelf().narrow());
-        this.getContext().scheduleOnce(Duration.ofMillis(1000), this.dataWorker, initialMerge);
     }
 
     ////////////////////
@@ -128,6 +129,7 @@ public class Planner extends AbstractBehavior<Planner.Message> {
         return newReceiveBuilder()
                 .onMessage(MergeResult.class, this::handle)
                 .onMessage(SubsetCheckResult.class, this::handle)
+                .onMessage(StartMessage.class, this::handle)
                 .onMessage(ShutdownMessage.class, this::handle)
                 .build();
     }
@@ -177,7 +179,14 @@ public class Planner extends AbstractBehavior<Planner.Message> {
         return this;
     }
 
-    private Behavior<Message> handle(ShutdownMessage result) {
+    private Behavior<Message> handle(StartMessage _msg) {
+        // kickoff merging events
+        DataWorker.MergeRequest initialMerge = new DataWorker.MergeRequest(this.getContext().getSelf().narrow());
+        this.getContext().scheduleOnce(Duration.ofMillis(500), this.dataWorker, initialMerge);
+        return this;
+    }
+
+    private Behavior<Message> handle(ShutdownMessage _msg) {
         // TODO run last merge
         if (!this.lastMerge) {
             this.getContext().getLog().info("waiting for last merge before shutdown");

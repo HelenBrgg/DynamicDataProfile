@@ -7,6 +7,7 @@ import akka.actor.typed.javadsl.AbstractBehavior;
 import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
 import akka.actor.typed.javadsl.Receive;
+import de.ddm.actors.patterns.Reaper;
 import de.ddm.actors.profiling.DataWorker;
 import de.ddm.serialization.AkkaSerializable;
 import de.ddm.structures.*;
@@ -48,15 +49,14 @@ public class Worker extends AbstractBehavior<Worker.Message> {
 
 	private Worker(ActorContext<Message> context) {
 		super(context);
-		// Reaper.watchWithDefaultReaper(this.getContext().getSelf());
+		Reaper.watchWithDefaultReaper(this.getContext().getSelf());
 
 		// int numWorkers = SystemConfigurationSingleton.get().getNumWorkers();
 		int numWorkers = 1;
 
 		this.workers = new ArrayList<>(numWorkers);
 		for (int id = 0; id < numWorkers; id++)
-			// wo berechnen wir nochmal die Workeranzahl? hängt ja an der Anzahl Attributes
-			this.workers.add(context.spawn(DataWorker.create(id, HeapColumnArray::new, HeapColumnSet::new), "data-worker-" + id,
+			this.workers.add(context.spawn(DataWorker.create(id, HeapColumnArray::new, HeapColumnSet::new), "remote-data-worker-" + id,
 					DispatcherSelector.fromConfig("akka.worker-pool-dispatcher")));
 	}
 

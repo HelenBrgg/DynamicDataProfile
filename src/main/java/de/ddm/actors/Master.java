@@ -68,7 +68,7 @@ public class Master extends AbstractBehavior<Master.Message> {
 
         // this.dataWorker = context.spawn(DataWorker.create(1, HeapColumnArray::new, HeapColumnSet::new), "data-worker");
         int numWorkers = SystemConfigurationSingleton.get().getNumWorkers();
-        PartitioningStrategy partitioning = new ModuloPartitioningStrategy(numWorkers);
+        PartitioningStrategy partitioning = new ModuloPartitioningStrategy();
         this.dataWorker = context.spawn(DataDistributor.create(HeapColumnArray::new, HeapColumnSet::new, partitioning, numWorkers), "data-distributor");
         this.inputWorker = context.spawn(InputWorker.create(this.dataWorker.narrow()), "input-worker");
         
@@ -103,7 +103,7 @@ public class Master extends AbstractBehavior<Master.Message> {
     }
 
     private Behavior<Message> handle(StartMessage message) {
-        // this.getContext().scheduleOnce(Duration.ofMillis((int) this.pollDelayMillis), this.getContext().getSelf(), new PollingMessage());
+        this.planner.tell(new Planner.StartMessage());
         return this;
     }
 

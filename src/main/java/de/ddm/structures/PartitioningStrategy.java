@@ -1,18 +1,15 @@
 package de.ddm.structures;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import java.util.function.BiConsumer;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.IntSummaryStatistics;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 public interface PartitioningStrategy {
+    void addWorker(int workerId);
+    void hasWorkers();
+
     Optional<Integer> getAttributeWorkerId(Table.Attribute attr);
 
     void beforePartitionTable(Table table);

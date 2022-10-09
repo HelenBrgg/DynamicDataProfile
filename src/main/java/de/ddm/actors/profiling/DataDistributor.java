@@ -6,6 +6,7 @@ import akka.actor.typed.javadsl.AbstractBehavior;
 import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
 import akka.actor.typed.javadsl.Receive;
+import akka.actor.typed.receptionist.ServiceKey;
 import de.ddm.structures.CandidateStatus;
 import de.ddm.structures.ColumnArray;
 import de.ddm.structures.ColumnSet;
@@ -31,9 +32,18 @@ import java.util.Optional;
 
 public class DataDistributor extends AbstractBehavior<Message> {
 
+	public static final ServiceKey<Message> dataDistributorService = ServiceKey.create(Message.class, "DataDistributorService");
+
     ////////////////////
     // Actor Messages //
     ////////////////////
+
+	@AllArgsConstructor
+    @Getter
+	public static class RegistrationMessage implements Message {
+		private static final long serialVersionUID = -4025238529984914107L;
+		private ActorRef<Message> dataWorker;
+	}
 
     @AllArgsConstructor
     @Getter
@@ -70,9 +80,9 @@ public class DataDistributor extends AbstractBehavior<Message> {
         ColumnArray.Factory arrayFactory,
         ColumnSet.Factory setFactory,
         PartitioningStrategy partitioningStrategy,
-        int numWorkers
+        int numLocalWorkers
     ){
-        return Behaviors.setup(ctx -> new DataDistributor(ctx, arrayFactory, setFactory, partitioningStrategy, numWorkers));
+        return Behaviors.setup(ctx -> new DataDistributor(ctx, arrayFactory, setFactory, partitioningStrategy, numLocalWorkers));
     }
 
     private DataDistributor(
@@ -80,13 +90,14 @@ public class DataDistributor extends AbstractBehavior<Message> {
         ColumnArray.Factory arrayFactory,
         ColumnSet.Factory setFactory,
         PartitioningStrategy partitioningStrategy,
-        int numWorkers
+        int numLocalWorkers
     ){
         super(context);
         this.partitioningStrategy = partitioningStrategy;
-        for (int i = 0; i < numWorkers; ++i) {
+        for (int i = 0; i < numLocalWorkers; ++i) {
             ActorRef<DataWorker.Message> worker = this.getContext().spawn(DataWorker.create(i, arrayFactory, setFactory), "data-worker-" + (i + 1));
             this.dataWorkers.add(worker.narrow());
+            this.partitioningStrategy.addWorker(i);
         }
         this.mergeResultPartAdapter = this.getContext().messageAdapter(Planner.MergeResult.class, WrappedMergeResult::new);
         this.subsetCheckResultAdapter = this.getContext().messageAdapter(Planner.SubsetCheckResult.class, WrappedSubsetCheckResult::new);
@@ -106,6 +117,7 @@ public class DataDistributor extends AbstractBehavior<Message> {
             .onMessage(SetQueryResult.class, this::handle)
             .onMessage(SubsetCheckRequest.class, this::handle)
             .onMessage(WrappedSubsetCheckResult.class, this::handle)
+            .onMessage(RegistrationMessage.class, this::handle)
             .build();
     }
 
@@ -212,6 +224,15 @@ public class DataDistributor extends AbstractBehavior<Message> {
 
     private Behavior<Message> handle(WrappedSubsetCheckResult result){
         assert false; // not yet implemented (necessary for horizontal partitioning)
+        return this;
+    }
+
+	private Behavior<Message> handle(RegistrationMessage message) {
+		this.getContext().getLog().info("registered data worker {}", message.getDataWorker());
+
+        this.partitioningStrategy.addWorker(this.dataWorkers.size());
+        this.dataWorkers.add(message.getDataWorker());
+
         return this;
     }
 
