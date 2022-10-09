@@ -165,11 +165,11 @@ public class DataWorker extends AbstractBehavior<DataWorker.Message> {
             SetDiff diff = state.mergeSegments();
             
             // update query cache
-            this.queryCaches.values().forEach(workerCaches -> {
-                if (workerCaches.containsKey(attr)) {
-                    workerCaches.get(attr).addedValues.addAll(diff.getInserted());
-                }
-            });
+            //this.queryCaches.values().forEach(workerCaches -> {
+            //    if (workerCaches.containsKey(attr)) {
+            //        workerCaches.get(attr).addedValues.addAll(diff.getInserted());
+            //    }
+            ///});
 
             // update metadata
             boolean additions = !diff.getInserted().isEmpty();
@@ -200,6 +200,7 @@ public class DataWorker extends AbstractBehavior<DataWorker.Message> {
             return this;
         }
 
+/*
         HashMap<Table.Attribute, QueryCache> workerCaches = this.queryCaches.computeIfAbsent(request.getRequestorWorkerId(), _key -> new HashMap<>());
         QueryCache cache = workerCaches.computeIfAbsent(request.getAttribute(), _key -> new QueryCache());
         if (!cache.addedValues.isEmpty()) {
@@ -210,6 +211,7 @@ public class DataWorker extends AbstractBehavior<DataWorker.Message> {
             request.resultRef.tell(result);
             return this;
         }
+*/
 
         AttributeState state = this.attributeStates.get(request.attribute);
 
