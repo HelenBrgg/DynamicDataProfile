@@ -46,7 +46,7 @@ java -Xmx8g -ea -cp target/ddm-akka-1.0.jar de.ddm.Main master [OPTIONS]
 
 * (keine Parameter): In seiner Default-Konfiguration liest das Akka-System den TPC-H Datensatz einmal aus und berechnet INDs mit 8 lokalen Workern.
 * `-ip data/example`: Verwendet den `data/example` Datensatz statt den TPC-H Datensatz.
-* `-dg '--repeat --max-output 100'`: Führt das Datengenerator-Skript mit den Parametern `--repeat --max-output 100` aus (wiederholt Datensatz bis 100MB an Output ausgegeben).
+* `-dg '--repeat --max-output 100'`: Führt das Datengenerator-Skript mit den Parametern `--repeat --max-output 100` aus (wiederholt Datensatz ausgeben bis 100MB an Output erreicht).
 * `-w 16`: Berechnet die INDs mit 16 lokalen Workern.
 
 Weitere Optionen sind unter `java -Xmx8g -ea -cp target/ddm-akka-1.0.jar de.ddm.Main --help` aufgelistet.
