@@ -2,6 +2,10 @@
 
 ## Projektstruktur
 
+Die `main` Branch enthält unsere CodeBase.
+
+Die `doku` Branch enthält die schriftliche Ausarbeitung mit generierter PDF Datei.
+
 * `scripts/`: Hier befindet sich derzeit nur das `datagenerator.py` Skript.
 * `src/main/java/de/ddm/actors/profiling/`: Hier befinden sich alle unsere Aktoren für unser Aktoren-Protokoll.
 * `src/main/java/de/ddm/structures`: Hier befinden sich alle unsere Klassen, die nicht direkt von Akka abhängig sind.

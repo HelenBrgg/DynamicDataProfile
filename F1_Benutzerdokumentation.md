@@ -58,5 +58,3 @@ java -Xmx8g -ea -cp target/ddm-akka-1.0.jar de.ddm.Main master -ip data/example 
 ```
 
 Das Akka-System beendet sich automatisch und gibt seine Ergebnisse in `live-results.csv` und `final-results.txt` aus.
-
-

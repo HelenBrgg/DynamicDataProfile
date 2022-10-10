@@ -6,7 +6,7 @@ NAME DES PROJEKTS: Dynamische Detektion von Inclusion Dependencies
 
 STARTTERMIN: 24.10.2021
 
-ENDTERMIN: 07.10.2022
+ENDTERMIN: 10.10.2022
 
 Projektteilnehmende: Felix Köpge, Ragna Solterbeck, Helen Brüggmann
 
