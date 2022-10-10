@@ -1,0 +1,946 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   version="1.1"
+   class="marks"
+   width="460"
+   height="349"
+   viewBox="0 0 460 349"
+   id="svg260"
+   sodipodi:docname="workload.svg"
+   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview262"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     showgrid="false"
+     inkscape:zoom="2.1977077"
+     inkscape:cx="230.01239"
+     inkscape:cy="174.72751"
+     inkscape:window-width="1920"
+     inkscape:window-height="939"
+     inkscape:window-x="0"
+     inkscape:window-y="32"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="g250" />
+  <rect
+     width="460"
+     height="349"
+     fill="white"
+     id="rect2" />
+  <g
+     fill="none"
+     stroke-miterlimit="10"
+     transform="translate(48,11)"
+     id="g250">
+    <g
+       class="mark-group role-frame root"
+       role="graphics-object"
+       aria-roledescription="group mark container"
+       id="g248">
+      <g
+         transform="translate(0,0)"
+         id="g246">
+        <path
+           class="background"
+           aria-hidden="true"
+           d="M0,0h0v300h0Z"
+           id="path4" />
+        <g
+           id="g242">
+          <g
+             class="mark-group role-scope concat_0_group"
+             role="graphics-object"
+             aria-roledescription="group mark container"
+             id="g240">
+            <g
+               transform="translate(0,0)"
+               id="g238">
+              <path
+                 class="background"
+                 aria-hidden="true"
+                 d="M0.5,0.5h400v300h-400Z"
+                 stroke="#ddd"
+                 id="path6" />
+              <g
+                 id="g234">
+                <g
+                   class="mark-group role-axis"
+                   aria-hidden="true"
+                   id="g46">
+                  <g
+                     transform="translate(0.5,300.5)"
+                     id="g44">
+                    <path
+                       class="background"
+                       aria-hidden="true"
+                       d="M0,0h0v0h0Z"
+                       pointer-events="none"
+                       id="path8" />
+                    <g
+                       id="g40">
+                      <g
+                         class="mark-rule role-axis-grid"
+                         pointer-events="none"
+                         id="g38">
+                        <line
+                           transform="translate(0,-300)"
+                           x2="0"
+                           y2="300"
+                           stroke="#ddd"
+                           stroke-width="1"
+                           opacity="1"
+                           id="line10" />
+                        <line
+                           transform="translate(31,-300)"
+                           x2="0"
+                           y2="300"
+                           stroke="#ddd"
+                           stroke-width="1"
+                           opacity="1"
+                           id="line12" />
+                        <line
+                           transform="translate(62,-300)"
+                           x2="0"
+                           y2="300"
+                           stroke="#ddd"
+                           stroke-width="1"
+                           opacity="1"
+                           id="line14" />
+                        <line
+                           transform="translate(92,-300)"
+                           x2="0"
+                           y2="300"
+                           stroke="#ddd"
+                           stroke-width="1"
+                           opacity="1"
+                           id="line16" />
+                        <line
+                           transform="translate(123,-300)"
+                           x2="0"
+                           y2="300"
+                           stroke="#ddd"
+                           stroke-width="1"
+                           opacity="1"
+                           id="line18" />
+                        <line
+                           transform="translate(154,-300)"
+                           x2="0"
+                           y2="300"
+                           stroke="#ddd"
+                           stroke-width="1"
+                           opacity="1"
+                           id="line20" />
+                        <line
+                           transform="translate(185,-300)"
+                           x2="0"
+                           y2="300"
+                           stroke="#ddd"
+                           stroke-width="1"
+                           opacity="1"
+                           id="line22" />
+                        <line
+                           transform="translate(215,-300)"
+                           x2="0"
+                           y2="300"
+                           stroke="#ddd"
+                           stroke-width="1"
+                           opacity="1"
+                           id="line24" />
+                        <line
+                           transform="translate(246,-300)"
+                           x2="0"
+                           y2="300"
+                           stroke="#ddd"
+                           stroke-width="1"
+                           opacity="1"
+                           id="line26" />
+                        <line
+                           transform="translate(277,-300)"
+                           x2="0"
+                           y2="300"
+                           stroke="#ddd"
+                           stroke-width="1"
+                           opacity="1"
+                           id="line28" />
+                        <line
+                           transform="translate(308,-300)"
+                           x2="0"
+                           y2="300"
+                           stroke="#ddd"
+                           stroke-width="1"
+                           opacity="1"
+                           id="line30" />
+                        <line
+                           transform="translate(338,-300)"
+                           x2="0"
+                           y2="300"
+                           stroke="#ddd"
+                           stroke-width="1"
+                           opacity="1"
+                           id="line32" />
+                        <line
+                           transform="translate(369,-300)"
+                           x2="0"
+                           y2="300"
+                           stroke="#ddd"
+                           stroke-width="1"
+                           opacity="1"
+                           id="line34" />
+                        <line
+                           transform="translate(400,-300)"
+                           x2="0"
+                           y2="300"
+                           stroke="#ddd"
+                           stroke-width="1"
+                           opacity="1"
+                           id="line36" />
+                      </g>
+                    </g>
+                    <path
+                       class="foreground"
+                       aria-hidden="true"
+                       d=""
+                       pointer-events="none"
+                       display="none"
+                       id="path42" />
+                  </g>
+                </g>
+                <g
+                   class="mark-group role-axis"
+                   aria-hidden="true"
+                   id="g80">
+                  <g
+                     transform="translate(0.5,0.5)"
+                     id="g78">
+                    <path
+                       class="background"
+                       aria-hidden="true"
+                       d="M0,0h0v0h0Z"
+                       pointer-events="none"
+                       id="path48" />
+                    <g
+                       id="g74">
+                      <g
+                         class="mark-rule role-axis-grid"
+                         pointer-events="none"
+                         id="g72">
+                        <line
+                           transform="translate(0,300)"
+                           x2="400"
+                           y2="0"
+                           stroke="#ddd"
+                           stroke-width="1"
+                           opacity="1"
+                           id="line50" />
+                        <line
+                           transform="translate(0,270)"
+                           x2="400"
+                           y2="0"
+                           stroke="#ddd"
+                           stroke-width="1"
+                           opacity="1"
+                           id="line52" />
+                        <line
+                           transform="translate(0,240)"
+                           x2="400"
+                           y2="0"
+                           stroke="#ddd"
+                           stroke-width="1"
+                           opacity="1"
+                           id="line54" />
+                        <line
+                           transform="translate(0,210)"
+                           x2="400"
+                           y2="0"
+                           stroke="#ddd"
+                           stroke-width="1"
+                           opacity="1"
+                           id="line56" />
+                        <line
+                           transform="translate(0,180)"
+                           x2="400"
+                           y2="0"
+                           stroke="#ddd"
+                           stroke-width="1"
+                           opacity="1"
+                           id="line58" />
+                        <line
+                           transform="translate(0,150)"
+                           x2="400"
+                           y2="0"
+                           stroke="#ddd"
+                           stroke-width="1"
+                           opacity="1"
+                           id="line60" />
+                        <line
+                           transform="translate(0,120)"
+                           x2="400"
+                           y2="0"
+                           stroke="#ddd"
+                           stroke-width="1"
+                           opacity="1"
+                           id="line62" />
+                        <line
+                           transform="translate(0,90)"
+                           x2="400"
+                           y2="0"
+                           stroke="#ddd"
+                           stroke-width="1"
+                           opacity="1"
+                           id="line64" />
+                        <line
+                           transform="translate(0,60)"
+                           x2="400"
+                           y2="0"
+                           stroke="#ddd"
+                           stroke-width="1"
+                           opacity="1"
+                           id="line66" />
+                        <line
+                           transform="translate(0,30)"
+                           x2="400"
+                           y2="0"
+                           stroke="#ddd"
+                           stroke-width="1"
+                           opacity="1"
+                           id="line68" />
+                        <line
+                           transform="translate(0,0)"
+                           x2="400"
+                           y2="0"
+                           stroke="#ddd"
+                           stroke-width="1"
+                           opacity="1"
+                           id="line70" />
+                      </g>
+                    </g>
+                    <path
+                       class="foreground"
+                       aria-hidden="true"
+                       d=""
+                       pointer-events="none"
+                       display="none"
+                       id="path76" />
+                  </g>
+                </g>
+                <g
+                   class="mark-group role-axis"
+                   role="graphics-symbol"
+                   aria-roledescription="axis"
+                   aria-label="X-axis titled 'Timestamp' for a linear scale with values from 1,665,412,300 to 1,665,412,430"
+                   id="g158">
+                  <g
+                     transform="translate(0.5,300.5)"
+                     id="g156">
+                    <path
+                       class="background"
+                       aria-hidden="true"
+                       d="M0,0h0v0h0Z"
+                       pointer-events="none"
+                       id="path82" />
+                    <g
+                       id="g152">
+                      <g
+                         class="mark-rule role-axis-tick"
+                         pointer-events="none"
+                         id="g112">
+                        <line
+                           transform="translate(0,0)"
+                           x2="0"
+                           y2="5"
+                           stroke="#888"
+                           stroke-width="1"
+                           opacity="1"
+                           id="line84" />
+                        <line
+                           transform="translate(31,0)"
+                           x2="0"
+                           y2="5"
+                           stroke="#888"
+                           stroke-width="1"
+                           opacity="1"
+                           id="line86" />
+                        <line
+                           transform="translate(62,0)"
+                           x2="0"
+                           y2="5"
+                           stroke="#888"
+                           stroke-width="1"
+                           opacity="1"
+                           id="line88" />
+                        <line
+                           transform="translate(92,0)"
+                           x2="0"
+                           y2="5"
+                           stroke="#888"
+                           stroke-width="1"
+                           opacity="1"
+                           id="line90" />
+                        <line
+                           transform="translate(123,0)"
+                           x2="0"
+                           y2="5"
+                           stroke="#888"
+                           stroke-width="1"
+                           opacity="1"
+                           id="line92" />
+                        <line
+                           transform="translate(154,0)"
+                           x2="0"
+                           y2="5"
+                           stroke="#888"
+                           stroke-width="1"
+                           opacity="1"
+                           id="line94" />
+                        <line
+                           transform="translate(185,0)"
+                           x2="0"
+                           y2="5"
+                           stroke="#888"
+                           stroke-width="1"
+                           opacity="1"
+                           id="line96" />
+                        <line
+                           transform="translate(215,0)"
+                           x2="0"
+                           y2="5"
+                           stroke="#888"
+                           stroke-width="1"
+                           opacity="1"
+                           id="line98" />
+                        <line
+                           transform="translate(246,0)"
+                           x2="0"
+                           y2="5"
+                           stroke="#888"
+                           stroke-width="1"
+                           opacity="1"
+                           id="line100" />
+                        <line
+                           transform="translate(277,0)"
+                           x2="0"
+                           y2="5"
+                           stroke="#888"
+                           stroke-width="1"
+                           opacity="1"
+                           id="line102" />
+                        <line
+                           transform="translate(308,0)"
+                           x2="0"
+                           y2="5"
+                           stroke="#888"
+                           stroke-width="1"
+                           opacity="1"
+                           id="line104" />
+                        <line
+                           transform="translate(338,0)"
+                           x2="0"
+                           y2="5"
+                           stroke="#888"
+                           stroke-width="1"
+                           opacity="1"
+                           id="line106" />
+                        <line
+                           transform="translate(369,0)"
+                           x2="0"
+                           y2="5"
+                           stroke="#888"
+                           stroke-width="1"
+                           opacity="1"
+                           id="line108" />
+                        <line
+                           transform="translate(400,0)"
+                           x2="0"
+                           y2="5"
+                           stroke="#888"
+                           stroke-width="1"
+                           opacity="1"
+                           id="line110" />
+                      </g>
+                      <g
+                         class="mark-text role-axis-label"
+                         pointer-events="none"
+                         id="g142">
+                        <text
+                           text-anchor="start"
+                           transform="translate(0,15)"
+                           font-family="sans-serif"
+                           font-size="10px"
+                           fill="#000"
+                           opacity="1"
+                           id="text114">1,665,412,300</text>
+                        <text
+                           text-anchor="middle"
+                           transform="translate(30.76923076923077,15)"
+                           font-family="sans-serif"
+                           font-size="10px"
+                           fill="#000"
+                           opacity="0"
+                           id="text116">1,665,412,310</text>
+                        <text
+                           text-anchor="middle"
+                           transform="translate(61.53846153846154,15)"
+                           font-family="sans-serif"
+                           font-size="10px"
+                           fill="#000"
+                           opacity="0"
+                           id="text118">1,665,412,320</text>
+                        <text
+                           text-anchor="middle"
+                           transform="translate(92.3076923076923,15)"
+                           font-family="sans-serif"
+                           font-size="10px"
+                           fill="#000"
+                           opacity="0"
+                           id="text120">1,665,412,330</text>
+                        <text
+                           text-anchor="middle"
+                           transform="translate(123.07692307692308,15)"
+                           font-family="sans-serif"
+                           font-size="10px"
+                           fill="#000"
+                           opacity="1"
+                           id="text122">1,665,412,340</text>
+                        <text
+                           text-anchor="middle"
+                           transform="translate(153.84615384615387,15)"
+                           font-family="sans-serif"
+                           font-size="10px"
+                           fill="#000"
+                           opacity="0"
+                           id="text124">1,665,412,350</text>
+                        <text
+                           text-anchor="middle"
+                           transform="translate(184.6153846153846,15)"
+                           font-family="sans-serif"
+                           font-size="10px"
+                           fill="#000"
+                           opacity="0"
+                           id="text126">1,665,412,360</text>
+                        <text
+                           text-anchor="middle"
+                           transform="translate(215.3846153846154,15)"
+                           font-family="sans-serif"
+                           font-size="10px"
+                           fill="#000"
+                           opacity="0"
+                           id="text128">1,665,412,370</text>
+                        <text
+                           text-anchor="middle"
+                           transform="translate(246.15384615384616,15)"
+                           font-family="sans-serif"
+                           font-size="10px"
+                           fill="#000"
+                           opacity="1"
+                           id="text130">1,665,412,380</text>
+                        <text
+                           text-anchor="middle"
+                           transform="translate(276.9230769230769,15)"
+                           font-family="sans-serif"
+                           font-size="10px"
+                           fill="#000"
+                           opacity="0"
+                           id="text132">1,665,412,390</text>
+                        <text
+                           text-anchor="middle"
+                           transform="translate(307.69230769230774,15)"
+                           font-family="sans-serif"
+                           font-size="10px"
+                           fill="#000"
+                           opacity="0"
+                           id="text134">1,665,412,400</text>
+                        <text
+                           text-anchor="middle"
+                           transform="translate(338.46153846153845,15)"
+                           font-family="sans-serif"
+                           font-size="10px"
+                           fill="#000"
+                           opacity="0"
+                           id="text136">1,665,412,410</text>
+                        <text
+                           text-anchor="middle"
+                           transform="translate(369.2307692307692,15)"
+                           font-family="sans-serif"
+                           font-size="10px"
+                           fill="#000"
+                           opacity="1"
+                           id="text138">1,665,412,420</text>
+                        <text
+                           text-anchor="end"
+                           transform="translate(400,15)"
+                           font-family="sans-serif"
+                           font-size="10px"
+                           fill="#000"
+                           opacity="0"
+                           id="text140">1,665,412,430</text>
+                      </g>
+                      <g
+                         class="mark-rule role-axis-domain"
+                         pointer-events="none"
+                         id="g146">
+                        <line
+                           transform="translate(0,0)"
+                           x2="400"
+                           y2="0"
+                           stroke="#888"
+                           stroke-width="1"
+                           opacity="1"
+                           id="line144" />
+                      </g>
+                      <g
+                         class="mark-text role-axis-title"
+                         pointer-events="none"
+                         id="g150">
+                        <text
+                           text-anchor="middle"
+                           transform="translate(200,30)"
+                           font-family="sans-serif"
+                           font-size="11px"
+                           font-weight="bold"
+                           fill="#000"
+                           opacity="1"
+                           id="text148">Timestamp</text>
+                      </g>
+                    </g>
+                    <path
+                       class="foreground"
+                       aria-hidden="true"
+                       d=""
+                       pointer-events="none"
+                       display="none"
+                       id="path154" />
+                  </g>
+                </g>
+                <g
+                   class="mark-group role-axis"
+                   role="graphics-symbol"
+                   aria-roledescription="axis"
+                   aria-label="Y-axis titled 'Mean Workload, Memory Use' for a linear scale with values from 0 to 100"
+                   id="g224">
+                  <g
+                     transform="translate(0.5,0.5)"
+                     id="g222">
+                    <path
+                       class="background"
+                       aria-hidden="true"
+                       d="M0,0h0v0h0Z"
+                       pointer-events="none"
+                       id="path160" />
+                    <g
+                       id="g218">
+                      <g
+                         class="mark-rule role-axis-tick"
+                         pointer-events="none"
+                         id="g184">
+                        <line
+                           transform="translate(0,300)"
+                           x2="-5"
+                           y2="0"
+                           stroke="#888"
+                           stroke-width="1"
+                           opacity="1"
+                           id="line162" />
+                        <line
+                           transform="translate(0,270)"
+                           x2="-5"
+                           y2="0"
+                           stroke="#888"
+                           stroke-width="1"
+                           opacity="1"
+                           id="line164" />
+                        <line
+                           transform="translate(0,240)"
+                           x2="-5"
+                           y2="0"
+                           stroke="#888"
+                           stroke-width="1"
+                           opacity="1"
+                           id="line166" />
+                        <line
+                           transform="translate(0,210)"
+                           x2="-5"
+                           y2="0"
+                           stroke="#888"
+                           stroke-width="1"
+                           opacity="1"
+                           id="line168" />
+                        <line
+                           transform="translate(0,180)"
+                           x2="-5"
+                           y2="0"
+                           stroke="#888"
+                           stroke-width="1"
+                           opacity="1"
+                           id="line170" />
+                        <line
+                           transform="translate(0,150)"
+                           x2="-5"
+                           y2="0"
+                           stroke="#888"
+                           stroke-width="1"
+                           opacity="1"
+                           id="line172" />
+                        <line
+                           transform="translate(0,120)"
+                           x2="-5"
+                           y2="0"
+                           stroke="#888"
+                           stroke-width="1"
+                           opacity="1"
+                           id="line174" />
+                        <line
+                           transform="translate(0,90)"
+                           x2="-5"
+                           y2="0"
+                           stroke="#888"
+                           stroke-width="1"
+                           opacity="1"
+                           id="line176" />
+                        <line
+                           transform="translate(0,60)"
+                           x2="-5"
+                           y2="0"
+                           stroke="#888"
+                           stroke-width="1"
+                           opacity="1"
+                           id="line178" />
+                        <line
+                           transform="translate(0,30)"
+                           x2="-5"
+                           y2="0"
+                           stroke="#888"
+                           stroke-width="1"
+                           opacity="1"
+                           id="line180" />
+                        <line
+                           transform="translate(0,0)"
+                           x2="-5"
+                           y2="0"
+                           stroke="#888"
+                           stroke-width="1"
+                           opacity="1"
+                           id="line182" />
+                      </g>
+                      <g
+                         class="mark-text role-axis-label"
+                         pointer-events="none"
+                         id="g208">
+                        <text
+                           text-anchor="end"
+                           transform="translate(-7,303)"
+                           font-family="sans-serif"
+                           font-size="10px"
+                           fill="#000"
+                           opacity="1"
+                           id="text186">0</text>
+                        <text
+                           text-anchor="end"
+                           transform="translate(-7,273)"
+                           font-family="sans-serif"
+                           font-size="10px"
+                           fill="#000"
+                           opacity="1"
+                           id="text188">10</text>
+                        <text
+                           text-anchor="end"
+                           transform="translate(-7,243)"
+                           font-family="sans-serif"
+                           font-size="10px"
+                           fill="#000"
+                           opacity="1"
+                           id="text190">20</text>
+                        <text
+                           text-anchor="end"
+                           transform="translate(-7,213)"
+                           font-family="sans-serif"
+                           font-size="10px"
+                           fill="#000"
+                           opacity="1"
+                           id="text192">30</text>
+                        <text
+                           text-anchor="end"
+                           transform="translate(-7,183)"
+                           font-family="sans-serif"
+                           font-size="10px"
+                           fill="#000"
+                           opacity="1"
+                           id="text194">40</text>
+                        <text
+                           text-anchor="end"
+                           transform="translate(-7,153)"
+                           font-family="sans-serif"
+                           font-size="10px"
+                           fill="#000"
+                           opacity="1"
+                           id="text196">50</text>
+                        <text
+                           text-anchor="end"
+                           transform="translate(-7,123)"
+                           font-family="sans-serif"
+                           font-size="10px"
+                           fill="#000"
+                           opacity="1"
+                           id="text198">60</text>
+                        <text
+                           text-anchor="end"
+                           transform="translate(-7,93.00000000000001)"
+                           font-family="sans-serif"
+                           font-size="10px"
+                           fill="#000"
+                           opacity="1"
+                           id="text200">70</text>
+                        <text
+                           text-anchor="end"
+                           transform="translate(-7,62.999999999999986)"
+                           font-family="sans-serif"
+                           font-size="10px"
+                           fill="#000"
+                           opacity="1"
+                           id="text202">80</text>
+                        <text
+                           text-anchor="end"
+                           transform="translate(-7,32.99999999999999)"
+                           font-family="sans-serif"
+                           font-size="10px"
+                           fill="#000"
+                           opacity="1"
+                           id="text204">90</text>
+                        <text
+                           text-anchor="end"
+                           transform="translate(-7,3)"
+                           font-family="sans-serif"
+                           font-size="10px"
+                           fill="#000"
+                           opacity="1"
+                           id="text206">100</text>
+                      </g>
+                      <g
+                         class="mark-rule role-axis-domain"
+                         pointer-events="none"
+                         id="g212">
+                        <line
+                           transform="translate(0,300)"
+                           x2="0"
+                           y2="-300"
+                           stroke="#888"
+                           stroke-width="1"
+                           opacity="1"
+                           id="line210" />
+                      </g>
+                      <g
+                         class="mark-text role-axis-title"
+                         pointer-events="none"
+                         id="g216">
+                        <text
+                           text-anchor="middle"
+                           transform="translate(-30.100000381469727,150) rotate(-90) translate(0,-2)"
+                           font-family="sans-serif"
+                           font-size="11px"
+                           font-weight="bold"
+                           fill="#000"
+                           opacity="1"
+                           id="text214">Mean Workload, Memory Use</text>
+                      </g>
+                    </g>
+                    <path
+                       class="foreground"
+                       aria-hidden="true"
+                       d=""
+                       pointer-events="none"
+                       display="none"
+                       id="path220" />
+                  </g>
+                </g>
+                <g
+                   class="mark-line role-mark concat_0_layer_0_marks"
+                   clip-path="url(#clip1)"
+                   role="graphics-object"
+                   aria-roledescription="line mark container"
+                   id="g228">
+                  <path
+                     aria-label="Timestamp: 1665412306.92; Mean Workload: 22.150636375"
+                     role="graphics-symbol"
+                     aria-roledescription="line mark"
+                     d="M21.27999965961163,233.548090875L27.43384581345778,188.12454487499997L33.58769196730393,89.66347987500001L39.741538121150086,150.05439487499999L45.895384274996246,0L45.898461708655724,169.142922L45.901538408719574,165.00607140000002L52.0492304288424,138.56728837500003L58.20307658268855,101.12612962499999L64.3569227365347,97.60994812499997L70.51076889038086,148.034817L70.51384632404034,136.37533950000002L70.51692302410419,154.926165L76.66461504422702,150.17046937499998L82.81846119807317,97.88755300000001L82.82153863173265,79.70826900000002L88.97230735191933,218.27787375L95.12615350576547,70.09823175000001L101.27999965961163,201.45324300000001L107.43384581345778,71.65809337500002L113.58769196730394,234.51776700000002L113.59076940096342,236.244657L113.59384610102727,238.18501949999998L113.59692280109113,196.06886L119.74153812115009,37.688442L119.74461555480957,81.24563520000001L125.89538427499625,164.262023L125.89846170865573,206.23890959999997L132.0492304288424,40.70351799999996L132.0523078625019,28.684757400000017L138.20307658268857,144.098976L144.3569227365347,206.4962685L144.36000017019418,190.33491374999997L144.36307687025806,219.1335465L150.51076889038086,70.30041487499997L156.66461504422702,216.82841699999997L162.81846119807318,137.96450774999997L168.9723073519193,41.90298449999999L168.9753847855788,35.95149224999997L168.97846148564267,36.113737500000006L175.12615350576547,156.86027174999998L181.27999965961163,210.48057599999999L187.4338458134578,28.63864799999999L187.43692324711728,25.82864340000002L193.58769196730395,78.97664212500004L199.74153812115009,206.905125375L205.89538427499625,147.67074975L212.04923042884238,65.39552199999999L212.0523078625019,39.99122580000003L218.20307658268857,123.94503112500001L224.3569227365347,170.35176000000004L224.36000017019418,146.7188172L224.36307687025803,271.21211999999997L230.51076889038086,182.737329L230.51384632404032,179.12014559999997L230.51692302410422,19.402986000000023L236.664615044227,26.24295750000001L242.81846119807318,118.04762025L248.9723073519193,142.771414125L255.12615350576547,205.59039974999996L261.27999965961163,149.70375375L267.43384581345776,11.113636499999968L273.58769196730395,50.80765987499999L279.7415381211501,173.933248875L285.8953842749962,240.36981974999998L292.0492304288424,156.442532625L298.20307658268854,34.25559675000001L304.3569227365347,66.546980625L310.51076889038086,118.78996012499996L316.66461504422705,171.846305625L322.8184611980732,241.873059L328.9723073519193,220.000452375L335.12615350576544,4.492612499999971L335.129230939425,5.762562999999998L341.2830770932711,62.27006700000002L341.28615379333496,59.14321599999999L347.43384581345776,38.14768349999997L353.58769196730395,218.964705L359.7415381211501,239.03580975L365.8953842749963,207.056866875L372.0492304288424,162.5890155L378.2030765826886,254.0773815"
+                     stroke="#FFAA00"
+                     stroke-width="2"
+                     id="path226" />
+                </g>
+                <g
+                   class="mark-line role-mark concat_0_layer_1_marks"
+                   clip-path="url(#clip2)"
+                   role="graphics-object"
+                   aria-roledescription="line mark container"
+                   id="g232">
+                  <path
+                     aria-label="Timestamp: 1665412304.92; Memory Use: 21.948197"
+                     role="graphics-symbol"
+                     aria-roledescription="line mark"
+                     d="M15.129230939424954,234.155409L21.27999965961163,234.175728L27.43384581345778,232.87353299999998L33.58769196730393,228.436659L39.741538121150086,220.47018L45.895384274996246,209.638836L52.0492304288424,195.893313L58.20307658268855,191.884152L64.3569227365347,178.939389L70.51076889038086,171.71196899999998L76.66461504422702,171.621636L82.81846119807317,171.65063399999997L88.97230735191933,171.551994L95.12615350576547,171.547839L101.27999965961163,171.488583L107.43384581345778,152.78027699999998L113.60000023475061,152.233455L119.74461555480957,152.210094L125.89538427499625,152.17263900000003L132.0492304288424,146.87114699999998L138.20307658268857,140.750271L144.3569227365347,140.508642L150.51076889038086,128.68340700000002L156.66461504422702,123.099864L162.81846119807318,120.302418L168.9723073519193,120.19391399999999L175.12615350576547,118.773498L181.27999965961163,118.042671L187.4338458134578,118.03191600000001L193.58769196730395,116.39753400000001L199.74153812115009,115.84440599999998L205.89538427499625,115.71899400000001L212.04923042884238,112.08570300000002L218.20307658268857,107.016348L224.3569227365347,106.720278L230.51076889038086,106.41812699999997L236.664615044227,106.21105799999997L242.81846119807318,95.23568699999998L248.9723073519193,94.98522899999999L255.12615350576547,94.589781L261.27999965961163,94.28918699999998L267.43384581345776,94.260336L273.58769196730395,94.263378L279.7415381211501,84.58879200000001L285.8953842749962,84.55794L292.0492304288424,84.52738499999998L298.206154016348,84.49831200000001L304.3569227365347,84.35465399999998L310.51076889038086,78.82702800000001L316.66461504422705,78.68500200000003L322.8184611980732,78.54483000000003L328.9723073519193,78.48787199999997L335.12615350576544,78.382704L341.27999965961163,78.03256800000001L347.43384581345776,70.535556L353.58769196730395,70.21931399999998L359.7415381211501,70.12415999999997L365.8953842749963,70.034865L372.0492304288424,169.38695700000002L378.2030765826886,234.07226699999998"
+                     stroke="#4c78a8"
+                     stroke-width="2"
+                     id="path230" />
+                </g>
+              </g>
+              <path
+                 class="foreground"
+                 aria-hidden="true"
+                 d=""
+                 display="none"
+                 id="path236" />
+            </g>
+          </g>
+        </g>
+        <path
+           class="foreground"
+           aria-hidden="true"
+           d=""
+           display="none"
+           id="path244" />
+      </g>
+    </g>
+    <rect
+       style="fill:#f9f9f9"
+       id="rect334"
+       width="411.51297"
+       height="9.8373537"
+       x="-0.52571869"
+       y="307.84058" />
+    <rect
+       style="fill:#ffffff"
+       id="rect358"
+       width="411.51297"
+       height="9.8373413"
+       x="-0.52571869"
+       y="307.84058" />
+  </g>
+  <defs
+     id="defs258">
+    <clipPath
+       id="clip1">
+      <rect
+         x="0"
+         y="0"
+         width="400"
+         height="300"
+         id="rect252" />
+    </clipPath>
+    <clipPath
+       id="clip2">
+      <rect
+         x="0"
+         y="0"
+         width="400"
+         height="300"
+         id="rect255" />
+    </clipPath>
+  </defs>
+</svg>
