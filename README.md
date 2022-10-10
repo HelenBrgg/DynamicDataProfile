@@ -1,169 +1,82 @@
-https://www.wdrmaus.de/blaubaer/filme/index.php5
+# Benutzerdokumentation
 
+## Datengenerator
 
-# ddm-akka
-
-## Compiling & running the system
-
-Use Maven to build the project:
-
-```sh
-mvn package -f "pom.xml"
-```
-
-Then, extract the sample dataset:
-
-```sh
-cd data && unzip TPCH.zip && cd ..
-```
-
-Now the master system (with 4 workers) can be started like this:
-
-```sh
-java -Xmx3g -ea -cp target/ddm-akka-1.0.jar de.ddm.Main master
-```
-
-To run the master system and a dedicated worker system on a different host:
-
-```sh
-# on the master system host
-java -Xmx3g -ea -cp target/ddm-akka-1.0.jar de.ddm.Main master -w 0 -h MASTER_IP
-
-# on the worker system host
-java -Xmx3g -ea -cp target/ddm-akka-1.0.jar de.ddm.Main worker -w 0 -mh MASTER_IP -h WORKER_IP
-```
-
-The master system will run a while and shut down after it is finished. You should receive output like this:
-
-```sh
-                akka://ddm/user/master/dependencyMiner| Before task delegation: 0 unassigned tasks
-                akka://ddm/user/master/dependencyMiner| After task delegation: 0 unassigned tasks
-                akka://ddm/user/master/dependencyMiner| Finished mining within 154548 ms!
-akka://ddm/user/master/dependencyMiner/resultCollector| Received FinalizeMessage!
-                                akka://ddm/user/reaper| Every local actor has been reaped. Terminating the actor system...
-                                   Cluster(akka://ddm)| Cluster Node [akka://ddm@127.0.1.1:7877] - Marked address [akka://ddm@127.0.1.1:7877] as [Leaving]
-                                   Cluster(akka://ddm)| Cluster Node [akka://ddm@127.0.1.1:7877] - Leader is moving node [akka://ddm@127.0.1.1:7877] to [Exiting]
-                                   Cluster(akka://ddm)| Cluster Node [akka://ddm@127.0.1.1:7877] - Exiting completed
-                                   Cluster(akka://ddm)| Cluster Node [akka://ddm@127.0.1.1:7877] - Shutting down...
-                                   Cluster(akka://ddm)| Cluster Node [akka://ddm@127.0.1.1:7877] - Successfully shut down
-  akka://ddm@127.0.1.1:7877/system/remoting-terminator| Shutting down remote daemon.
-  akka://ddm@127.0.1.1:7877/system/remoting-terminator| Remote daemon shut down; proceeding with flushing remote transports.
-  akka://ddm@127.0.1.1:7877/system/remoting-terminator| Remoting shut down.
-```
-
-The actual results can be viewed in the incrementally-created `results.txt` and `results.csv` files.
-
-## How does it work
-
-The system activities can be broadly split in 3 phases. While these phases boot up and finish sequentially, they will overlap and run in parallel.
-
-### 1. Reading and storing the dataset
-
-After reading in the table headers, the table rows will be read in batches until all tables have been completely read.
-
-In order to reduce memory usage, individual table columns will be stored in an optimized data structure called `Column`.
-
-When Column receives a value, it will compare it to all distinct values received so far and if it is already known, only store an index to it. These indices will be used to read back the values in order. 
+Bevor das Datengenerator-Script ausgeführt werden kann muss der TPC-H Datensatz entpackt und die Abhängigkeiten installiert werden:
 
 ```
-values stored in order:
-
-    |"horse"|
-    |"dog"  |
-    |"dog"  |
-    |"cat"  |
-    |"horse"|
-
-values stored in Column:
-
-   distinct_values    indices    readValue(index)
-      |"horse"|         |0|        => "horse"
-      |"dog"  |         |1|        => "dog"
-      |"cat"  |         |1|        => "dog"
-                        |2|        => "cat"
-                        |0|        => "horse"
-
+cd data && unzip TPCH.zip
+pip install argparse
 ```
 
-All data of all tables will be stored in the `LocalDataStorage` class. __NOTE: Currently, this is only an utility structure used by `DependencyMiner` - but in future it will be expanded to become a proper Akka actor. Each system will receive one such actor to actively query and store data which it specifically requires.__
+Das Script kann wie folgt ausgeführt werden:
 
-### 2. Generating tasks
-
-Once a table has been fully read, it will be paired up with each previously fully-read table and passed on to the `TaskGenerator`. The `TaskGenerator` will generate one or more `Task`s based on each pairing.
-
-A `Task` is a simple data structure, describing two tables and two respective selections of their columns which are to be checked for unary inclusion dependencies. 
-
-![](./docs/structures.svg)
-
-A task `(T1[A,B], T2[X,Y])` for example will instruct to check for the following 8 INDs:
-
-```
-T1 → T2:  A ⊆ X,  B ⊆ X,  A ⊆ Y,  B ⊆ Y
-T2 → T1:  X ⊆ A,  X ⊆ B,  Y ⊆ A,  Y ⊆ B
+```bash
+scripts/datagenerator.py CSV_FILE [OPTIONS]
 ```
 
-Each `Task` will be turned into a `TaskMessage` when delegated. Currently, a Task message contains all distinct values of the listed columns in full. (__NOTE: Once we get an incremental algorithm, as well as the LocalDataStorage actor working, our strategy of task generation may change significantly.__
-In order for a  `TaskMessage` to not become too large (which can very quickly trigger out-of-memory errors in Akka's serialization layer), the `Task`s will be generated for them to achieve a certain size limit (currently 80mb, note however the current implementation is imprecise):
+Wobei `CSV_FILE` der Pfad zu einer CSV-Datei sein muss. `OPTIONS` kann eine Kombination aus verschiedenen Parametern sein:
 
-### Case 1
+* (keine Parameter): Liest einen Datensatz einmal aus.
+* `--repeat`: Wiederholt einen Datensatz unendlich oft.
+* `--repeat --max-output 100`: Wiederholt einen Datensatz, bis 100MB an Daten ausgegeben wurden.
+* `--delete 0.1`: Liest einen Datensatz einmal aus mit 10% Wahrscheinlichkeit, dass alte Zeilen gelöscht werden.
+* `--repeat --mutate`: Wiederholt einen Datensatz unendlich oft mit Mutierungen nach jeder Wiederholung.
+* `--batch-size 1`: Liest einen Datensatz einmal aus mit einer Batch-Größe von maximal 1KB (sonst: 64KB).
 
-If two tables `T1` and `T2` both fit in 80mb, one `Task` will be generated with all columns of each table selected:
+Weitere Optionen sind unter `./scripts/datagenerator.py --help` aufgelistet.
 
-* `(T1[*], T2[*])`
+## Akka-System
 
-### Case 2
+Das Akka-System läuft unter Java 18. Maven wird für die Kompilation benötigt:
 
-If table `T1` fits in 80mb, but table `T2` does not, multiple `Task`s will be generated. Each Task will select `T2` in full, while the selection of `T2` will be split: 
-
-* `(T1[*], T2[X,Y])`
-* `(T1[*], T2[Z,W])`
-
-In total, `(T1[*], T2[*])` will be covered, with redundant coverage of `T1`.
-
-### Case 3
-
-If neither `T1` nor `T2` fit in 80mb, multiple Tasks will be generated. The selections for both `T1` and `T2` will be split and paired up in all permutations:
-
-* `(T1[A,B], T2[X,Y])`
-* `(T1[C,D], T2[Z,W])`
-* `(T1[A,B], T2[X,Y])`
-* `(T1[C,D], T2[Z,W])`
-
-In total, `(T1[*], T2[*])` will be covered, with redundant coverage of both `T1` and `T2`.
-
-### 3. Delegating tasks
-
-__Master-Worker pattern__: The `DependencyMiner` keeps track of which `DependencyWorker` are busy and which are idle. Idle `DependencyWorker`s will be assigned a `Task`, which they will receive in a `TaskMessage`. While the `DependencyWorker` is busy, it will receive no other `Task`s.
-
-When a `DependencyWorker` receives a `TaskMessage`, it checks for INDs with the following algorithm:
-
-```python
-for columnNameA, valueSetA in zip(columNamesA, distinctValuesA):
-    for columnNameB, valueSetB in zip(columNamesB, distinctValuesB):
-        if len(valueSetA) ≤ len(valueSetB) and valueSetA ⊆ valueSetB:
-            pushResult(
-                dependentTable=tableNameA,
-                referencedTable=tableNameB,
-                dependentColumn=columnNameA,
-                referencedColumn=columnNameB)
-        if len(valueSetB) ≤ len(valueSetA) and valueSetB ⊆ valueSetA:
-            pushResult(
-                dependentTable=tableNameB,
-                referencedTable=tableNameA,
-                dependentColumn=columnNameB,
-                referencedColumn=columnNameA)
+```bash
+mvn package -f pom.xml
 ```
 
-The results then get sent back in a `CompletionMessage` to the `DependencyMiner`. This is currently all a `DependencyMiner` does.
+Das Akka-System lässt sie wie folgt ausführen:
 
-### 4. Reporting the results
+```
+java -Xmx8g -ea -cp target/ddm-akka-1.0.jar de.ddm.Main master [OPTIONS]
+```
 
-The results get reported by the `ResultCollector` in both the files `results.txt` and `results.csv`. The former will contain the INDs in a human readable form, the latter as a CSV table.
+`OPTIONS` kann eine Kombination aus verschiedenen Parametern sein:
 
+* (keine Parameter): In seiner Default-Konfiguration liest das Akka-System den TPC-H Datensatz einmal aus und berechnet INDs mit 8 lokalen Workern.
+* `-ip data/example`: Verwendet den `data/example` Datensatz statt den TPC-H Datensatz.
+* `-dg '--repeat --max-output 100'`: Führt das Datengenerator-Skript mit den Parametern `--repeat --max-output 100` aus (wiederholt Datensatz ausgeben bis 100MB an Output erreicht).
+* `-w 16`: Berechnet die INDs mit 16 lokalen Workern.
 
-[`Column`]: ./src/main/java/de/ddm/structures/Column.java
-[`LocalDataStorage`]: ./src/main/java/de/ddm/structures/LocalDataStorage.java
-[`Task`]: ./src/main/java/de/ddm/structures/Task.java
-[`TaskGenerator`]: ./src/main/java/de/ddm/structures/TaskGenerator.java
-[`DependencyMiner`]: ./src/main/java/de/ddm/actors/profiling/DependencyMiner.java
-[`DependencyWorker`]: ./src/main/java/de/ddm/actors/profiling/DependencyWorker.java
+Weitere Optionen sind unter `java -Xmx8g -ea -cp target/ddm-akka-1.0.jar de.ddm.Main --help` aufgelistet.
+
+Eine Ausführung mit dem `data/example` Datensatz, mit 100MB Output pro CSV-Datei und 16 lokalen Workern sähe also so aus:
+
+```
+java -Xmx8g -ea -cp target/ddm-akka-1.0.jar de.ddm.Main master -ip data/example -dg '--repeat --max-output 100' -w 16
+```
+
+Das Akka-System beendet sich automatisch und gibt seine Ergebnisse in `live-results.csv` und `final-results.txt` aus.
+
+# Entwicklerdokumentation
+
+## Projektstruktur
+
+Die `main` Branch enthält unsere CodeBase.
+
+Die `doku` Branch enthält die schriftliche Ausarbeitung mit generierter PDF Datei.
+
+* `scripts/`: Hier befindet sich derzeit nur das `datagenerator.py` Skript.
+* `src/main/java/de/ddm/actors/profiling/`: Hier befinden sich alle unsere Aktoren für unser Aktoren-Protokoll.
+* `src/main/java/de/ddm/structures`: Hier befinden sich alle unsere Klassen, die nicht direkt von Akka abhängig sind.
+* `src/main/java/de/ddm/configuration`: Hier können die Kommandozeilen-Befehle des Akka-Systems angepasst werden.
+* `ddm-akka/`: Hier befindet sich eine alte Version unserer Codebase, die für das Testen verwendet wird.
+* `ddm-spark/`: Hier befindet sich eine Implementation des SINDY-Algorithmus in Spark.
+
+## Testen
+
+Wir testen die Ergebnisse mittels dem `run_tests.sh` Skript.
+
+Dabei testen wir unserer neuen Codebase gegen die Ergebnisse einer alte Version unserer Codebase.  Diese alte Version befindet sich in der Unter-Repository `ddm-akka`.  Unsere Tests prüfen derzeit nur, ob alle INDs in einem statischen Datensatz korrekt gefunden wurde. Für dynamische Datensätze haben wir derzeit keine Tests.
+
+Bei unserem Test werden die beiden Output-Dateies `final-results.txt` und `ddm-akka/results.txt` verglichen. Beiden Dateien werden mittels dem UNIX `diff` Tool auf Gleichheit geprüft: `sort ddm-akka/results.txt | diff final-results.csv -`. Bei gescheiterten Tests werden die nicht-gefunden und falsch-gefunden Einträge hervorgehoben.
+
