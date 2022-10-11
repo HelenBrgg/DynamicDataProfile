@@ -19,13 +19,13 @@ Die __System-Benchmarks__ zeigen die CPU- und RAM-Auslastung des Host-Systems w�
 Die __Ausführungszeiten__ wurden zusätzlich mit dem UNIX `time` Tool gemessen. _Real-Time_ beschreibt die Ausführungszeit von Anfang bis Ende. _User-Time_ beschreibt die CPU-Zeit über mehrere Threads/Prozesse hinweg.
 
 |Konfiguration|Erklärung|Input-Größe|Real-Time (secs)|User-Time (secs)|Durchsatz (MB/s)|
-|--|--|-|-|-|-|
+|---|---|-|-|-|-|
 |`TPCH-static`|Statischer Datensatz|415MB|116|447|3.57|
 |`TPCH-spark`|Statischer Datensatz, Spark Implementation|415MB|68|408|6.1|
 |`TPCH-del10`|Dynamischer Datensatz, 10% Löschungen|415MB|122|503|3.4|
 |`TPCH-del50`|Dynamischer Datensatz, 50% Löschungen|415MB|129|502|3.2|
 |`TPCH-repeat300-del10`|Dynamischer Datensatz mit Wiederholung bis 300MB pro Datei, 10% Löschungen|2.1GB|305|1682|6.85|
-|`TPCH-moutate300-del10`|Dynamischer Datensatz mit Mutation bis 300MB pro Datei, 10% Löschungen|2.1GB|471|3142|4.46|
+|`TPCH-mutate300-del10`|Dynamischer Datensatz mit Mutation bis 300MB pro Datei, 10% Löschungen|2.1GB|471|3142|4.46|
 
 : Tabelle: Überblick der verschiedenen System-Konfigurationen und einmalig-gemessene Ausführungszeiten (UNIX `time`). 
 
